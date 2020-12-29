@@ -1,0 +1,54 @@
+﻿Modality,Eff. Dose [mSv]
+X-Ray Imaging,
+Chest x-ray,0.1
+Abdomen x-ray,0.7
+Pelvis x-ray,0.7
+Neck x-ray,0.2
+Upper back x-ray,1
+Lower back x-ray,1.5
+Extremity x-ray,0.01
+Mammogram,0.4
+DEXA Scan,0.04
+Dental x-ray,0.01
+Skull x-ray,0.1
+CT Imaging,
+Brain CT,2
+Neck CT,6
+Chest CT,7
+PE-Chest CTA,15
+Coronary CTA,16
+Cardiac CT,3
+Abdomen CT,8
+Liver Dedicated CT,15
+Abdomen & Pelvis CT,14
+"Chest, Abdomen & Pelvis CT",18
+Pelvis CT,6
+Virtual Colonoscopy CT,10
+Fluoroscopy,
+Upper GI (Barium),6
+Barium Enema,8
+IV Pyelogram,3
+Nuclear Medicine,
+VQ Scan,2.2
+Technicium Stress Test,9.4
+Thallium Stress Test,40.7
+HIDA Biliary Scan,3.1
+Renal Scan,2.6
+Whole Body PET,14.1
+Bone Scan,6.3
+Tagged WBC Study,6.7
+Gastric Emptying Study,0.4
+GI Bleed RBC Study,7.8
+Thyroid Iodine Scan,4.8
+Parathyroid Sestamibi Scan,6.7
+Brain Scan,6.9
+Radionuclide Ventriculogram,7.8
+Interventional Imaging,
+Dx Coronary Angiogram,7
+Tx Coronary Angiogram,15
+Pulmonary Angiogram,5
+Abdominal Angiogram,12
+Head & Neck Angiogram,5
+TIPS Liver Procedure,70
+Pelvic Vein Embolization,60
+ERCP,4
