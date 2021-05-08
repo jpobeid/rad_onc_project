@@ -12,7 +12,7 @@ void main() => runApp(
           scaffoldBackgroundColor: Colors.black,
           textTheme: TextTheme(
             headline1: TextStyle(
-                fontSize: 24,
+                fontSize: 24, 
                 color: Colors.grey[100],
                 fontWeight: FontWeight.bold),
             headline2: TextStyle(
@@ -22,6 +22,7 @@ void main() => runApp(
             subtitle1: TextStyle(fontSize: 14, color: Colors.grey[200]),
             subtitle2: TextStyle(fontSize: 16, color: Colors.black),
           ),
+
         ),
         //home: RadOncPage(),
         home: RadOncPage(),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
+import 'package:rad_onc_project/data/main_data.dart' as datas;
 
 List<List<dynamic>> dataIsotopes;
 
@@ -59,7 +60,7 @@ class _IsotopesAppState extends State<IsotopesApp> {
     if (dataIsotopes != null) {
       return Scaffold(
         appBar: RadAppBar(
-          strAppTitle: 'Radio-Isotopes',
+          strAppTitle: datas.mapAppNames[2][1],
         ),
         body: ListView.builder(
           itemCount: dataIsotopes.length,

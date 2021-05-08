@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:rad_onc_project/functions/text_field_validation.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
+import 'package:rad_onc_project/data/main_data.dart' as datas;
 
 class Controller extends GetxController {
   var nSlider = (3.0).obs;
@@ -11,7 +12,7 @@ class Controller extends GetxController {
   var strFractions = ''.obs;
   var strX = ''.obs;
 
-  void resetValues(){
+  void resetValues() {
     nSlider.value = (3.0);
     strDose.value = '';
     strFractions.value = '';
@@ -40,11 +41,14 @@ class _BedQedCalcState extends State<BedQedCalc> {
   Widget build(BuildContext context) {
     return Obx(
       () => Scaffold(
-        appBar: RadAppBar(strAppTitle: 'BED-QED-Calculator',),
+        appBar: RadAppBar(
+          strAppTitle: datas.mapAppNames[1][0],
+        ),
         body: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * BedQedCalc.fractionStart,
+              height:
+                  MediaQuery.of(context).size.height * BedQedCalc.fractionStart,
             ),
             Table(
               defaultVerticalAlignment: TableCellVerticalAlignment.top,
@@ -127,7 +131,9 @@ class _BedQedCalcState extends State<BedQedCalc> {
               ],
             ),
             Divider(
-              height: MediaQuery.of(context).size.height * BedQedCalc.fractionStart * 2,
+              height: MediaQuery.of(context).size.height *
+                  BedQedCalc.fractionStart *
+                  2,
               color: Theme.of(context).primaryColor,
               thickness: 1,
             ),
@@ -140,20 +146,23 @@ class _BedQedCalcState extends State<BedQedCalc> {
                     style: Theme.of(context).textTheme.headline2,
                   ),
                   Text(
-                    getBED(ctrl.strDose.value, ctrl.strFractions.value, ctrl.strX.value,
-                        ctrl.nSlider.value),
+                    getBED(ctrl.strDose.value, ctrl.strFractions.value,
+                        ctrl.strX.value, ctrl.nSlider.value),
                     style: Theme.of(context).textTheme.headline2,
                     textAlign: TextAlign.center,
                   ),
                 ]),
                 TableRow(children: [
                   Text(
-                    checkStrings(ctrl.strDose.value, ctrl.strFractions.value, ctrl.strX.value)?'EQD-${ctrl.strX.value} (Gy):':'EQD-X (Gy):',
+                    checkStrings(ctrl.strDose.value, ctrl.strFractions.value,
+                            ctrl.strX.value)[1]
+                        ? 'EQD-${ctrl.strX.value} (Gy):'
+                        : 'EQD-X (Gy):',
                     style: Theme.of(context).textTheme.headline2,
                   ),
                   Text(
-                    getEQDx(ctrl.strDose.value, ctrl.strFractions.value, ctrl.strX.value,
-                        ctrl.nSlider.value),
+                    getEQDx(ctrl.strDose.value, ctrl.strFractions.value,
+                        ctrl.strX.value, ctrl.nSlider.value),
                     style: Theme.of(context).textTheme.headline2,
                     textAlign: TextAlign.center,
                   ),
@@ -167,15 +176,18 @@ class _BedQedCalcState extends State<BedQedCalc> {
   }
 }
 
-bool checkStrings(String strD, String strN, String strX){
-  bool validDose = textFieldDoubleValidation(strD, false, false, true, true, 100, 0, 2, 2);
-  bool validFractions = textFieldDoubleValidation(strN, false, false, false, false, 99, 0, 2, 0);
-  bool validX = textFieldDoubleValidation(strX, false, false, true, true, 100, 0, 2, 3);
-  return (validDose&&validFractions&&validX);
+List<bool> checkStrings(String strD, String strN, String strX) {
+  bool validDose =
+      textFieldDoubleValidation(strD, false, false, true, true, 100, 0, 2, 2);
+  bool validFractions =
+      textFieldDoubleValidation(strN, false, false, false, false, 99, 0, 2, 0);
+  bool validX =
+      textFieldDoubleValidation(strX, false, false, true, true, 100, 0, 2, 3);
+  return [validDose && validFractions, validDose && validFractions && validX];
 }
 
 String getBED(String strD, String strN, String strX, double ab) {
-  if (checkStrings(strD, strN, strX)) {
+  if (checkStrings(strD, strN, strX)[0]) {
     double D = double.parse(strD);
     double N = double.parse(strN);
     double ansBED = D + (pow(D, 2) / (N * ab));
@@ -186,7 +198,7 @@ String getBED(String strD, String strN, String strX, double ab) {
 }
 
 String getEQDx(String strD, String strN, String strX, double ab) {
-  if (checkStrings(strD, strN, strX)) {
+  if (checkStrings(strD, strN, strX)[1]) {
     double D = double.parse(strD);
     double N = double.parse(strN);
     double X = double.parse(strX);

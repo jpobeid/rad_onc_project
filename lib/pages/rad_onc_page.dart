@@ -4,6 +4,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:rad_onc_project/widgets/list_card.dart';
 import 'package:rad_onc_project/widgets/nav_bar.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
+import 'package:rad_onc_project/data/main_data.dart' as datas;
 
 class RadOncPage extends StatefulWidget {
   static const routeName = '/rad-onc-page';
@@ -37,17 +38,24 @@ class _RadOncPageState extends State<RadOncPage> {
         body: Column(children: [
           ListCard(
             pathImage: 'assets/volume.jpg',
-            strTitle: 'Tumor Volume',
+            strTitle: datas.mapAppNames[0][0],
             strSubtitle: 'Estimate volume from size',
             trailingIcon: FlutterIcons.calculator_mco,
             strRouteName: '/tumor-volume-app',
           ),
           ListCard(
             pathImage: 'assets/scaling.jpg',
-            strTitle: 'Scaling Time',
+            strTitle: datas.mapAppNames[0][1],
             strSubtitle: 'Compute/plot biomarker trend',
             trailingIcon: FlutterIcons.chart_line_mco,
             strRouteName: '/scaling-time-app',
+          ),
+          ListCard(
+            pathImage: 'assets/scaling.jpg',
+            strTitle: datas.mapAppNames[0][2],
+            strSubtitle: 'Compute probabilities',
+            trailingIcon: FlutterIcons.calculator_mco,
+            strRouteName: '/probabilities-app',
           ),
         ]),
         bottomNavigationBar: NavBar(indexNav: _indexPage, callback: setIndex),

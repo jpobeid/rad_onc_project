@@ -3,6 +3,7 @@ import 'package:rad_onc_project/functions/text_field_validation.dart';
 import 'package:rad_onc_project/widgets/rad_toggle_button.dart';
 import 'dart:math' as math;
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
+import 'package:rad_onc_project/data/main_data.dart' as datas;
 
 class TimeDecayDoseApp extends StatefulWidget {
   static const routeName = '/time-decay-dose-app';
@@ -111,9 +112,9 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
           : 'N/A';
     }
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       appBar: RadAppBar(
-        strAppTitle: 'Time Decay/Dose',
+        strAppTitle: datas.mapAppNames[2][2],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

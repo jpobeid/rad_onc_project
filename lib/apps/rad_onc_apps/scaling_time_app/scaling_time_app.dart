@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:rad_onc_project/functions/text_field_validation.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:rad_onc_project/data/main_data.dart' as datas;
 
 class ScalingTime extends StatefulWidget {
   static const routeName = '/scaling-time-app';
@@ -123,9 +124,9 @@ class _ScalingTimeState extends State<ScalingTime> {
     if(MediaQuery.of(context).orientation == Orientation.portrait){
       return SafeArea(
         child: Scaffold(
-          resizeToAvoidBottomPadding: true,
+          resizeToAvoidBottomInset: true,
           appBar: RadAppBar(
-            strAppTitle: 'Scaling Time',
+            strAppTitle: datas.mapAppNames[0][1],
           ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -3,6 +3,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:rad_onc_project/widgets/list_card.dart';
 import 'package:rad_onc_project/widgets/nav_bar.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
+import 'package:rad_onc_project/data/main_data.dart' as datas;
 
 class RadBioPage extends StatefulWidget {
   static const routeName = '/rad-bio-page';
@@ -26,21 +27,21 @@ class _RadBioPageState extends State<RadBioPage> {
         body: Column(children: [
           ListCard(
             pathImage: 'assets/alphabeta.jpg',
-            strTitle: 'BED-QED Calculator',
+            strTitle: datas.mapAppNames[1][0],
             strSubtitle: 'Compute dose conversions',
             trailingIcon: FlutterIcons.calculator_mco,
             strRouteName: '/bed-qed-app',
           ),
           ListCard(
             pathImage: 'assets/ct.jpg',
-            strTitle: 'Effective Doses',
+            strTitle: datas.mapAppNames[1][1],
             strSubtitle: 'Imaging effective dose list',
             trailingIcon: FlutterIcons.list_ul_faw,
             strRouteName: '/effective-dose-app',
           ),
           ListCard(
             pathImage: 'assets/summation.jpg',
-            strTitle: 'Cumulative Dose',
+            strTitle: datas.mapAppNames[1][2],
             strSubtitle: 'Cumulative dose tolerance',
             trailingIcon: FlutterIcons.calculator_mco,
             strRouteName: '/tolerance-app',

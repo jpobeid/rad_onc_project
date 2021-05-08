@@ -3,6 +3,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:rad_onc_project/widgets/nav_bar.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/widgets/list_card.dart';
+import 'package:rad_onc_project/data/main_data.dart' as datas;
 
 class RadPhysicsPage extends StatefulWidget {
   static const routeName = '/rad-physics-page';
@@ -28,21 +29,21 @@ class _RadPhysicsPageState extends State<RadPhysicsPage> {
         body: Column(children: [
           ListCard(
             pathImage: 'assets/pdd.jpg',
-            strTitle: 'PDD Viewer',
+            strTitle: datas.mapAppNames[2][0],
             strSubtitle: 'Dose-depth relationships',
             trailingIcon: FlutterIcons.chart_line_mco,
             strRouteName: '/pdd-app',
           ),
           ListCard(
             pathImage: 'assets/isotope.jpg',
-            strTitle: 'Radio-Isotopes',
+            strTitle: datas.mapAppNames[2][1],
             strSubtitle: 'Info on important isotopes',
             trailingIcon: FlutterIcons.list_ul_faw,
             strRouteName: '/isotopes-app',
           ),
           ListCard(
             pathImage: 'assets/time.jpg',
-            strTitle: 'Time Decay/Dose',
+            strTitle: datas.mapAppNames[2][2],
             strSubtitle: 'Activity rates/sums over time',
             trailingIcon: FlutterIcons.calculator_mco,
             strRouteName: '/time-decay-dose-app',

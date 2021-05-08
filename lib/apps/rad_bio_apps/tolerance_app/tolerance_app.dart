@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rad_onc_project/functions/text_field_validation.dart' as check;
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/widgets/rad_toggle_button.dart';
+import 'package:rad_onc_project/data/main_data.dart' as datas;
 
 class ToleranceApp extends StatefulWidget {
   static const routeName = '/tolerance-app';
@@ -70,7 +71,7 @@ class _ToleranceAppState extends State<ToleranceApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: RadAppBar(
-        strAppTitle: 'Cumulative Dose',
+        strAppTitle: datas.mapAppNames[1][2],
       ),
       body: Column(
         children: [
