@@ -34,7 +34,10 @@ class _RadOncPageState extends State<RadOncPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: RadAppBar(strAppTitle: 'Radiation Oncology App',),
+        appBar: RadAppBar(
+          strAppTitle: 'Radiation Oncology App',
+          isActionable: true,
+        ),
         body: Column(children: [
           ListCard(
             pathImage: 'assets/volume.jpg',

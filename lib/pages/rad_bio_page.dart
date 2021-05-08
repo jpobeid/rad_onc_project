@@ -14,16 +14,21 @@ class RadBioPage extends StatefulWidget {
 
 class _RadBioPageState extends State<RadBioPage> {
   int _indexPage = 1;
-  void setIndex(index){
+
+  void setIndex(index) {
     setState(() {
-      _indexPage=index;
+      _indexPage = index;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: RadAppBar(strAppTitle: 'Radiation Oncology App',),
+        appBar: RadAppBar(
+          strAppTitle: 'Radiation Oncology App',
+          isActionable: true,
+        ),
         body: Column(children: [
           ListCard(
             pathImage: 'assets/alphabeta.jpg',
@@ -47,7 +52,7 @@ class _RadBioPageState extends State<RadBioPage> {
             strRouteName: '/tolerance-app',
           ),
         ]),
-        bottomNavigationBar: NavBar(indexNav: _indexPage,callback: setIndex),
+        bottomNavigationBar: NavBar(indexNav: _indexPage, callback: setIndex),
       ),
     );
   }

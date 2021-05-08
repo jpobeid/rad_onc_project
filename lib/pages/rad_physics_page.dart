@@ -25,7 +25,10 @@ class _RadPhysicsPageState extends State<RadPhysicsPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: RadAppBar(strAppTitle: 'Radiation Oncology App',),
+        appBar: RadAppBar(
+          strAppTitle: 'Radiation Oncology App',
+          isActionable: true,
+        ),
         body: Column(children: [
           ListCard(
             pathImage: 'assets/pdd.jpg',
@@ -47,6 +50,13 @@ class _RadPhysicsPageState extends State<RadPhysicsPage> {
             strSubtitle: 'Activity rates/sums over time',
             trailingIcon: FlutterIcons.calculator_mco,
             strRouteName: '/time-decay-dose-app',
+          ),
+          ListCard(
+            pathImage: 'assets/time.jpg',
+            strTitle: datas.mapAppNames[2][3],
+            strSubtitle: 'Compute monitor units',
+            trailingIcon: FlutterIcons.calculator_mco,
+            strRouteName: '/mu-calc-app',
           ),
         ]),
         bottomNavigationBar: NavBar(indexNav: _indexPage, callback: setIndex),

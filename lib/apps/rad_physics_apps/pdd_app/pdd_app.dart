@@ -6,8 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:rad_onc_project/functions/draw_plot.dart' as plt;
 import 'package:vector_math/vector_math.dart' as vec;
 
-import 'electron_data.dart' as elect;
-import 'photon_data.dart' as photo;
+import 'package:rad_onc_project/data/electron_data.dart' as elect;
+import 'package:rad_onc_project/data/photon_data.dart' as photo;
 
 const int xSkip = 1;
 const Color colorPhoton = Colors.pink;

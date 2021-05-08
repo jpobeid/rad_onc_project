@@ -3,6 +3,8 @@ import 'package:rad_onc_project/apps/rad_bio_apps/tolerance_app/tolerance_app.da
 import 'package:rad_onc_project/apps/rad_onc_apps/probabilities_app/probabilities_app.dart';
 import 'package:rad_onc_project/apps/rad_onc_apps/scaling_time_app/scaling_time_plot.dart';
 import 'package:rad_onc_project/apps/rad_onc_apps/tumor_volume_app/tumor_volume_app.dart';
+import 'package:rad_onc_project/apps/rad_physics_apps/mu_calc_app/mu_calc_app.dart';
+import 'package:rad_onc_project/pages/settings_page.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 
 import '../apps/rad_bio_apps/bed_qed_app/bed_qed_app.dart';
@@ -19,6 +21,12 @@ class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final List<dynamic> args = settings.arguments;
     switch (settings.name) {
+      //region Settings
+      case (SettingsPage.routeName):
+        return MaterialPageRoute(builder: (context) => SettingsPage());
+        break;
+      //endregion Settings
+
       //region RadOnc
       case (RadOncPage.routeName):
         return MaterialPageRoute(builder: (context) => RadOncPage());
@@ -84,6 +92,9 @@ class RouteGenerator {
                     strSymbol: args[5],
                   ));
         }
+        break;
+      case (MUCalcApp.routeName):
+        return MaterialPageRoute(builder: (context) => MUCalcApp());
         break;
       //endregion RadPhys
       default:
