@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rad_onc_project/widgets/list_card.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
-import 'package:rad_onc_project/data/photon_data.dart' as photons;
+import 'package:rad_onc_project/data/main_data.dart' as datas;
 
 class SettingsPage extends StatelessWidget {
   static const String routeName = '/settings-page';
@@ -14,14 +15,17 @@ class SettingsPage extends StatelessWidget {
         appBar: RadAppBar(
           strAppTitle: 'Settings',
         ),
-        body: ListView.builder(
-            itemCount: photons.listDepth.length,
-            itemBuilder: (context, index) {
-              return Text(
-                '${photons.listDepth[index]}',
-                style: Theme.of(context).textTheme.headline1,
-              );
-            }),
+        body: ListView(
+          children: [
+            ListCard(
+              pathImage: 'assets/pdd.jpg',
+              strTitle: datas.mapAppNames[3][0],
+              strSubtitle: 'Modify PDD parameters',
+              trailingIcon: Icons.settings,
+              strRouteName: '/settings-curve',
+            ),
+          ],
+        ),
       ),
     );
   }

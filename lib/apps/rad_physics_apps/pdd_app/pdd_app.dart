@@ -1,31 +1,71 @@
-import 'dart:math';
+import 'dart:convert';
+import 'dart:math' as maths;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rad_onc_project/functions/draw_plot.dart' as plt;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vector_math/vector_math.dart' as vec;
 
-import 'package:rad_onc_project/data/electron_data.dart' as elect;
-import 'package:rad_onc_project/data/photon_data.dart' as photo;
-
-const int xSkip = 1;
-const Color colorPhoton = Colors.pink;
-const Color colorElectron = Colors.indigoAccent;
+import 'package:rad_onc_project/data/curve_data.dart' as curves;
 
 class PddApp extends StatefulWidget {
   static const routeName = '/pdd-app';
+
+  static const int xSkip = 1;
+  static const Color colorPhoton = Colors.pink;
+  static const Color colorElectron = Colors.indigoAccent;
+  static const TextStyle textStyle = TextStyle(
+      fontSize: 22,
+      color: Colors.white,
+      fontWeight: FontWeight.bold);
 
   @override
   _PddAppState createState() => _PddAppState();
 }
 
 class _PddAppState extends State<PddApp> {
+  static const List<int> listFlex = [15, 5];
+  int sumFlex = listFlex.reduce((value, element) => value + element);
+  static const double fractionCanvasWidth = 0.95;
+  static const double fractionCanvasHeight = 0.9;
+  static const double fractionWidthCheckbox = 0.9;
+  bool _isFixedAxis = false;
+
+  int _nDropdown = 0;
+  bool isPhoton = true;
+  List<double> listCrosshairInfo = [0, 0, 0];
+  String strDose = 'N/A';
+  String strDepth = 'N/A';
+  Map<String, dynamic> _mapCurve;
+
+  void resetDefaults() {
+    listCrosshairInfo = [0, 0, 0];
+    strDose = 'N/A';
+    strDepth = 'N/A';
+  }
+
+  void gestureFunction(dynamic details, double canvasHeight, double canvasWidth, double x0,
+      double maxDepthE, List<Offset> listCurve, List<double> listActiveDepth) {
+    double absX = (details.globalPosition.dx - x0);
+    double maxAbsX = (listActiveDepth.last / maxDepthE) * canvasWidth;
+    if (!(!isPhoton && _isFixedAxis && absX > maxAbsX)) {
+      double fractionAbsY = (canvasHeight - getCrosshairY(listCurve, absX)) / canvasHeight;
+      listCrosshairInfo = [absX, fractionAbsY, 1];
+      fractionAbsY = fractionAbsY > 1 ? 1 : fractionAbsY;
+      double maxDepth = (!isPhoton && _isFixedAxis) ? maxDepthE : listActiveDepth.last;
+      strDepth = (absX * maxDepth / canvasWidth).toStringAsFixed(2);
+      strDose = (fractionAbsY * 100).toStringAsFixed(1);
+    }
+  }
+
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
     ]);
+    initCurves();
     super.initState();
   }
 
@@ -37,69 +77,24 @@ class _PddAppState extends State<PddApp> {
     super.dispose();
   }
 
-  //region listValues
-  //Photon data
-  List<double> listDepthX = photo.listDepth;
-  List<double> listPdd6X = photo.listPdd6X;
-  List<double> listPdd10X = photo.listPdd10X;
-  List<double> listPdd15X = photo.listPdd15X;
-
-  //Electron data
-  Map<double, double> map6E = elect.map6E;
-  Map<double, double> map9E = elect.map9E;
-  Map<double, double> map12E = elect.map12E;
-  Map<double, double> map16E = elect.map16E;
-
-  //endregion listValues
-
-  static const List<int> listFlex = [15, 5];
-  int sumFlex = listFlex.reduce((value, element) => value + element);
-  static const double fractionCanvasWidth = 0.95;
-  static const double fractionCanvasHeight = 0.9;
-  static const double fractionWidthCheckbox = 0.9;
-  bool _isFixedAxis = false;
-  double maxDepthE;
-
-  int valueDrop = 0;
-  bool isPhoton = true;
-  List<double> listCrosshairInfo = [0, 0, 0];
-  String strDose = 'N/A';
-  String strDepth = 'N/A';
-
-  void resetDefaults() {
-    listCrosshairInfo = [0, 0, 0];
-    strDose = 'N/A';
-    strDepth = 'N/A';
-  }
-
-  void gestureFunction(
-      dynamic details,
-      double canvasHeight,
-      double canvasWidth,
-      double x0,
-      double maxDepthE,
-      List<Offset> listCurve,
-      List<double> listActiveDepth) {
-    double absX = (details.globalPosition.dx - x0);
-    double maxAbsX = (listActiveDepth.last / maxDepthE) * canvasWidth;
-    if (!(!isPhoton && _isFixedAxis && absX > maxAbsX)) {
-      double fractionAbsY =
-          (canvasHeight - getCrosshairY(listCurve, absX)) / canvasHeight;
-      listCrosshairInfo = [absX, fractionAbsY, 1];
-      fractionAbsY = fractionAbsY > 1 ? 1 : fractionAbsY;
-      double maxDepth =
-          (!isPhoton && _isFixedAxis) ? maxDepthE : listActiveDepth.last;
-      strDepth = (absX * maxDepth / canvasWidth).toStringAsFixed(2);
-      strDose = (fractionAbsY * 100).toStringAsFixed(1);
-    }
+  Future<void> initCurves() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (prefs.get('mapCurve') == null) {
+        _mapCurve = curves.mapDefaultCurve;
+      } else {
+        _mapCurve = json.decode(prefs.getString('mapCurve'));
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    maxDepthE =
-        map16E.keys.toList().reduce((value, element) => max(value, element));
-    if (MediaQuery.of(context).orientation == Orientation.landscape) {
-      TextStyle textStyle = Theme.of(context).textTheme.headline1;
+    bool isBuildReady =
+        MediaQuery.of(context).orientation == Orientation.landscape && _mapCurve != null;
+    if (isBuildReady) {
+      double maxDepthE = List<double>.from(_mapCurve['PDD-16E'][0])
+          .reduce((value, element) => maths.max(value, element));
       return SafeArea(
         child: Scaffold(
           body: Row(
@@ -107,10 +102,8 @@ class _PddAppState extends State<PddApp> {
               Expanded(
                 flex: listFlex[0],
                 child: LayoutBuilder(builder: (context, constraints) {
-                  double canvasWidth =
-                      constraints.maxWidth * fractionCanvasWidth;
-                  double canvasHeight =
-                      constraints.maxHeight * fractionCanvasHeight;
+                  double canvasWidth = constraints.maxWidth * fractionCanvasWidth;
+                  double canvasHeight = constraints.maxHeight * fractionCanvasHeight;
                   Size canvasSize = Size(canvasWidth, canvasHeight);
                   double x0 = MediaQuery.of(context).size.width *
                       listFlex[0] /
@@ -121,59 +114,19 @@ class _PddAppState extends State<PddApp> {
                           listFlex[0] /
                           sumFlex *
                           fractionCanvasWidth;
-                  List<double> listActiveDepth;
-                  List<double> listActivePdd;
-                  switch (valueDrop) {
-                    case 0:
-                      {
-                        listActiveDepth = listDepthX;
-                        listActivePdd = listPdd6X;
-                      }
-                      break;
-                    case 1:
-                      {
-                        listActiveDepth = listDepthX;
-                        listActivePdd = listPdd10X;
-                      }
-                      break;
-                    case 2:
-                      {
-                        listActiveDepth = listDepthX;
-                        listActivePdd = listPdd15X;
-                      }
-                      break;
-                    case 3:
-                      {
-                        listActiveDepth = map6E.keys.toList();
-                        listActivePdd = map6E.values.toList();
-                      }
-                      break;
-                    case 4:
-                      {
-                        listActiveDepth = map9E.keys.toList();
-                        listActivePdd = map9E.values.toList();
-                      }
-                      break;
-                    case 5:
-                      {
-                        listActiveDepth = map12E.keys.toList();
-                        listActivePdd = map12E.values.toList();
-                      }
-                      break;
-                    case 6:
-                      {
-                        listActiveDepth = map16E.keys.toList();
-                        listActivePdd = map16E.values.toList();
-                      }
-                      break;
-                  }
+
+                  //Define the active lists to be used for depth and dose
+                  List<double> listActiveDepth =
+                      List<double>.from(_mapCurve[curves.listCurveName[_nDropdown]][0]);
+                  List<double> listActivePdd =
+                      List<double>.from(_mapCurve[curves.listCurveName[_nDropdown]][1]);
+
                   List<Offset> listCurve = getListOffsetCurve(
                       canvasSize,
-                      _normList(canvasSize, listActiveDepth, false, isPhoton,
-                          _isFixedAxis, maxDepthE),
-                      _normList(canvasSize, listActivePdd, true, isPhoton,
-                          _isFixedAxis, maxDepthE),
-                      xSkip);
+                      _normList(
+                          canvasSize, listActiveDepth, false, isPhoton, _isFixedAxis, maxDepthE),
+                      _normList(canvasSize, listActivePdd, true, isPhoton, _isFixedAxis, maxDepthE),
+                      PddApp.xSkip);
                   return Align(
                     alignment: Alignment.centerRight,
                     child: Container(
@@ -183,22 +136,15 @@ class _PddAppState extends State<PddApp> {
                       child: GestureDetector(
                         onHorizontalDragStart: (details) {
                           setState(() {
-                            gestureFunction(details, canvasHeight, canvasWidth,
-                                x0, maxDepthE, listCurve, listActiveDepth);
+                            gestureFunction(details, canvasHeight, canvasWidth, x0, maxDepthE,
+                                listCurve, listActiveDepth);
                           });
                         },
                         onHorizontalDragUpdate: (details) {
-                          if (details.globalPosition.dx > x0 &&
-                              details.globalPosition.dx < x1) {
+                          if (details.globalPosition.dx > x0 && details.globalPosition.dx < x1) {
                             setState(() {
-                              gestureFunction(
-                                  details,
-                                  canvasHeight,
-                                  canvasWidth,
-                                  x0,
-                                  maxDepthE,
-                                  listCurve,
-                                  listActiveDepth);
+                              gestureFunction(details, canvasHeight, canvasWidth, x0, maxDepthE,
+                                  listCurve, listActiveDepth);
                             });
                           }
                         },
@@ -223,151 +169,96 @@ class _PddAppState extends State<PddApp> {
                 child: Container(
                   color: Theme.of(context).scaffoldBackgroundColor,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Column(
-                        children: [
-                          Text(
-                            'Energy:',
-                            style: textStyle,
-                          ),
-                          DropdownButton(
-                            value: valueDrop,
-                            dropdownColor: Theme.of(context).backgroundColor,
-                            items: [
-                              DropdownMenuItem(
-                                value: 0,
+                      DropdownButton(
+                        value: _nDropdown,
+                        dropdownColor: Colors.blueGrey,
+                        items: curves.listCurveName
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: curves.listCurveName.indexOf(e),
                                 child: Text(
-                                  '6X PDD',
-                                  style: textStyle,
+                                  e,
+                                  style: PddApp.textStyle,
                                 ),
                               ),
-                              DropdownMenuItem(
-                                value: 1,
-                                child: Text(
-                                  '10X PDD',
-                                  style: textStyle,
-                                ),
-                              ),
-                              DropdownMenuItem(
-                                value: 2,
-                                child: Text(
-                                  '15X PDD',
-                                  style: textStyle,
-                                ),
-                              ),
-                              DropdownMenuItem(
-                                value: 3,
-                                child: Text(
-                                  '6E PDD',
-                                  style: textStyle,
-                                ),
-                              ),
-                              DropdownMenuItem(
-                                value: 4,
-                                child: Text(
-                                  '9E PDD',
-                                  style: textStyle,
-                                ),
-                              ),
-                              DropdownMenuItem(
-                                value: 5,
-                                child: Text(
-                                  '12E PDD',
-                                  style: textStyle,
-                                ),
-                              ),
-                              DropdownMenuItem(
-                                value: 6,
-                                child: Text(
-                                  '16E PDD',
-                                  style: textStyle,
-                                ),
-                              ),
-                            ],
-                            onChanged: (int val) {
+                            )
+                            .toList(),
+                        onChanged: (int val) {
+                          setState(() {
+                            _nDropdown = val;
+                            isPhoton = _nDropdown <= 2 ? true : false;
+                            resetDefaults();
+                          });
+                        },
+                      ),
+                      Text(
+                        'EqSqr (cm):',
+                        style: PddApp.textStyle,
+                      ),
+                      Text(
+                        '10 x 10',
+                        style: PddApp.textStyle,
+                      ),
+                      Text(
+                        'SSD (cm):',
+                        style: PddApp.textStyle,
+                      ),
+                      Text(
+                        '100',
+                        style: PddApp.textStyle,
+                      ),
+                      LayoutBuilder(builder: (context, constraints) {
+                        return (Container(
+                          width: constraints.maxWidth * fractionWidthCheckbox,
+                          color: _isFixedAxis
+                              ? Theme.of(context).scaffoldBackgroundColor
+                              : Theme.of(context).primaryColor,
+                          child: CheckboxListTile(
+                            dense: true,
+                            contentPadding: EdgeInsets.all(0),
+                            value: _isFixedAxis,
+                            title: Text(
+                              'Fix axis',
+                              style: PddApp.textStyle,
+                              textAlign: TextAlign.center,
+                            ),
+                            onChanged: (checked) {
                               setState(() {
-                                valueDrop = val;
-                                isPhoton = valueDrop <= 2 ? true : false;
+                                _isFixedAxis = !_isFixedAxis;
                                 resetDefaults();
                               });
                             },
                           ),
-                          Text(
-                            'EqSqr (cm):',
-                            style: textStyle,
-                          ),
-                          Text(
-                            '10 x 10',
-                            style: textStyle,
-                          ),
-                          Text(
-                            'SSD (cm):',
-                            style: textStyle,
-                          ),
-                          Text(
-                            '100',
-                            style: textStyle,
-                          ),
-                          LayoutBuilder(builder: (context, constraints) {
-                            return (Container(
-                              width:
-                                  constraints.maxWidth * fractionWidthCheckbox,
-                              color: _isFixedAxis
-                                  ? Theme.of(context).scaffoldBackgroundColor
-                                  : Theme.of(context).primaryColor,
-                              child: CheckboxListTile(
-                                dense: true,
-                                contentPadding: EdgeInsets.all(0),
-                                value: _isFixedAxis,
-                                title: Text(
-                                  'Fix axis',
-                                  style: Theme.of(context).textTheme.headline1,
-                                  textAlign: TextAlign.center,
-                                ),
-                                onChanged: (checked) {
-                                  setState(() {
-                                    _isFixedAxis = !_isFixedAxis;
-                                    resetDefaults();
-                                  });
-                                },
-                              ),
-                            ));
-                          }),
-                        ],
+                        ));
+                      }),
+                      Text(
+                        'Dose (%):',
+                        style: PddApp.textStyle,
                       ),
-                      Column(
-                        children: [
-                          Text(
-                            'Dose (%):',
-                            style: textStyle,
-                          ),
-                          Text(
-                            strDose,
-                            style: textStyle,
-                          ),
-                          RichText(
-                            text: TextSpan(
-                              style: textStyle,
-                              children: [
-                                TextSpan(text: 'Depth '),
-                                TextSpan(
-                                  text: '(${isPhoton ? 'cm' : 'mm'}):',
-                                  style: TextStyle(
-                                      fontSize: textStyle.fontSize,
-                                      fontWeight: FontWeight.bold,
-                                      color: isPhoton
-                                          ? colorPhoton
-                                          : colorElectron),
-                                ),
-                              ],
+                      Text(
+                        strDose,
+                        style: PddApp.textStyle,
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          style: PddApp.textStyle,
+                          children: [
+                            TextSpan(text: 'Depth '),
+                            TextSpan(
+                              text: '(${isPhoton ? 'cm' : 'mm'}):',
+                              style: TextStyle(
+                                  fontSize: PddApp.textStyle.fontSize,
+                                  fontWeight: FontWeight.bold,
+                                  color: isPhoton ? PddApp.colorPhoton : PddApp.colorElectron),
                             ),
-                          ),
-                          Text(
-                            strDepth,
-                            style: textStyle,
-                          ),
-                        ],
+                          ],
+                        ),
+                      ),
+                      Text(
+                        strDepth,
+                        style: PddApp.textStyle,
                       ),
                     ],
                   ),
@@ -416,14 +307,19 @@ class PddPaint extends CustomPainter {
     //Normalize the list values to the canvas size
     List<double> _normListDepth =
         _normList(size, listDepth, false, isPhoton, isFixedAxis, maxDepthE);
-    List<double> _normListPdd =
-        _normList(size, listPdd, true, isPhoton, isFixedAxis, maxDepthE);
+    List<double> _normListPdd = _normList(size, listPdd, true, isPhoton, isFixedAxis, maxDepthE);
 
     //Draw PDD points and curves
-    plt.drawPlotPoints(canvas, size, _normListDepth.map((e) => e/size.width).toList(), _normListPdd.map((e) => e/size.height).toList(), (isPhoton ? colorPhoton : colorElectron), strokeWidthPoints);
-    List<Offset> listCurve =
-        getListOffsetCurve(size, _normListDepth, _normListPdd, xSkip);
-    drawPddCurve(canvas, listCurve, plt.getPaintAxis((isPhoton ? colorPhoton : colorElectron), strokeWidthAxis));
+    plt.drawPlotPoints(
+        canvas,
+        size,
+        _normListDepth.map((e) => e / size.width).toList(),
+        _normListPdd.map((e) => e / size.height).toList(),
+        (isPhoton ? PddApp.colorPhoton : PddApp.colorElectron),
+        strokeWidthPoints);
+    List<Offset> listCurve = getListOffsetCurve(size, _normListDepth, _normListPdd, PddApp.xSkip);
+    drawPddCurve(canvas, listCurve,
+        plt.getPaintAxis((isPhoton ? PddApp.colorPhoton : PddApp.colorElectron), strokeWidthAxis));
 
     //If ready, draw the crosshair
     if (listCrosshairInfo[2] == 1) {
@@ -432,16 +328,10 @@ class PddPaint extends CustomPainter {
       paintCrosshair.style = PaintingStyle.stroke;
       paintCrosshair.strokeWidth = 2;
 
-      canvas.drawLine(
-          Offset(listCrosshairInfo[0], size.height),
-          Offset(
-              listCrosshairInfo[0], size.height * (1 - listCrosshairInfo[1])),
-          paintCrosshair);
-      canvas.drawLine(
-          Offset(0, size.height * (1 - listCrosshairInfo[1])),
-          Offset(
-              listCrosshairInfo[0], size.height * (1 - listCrosshairInfo[1])),
-          paintCrosshair);
+      canvas.drawLine(Offset(listCrosshairInfo[0], size.height),
+          Offset(listCrosshairInfo[0], size.height * (1 - listCrosshairInfo[1])), paintCrosshair);
+      canvas.drawLine(Offset(0, size.height * (1 - listCrosshairInfo[1])),
+          Offset(listCrosshairInfo[0], size.height * (1 - listCrosshairInfo[1])), paintCrosshair);
     }
   }
 
@@ -452,8 +342,8 @@ class PddPaint extends CustomPainter {
 }
 
 //region General functions
-List<double> _normList(Size size, List<double> list, bool isPdd, bool isPhoton,
-    bool isFixedAxis, double maxDepthE) {
+List<double> _normList(
+    Size size, List<double> list, bool isPdd, bool isPhoton, bool isFixedAxis, double maxDepthE) {
   const int maxPercent = 100;
   if (isPdd) {
     return list.map((e) => e * size.height / maxPercent).toList();
@@ -465,8 +355,8 @@ List<double> _normList(Size size, List<double> list, bool isPdd, bool isPhoton,
 
 //absX is the absolute x within the canvas
 //I will reserve globalX for x within the entire screen
-List<Offset> getListOffsetCurve(Size size, List<double> _normListDepth,
-    List<double> _normListPdd, int xSkip) {
+List<Offset> getListOffsetCurve(
+    Size size, List<double> _normListDepth, List<double> _normListPdd, int xSkip) {
   int iMax = _normListDepth.length - 2;
   double yMax = size.height;
   double maxAbsX = _normListDepth.last;
@@ -474,9 +364,7 @@ List<Offset> getListOffsetCurve(Size size, List<double> _normListDepth,
   List<Offset> listX = [];
   for (int i = 0; i < iMax; i++) {
     double segDx = (_normListDepth[i + 1] - _normListDepth[i]);
-    vk = i == 0
-        ? getVk0(_normListDepth, _normListPdd)
-        : getVk(_normListDepth, _normListPdd, i, vk);
+    vk = i == 0 ? getVk0(_normListDepth, _normListPdd) : getVk(_normListDepth, _normListPdd, i, vk);
     if (i == 0) {
       for (int relX = 0; relX <= segDx.ceil(); relX += xSkip) {
         double absX = relX + _normListDepth[i];
@@ -505,29 +393,29 @@ void drawPddCurve(Canvas canvas, List<Offset> listOffsets, Paint paintCurve) {
 
 //region Spline functions
 double f(double a, double b, double c, double d, double x) {
-  return (a + b * x + c * pow(x, 2) + d * pow(x, 3));
+  return (a + b * x + c * maths.pow(x, 2) + d * maths.pow(x, 3));
 }
 
 vec.Matrix4 getMx0(double x0, double x1, double x2, double x3) {
   vec.Vector4 col0 =
-      vec.Vector4(pow(x0, 0), pow(x0, 1), pow(x0, 2), pow(x0, 3));
+      vec.Vector4(maths.pow(x0, 0), maths.pow(x0, 1), maths.pow(x0, 2), maths.pow(x0, 3));
   vec.Vector4 col1 =
-      vec.Vector4(pow(x1, 0), pow(x1, 1), pow(x1, 2), pow(x1, 3));
+      vec.Vector4(maths.pow(x1, 0), maths.pow(x1, 1), maths.pow(x1, 2), maths.pow(x1, 3));
   vec.Vector4 col2 =
-      vec.Vector4(pow(x2, 0), pow(x2, 1), pow(x2, 2), pow(x2, 3));
+      vec.Vector4(maths.pow(x2, 0), maths.pow(x2, 1), maths.pow(x2, 2), maths.pow(x2, 3));
   vec.Vector4 col3 =
-      vec.Vector4(pow(x3, 0), pow(x3, 1), pow(x3, 2), pow(x3, 3));
+      vec.Vector4(maths.pow(x3, 0), maths.pow(x3, 1), maths.pow(x3, 2), maths.pow(x3, 3));
   return vec.Matrix4.columns(col0, col1, col2, col3);
 }
 
 vec.Matrix4 getMx(double x0, double x1, double x2) {
-  vec.Vector4 col0 = vec.Vector4(0, 1, 2 * x0, 3 * pow(x0, 2));
+  vec.Vector4 col0 = vec.Vector4(0, 1, 2 * x0, 3 * maths.pow(x0, 2));
   vec.Vector4 col1 =
-      vec.Vector4(pow(x0, 0), pow(x0, 1), pow(x0, 2), pow(x0, 3));
+      vec.Vector4(maths.pow(x0, 0), maths.pow(x0, 1), maths.pow(x0, 2), maths.pow(x0, 3));
   vec.Vector4 col2 =
-      vec.Vector4(pow(x1, 0), pow(x1, 1), pow(x1, 2), pow(x1, 3));
+      vec.Vector4(maths.pow(x1, 0), maths.pow(x1, 1), maths.pow(x1, 2), maths.pow(x1, 3));
   vec.Vector4 col3 =
-      vec.Vector4(pow(x2, 0), pow(x2, 1), pow(x2, 2), pow(x2, 3));
+      vec.Vector4(maths.pow(x2, 0), maths.pow(x2, 1), maths.pow(x2, 2), maths.pow(x2, 3));
   return vec.Matrix4.columns(col0, col1, col2, col3);
 }
 
@@ -539,10 +427,9 @@ vec.Vector4 getVk0(List<double> listX, List<double> listY) {
   return vY0;
 }
 
-vec.Vector4 getVk(
-    List<double> listX, List<double> listY, int i, vec.Vector4 vk0) {
+vec.Vector4 getVk(List<double> listX, List<double> listY, int i, vec.Vector4 vk0) {
   vec.Vector4 vYprime = vec.Vector4(
-      (vk0[1] + 2 * vk0[2] * listX[i] + 3 * vk0[3] * pow(listX[i], 2)),
+      (vk0[1] + 2 * vk0[2] * listX[i] + 3 * vk0[3] * maths.pow(listX[i], 2)),
       listY[i],
       listY[i + 1],
       listY[i + 2]);
@@ -556,7 +443,7 @@ vec.Vector4 getVk(
 //region Update functions
 double getCrosshairY(List<Offset> listCurve, double absX) {
   List<double> listDx = listCurve.map((e) => (e.dx - absX).abs()).toList();
-  double minDx = listDx.reduce((value, element) => min(value, element));
+  double minDx = listDx.reduce((value, element) => maths.min(value, element));
   int argMin = listDx.indexOf(minDx);
   return listCurve[argMin].dy;
 }

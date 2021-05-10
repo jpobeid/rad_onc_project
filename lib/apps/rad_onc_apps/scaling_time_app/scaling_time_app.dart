@@ -45,7 +45,7 @@ class _ScalingTimeState extends State<ScalingTime> {
         children: [
           Expanded(
             flex: listHorizontalFlex[0],
-            child: FlatButton(
+            child: TextButton(
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Text(
@@ -86,7 +86,7 @@ class _ScalingTimeState extends State<ScalingTime> {
             ),
           ),
           Expanded(
-            child: FlatButton(
+            child: TextButton(
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Icon(

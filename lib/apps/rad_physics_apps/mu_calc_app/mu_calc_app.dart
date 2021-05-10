@@ -9,46 +9,48 @@ class MUCalcApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: RadAppBar(
-        strAppTitle: datas.mapAppNames[2][3],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            color: Colors.green,
-            child: ToggleButtons(
-              isSelected: [true, false],
+    return SafeArea(
+      child: Scaffold(
+        appBar: RadAppBar(
+          strAppTitle: datas.mapAppNames[2][3],
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              color: Colors.green,
+              child: ToggleButtons(
+                isSelected: [true, false],
+                children: [
+                  Text('SSD'),
+                  Text('SAD'),
+                ],
+              ),
+            ),
+            Table(
               children: [
-                Text('SSD'),
-                Text('SAD'),
+                TableRow(
+                  children: [
+                    Text('Dose (Gy):', style: Theme.of(context).textTheme.headline1,),
+                    Text('You', style: Theme.of(context).textTheme.headline1,),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    Text('Field Size (cm):', style: Theme.of(context).textTheme.headline1,),
+                    Text('You', style: Theme.of(context).textTheme.headline1,),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    Text('Depth (cm):', style: Theme.of(context).textTheme.headline1,),
+                    Text('You', style: Theme.of(context).textTheme.headline1,),
+                  ],
+                ),
               ],
             ),
-          ),
-          Table(
-            children: [
-              TableRow(
-                children: [
-                  Text('Dose (Gy):', style: Theme.of(context).textTheme.headline1,),
-                  Text('You', style: Theme.of(context).textTheme.headline1,),
-                ],
-              ),
-              TableRow(
-                children: [
-                  Text('Field Size (cm):', style: Theme.of(context).textTheme.headline1,),
-                  Text('You', style: Theme.of(context).textTheme.headline1,),
-                ],
-              ),
-              TableRow(
-                children: [
-                  Text('Depth (cm):', style: Theme.of(context).textTheme.headline1,),
-                  Text('You', style: Theme.of(context).textTheme.headline1,),
-                ],
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

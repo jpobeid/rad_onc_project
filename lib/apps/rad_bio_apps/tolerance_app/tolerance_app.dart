@@ -69,217 +69,219 @@ class _ToleranceAppState extends State<ToleranceApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: RadAppBar(
-        strAppTitle: datas.mapAppNames[1][2],
-      ),
-      body: Column(
-        children: [
-          TitleRow(
-            strText: 'Dose Type',
-            isCancelable: false,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-                vertical:
-                    MediaQuery.of(context).size.height * fractionHeightPadding),
-            child: RadToggleButton(
-              strOption1: listStrDoseType[0],
-              strOption2: listStrDoseType[1],
-              fractionToggleWidth: fractionToggleWidth,
-              sizeBorderRadius: sizeToggleBorderRadius,
-              listIsSelected: _listToggle,
-              functionOnPressed: functionTogglePressed,
+    return SafeArea(
+      child: Scaffold(
+        appBar: RadAppBar(
+          strAppTitle: datas.mapAppNames[1][2],
+        ),
+        body: Column(
+          children: [
+            TitleRow(
+              strText: 'Dose Type',
+              isCancelable: false,
             ),
-          ),
-          TitleRow(
-            strText: 'RadBio Parameters',
-            isCancelable: false,
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: Text(
-                  'Max ${listStrDoseType[_listToggle.indexOf(true)]} (Gy):',
-                  style: Theme.of(context).textTheme.headline2,
-                  textAlign: TextAlign.start,
-                ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical:
+                      MediaQuery.of(context).size.height * fractionHeightPadding),
+              child: RadToggleButton(
+                strOption1: listStrDoseType[0],
+                strOption2: listStrDoseType[1],
+                fractionToggleWidth: fractionToggleWidth,
+                sizeBorderRadius: sizeToggleBorderRadius,
+                listIsSelected: _listToggle,
+                functionOnPressed: functionTogglePressed,
               ),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  '\u03b1/\u03b2',
-                  style: Theme.of(context).textTheme.headline2,
-                  textAlign: TextAlign.end,
+            ),
+            TitleRow(
+              strText: 'RadBio Parameters',
+              isCancelable: false,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'Max ${listStrDoseType[_listToggle.indexOf(true)]} (Gy):',
+                    style: Theme.of(context).textTheme.headline2,
+                    textAlign: TextAlign.start,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: listHorizontalFlex1[0],
-                child: TextField(
-                  controller: _controllerMaxDose,
-                  maxLength: 5,
-                  keyboardType: TextInputType.number,
-                  style: Theme.of(context).textTheme.headline2,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(0), isDense: true),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    '\u03b1/\u03b2',
+                    style: Theme.of(context).textTheme.headline2,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: listHorizontalFlex1[1],
-                child: Slider(
-                  min: 1,
-                  max: 10,
-                  divisions: 18,
-                  value: _valueAbRatio,
-                  label: _valueAbRatio.toString(),
-                  onChanged: (value) {
-                    setState(() {
-                      _valueAbRatio = value;
-                    });
-                  },
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: listHorizontalFlex1[0],
+                  child: TextField(
+                    controller: _controllerMaxDose,
+                    maxLength: 5,
+                    keyboardType: TextInputType.number,
+                    style: Theme.of(context).textTheme.headline2,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(0), isDense: true),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Divider(
-            thickness: sizeDivider,
-            color: Theme.of(context).textTheme.headline2.color,
-          ),
-          Expanded(
-            child: ListView.builder(
-                itemCount: _nCourses + 1,
-                itemBuilder: (context, index) {
-                  if (index <= _nCourses - 1) {
-                    return CourseInfo(
-                      nCourse: index + 1,
-                      listPercentForgiven: _listPercentForgiven,
-                      listControllerDose: _listControllerDose,
-                      listControllerFractions: _listControllerFractions,
-                      isCancelable:
-                          (index > 0 && index == _nCourses - 1) ? true : false,
-                      functionCancelPressed: functionCancelPressed,
-                    );
-                  } else {
-                    return Column(
-                      children: [
-                        Divider(
-                          thickness: sizeDivider,
-                          color: Theme.of(context).textTheme.headline2.color,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color:
-                                    Theme.of(context).textTheme.headline2.color,
-                                borderRadius: BorderRadius.circular(
-                                    sizeToggleBorderRadius),
-                              ),
-                              width: MediaQuery.of(context).size.width *
-                                  fractionButtonWidth,
-                              height: MediaQuery.of(context).size.height *
-                                  fractionButtonHeight,
-                              child: FlatButton(
-                                child: Text(
-                                  'Compute',
-                                  style: TextStyle(
-                                      fontSize: Theme.of(context)
-                                          .textTheme
-                                          .headline2
-                                          .fontSize,
-                                      fontWeight: Theme.of(context)
-                                          .textTheme
-                                          .headline2
-                                          .fontWeight,
-                                      color: Theme.of(context)
-                                          .scaffoldBackgroundColor),
+                Expanded(
+                  flex: listHorizontalFlex1[1],
+                  child: Slider(
+                    min: 1,
+                    max: 10,
+                    divisions: 18,
+                    value: _valueAbRatio,
+                    label: _valueAbRatio.toString(),
+                    onChanged: (value) {
+                      setState(() {
+                        _valueAbRatio = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+            Divider(
+              thickness: sizeDivider,
+              color: Theme.of(context).textTheme.headline2.color,
+            ),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: _nCourses + 1,
+                  itemBuilder: (context, index) {
+                    if (index <= _nCourses - 1) {
+                      return CourseInfo(
+                        nCourse: index + 1,
+                        listPercentForgiven: _listPercentForgiven,
+                        listControllerDose: _listControllerDose,
+                        listControllerFractions: _listControllerFractions,
+                        isCancelable:
+                            (index > 0 && index == _nCourses - 1) ? true : false,
+                        functionCancelPressed: functionCancelPressed,
+                      );
+                    } else {
+                      return Column(
+                        children: [
+                          Divider(
+                            thickness: sizeDivider,
+                            color: Theme.of(context).textTheme.headline2.color,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color:
+                                      Theme.of(context).textTheme.headline2.color,
+                                  borderRadius: BorderRadius.circular(
+                                      sizeToggleBorderRadius),
                                 ),
-                                onPressed: () {
-                                  String strMaxDose = _controllerMaxDose.text;
-                                  List<String> listStrDose = _listControllerDose
-                                      .map((e) => e.text)
-                                      .toList();
-                                  List<String> listStrFractions =
-                                      _listControllerFractions
-                                          .map((e) => e.text)
-                                          .toList();
-                                  if (checkIsValid(strMaxDose, listStrDose,
-                                      listStrFractions)) {
-                                    double netDose = 0;
-                                    for (int i = 0; i < _nCourses; i++) {
-                                      Function fDose =
-                                          _listToggle[0] ? getBed : getEqd2;
-                                      netDose += fDose(
-                                              double.parse(
-                                                  _listControllerDose[i].text),
-                                              double.parse(
-                                                  _listControllerFractions[i]
-                                                      .text),
-                                              _valueAbRatio) *
-                                          (1 - _listPercentForgiven[i] / 100);
-                                    }
-                                    showDialog(
-                                        context: (context),
-                                        builder: (context) {
-                                          return ComputeDialog(
-                                            isBed: _listToggle[0],
-                                            maxDose: double.parse(
-                                                _controllerMaxDose.text),
-                                            netDose: netDose,
-                                            ab: _valueAbRatio,
-                                          );
-                                        });
-                                  } else {
-                                    Scaffold.of(context).showSnackBar(
-                                      SnackBar(
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
-                                        content: Text(
-                                          'Invalid numeric input!',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline1,
-                                          textAlign: TextAlign.center,
+                                width: MediaQuery.of(context).size.width *
+                                    fractionButtonWidth,
+                                height: MediaQuery.of(context).size.height *
+                                    fractionButtonHeight,
+                                child: FlatButton(
+                                  child: Text(
+                                    'Compute',
+                                    style: TextStyle(
+                                        fontSize: Theme.of(context)
+                                            .textTheme
+                                            .headline2
+                                            .fontSize,
+                                        fontWeight: Theme.of(context)
+                                            .textTheme
+                                            .headline2
+                                            .fontWeight,
+                                        color: Theme.of(context)
+                                            .scaffoldBackgroundColor),
+                                  ),
+                                  onPressed: () {
+                                    String strMaxDose = _controllerMaxDose.text;
+                                    List<String> listStrDose = _listControllerDose
+                                        .map((e) => e.text)
+                                        .toList();
+                                    List<String> listStrFractions =
+                                        _listControllerFractions
+                                            .map((e) => e.text)
+                                            .toList();
+                                    if (checkIsValid(strMaxDose, listStrDose,
+                                        listStrFractions)) {
+                                      double netDose = 0;
+                                      for (int i = 0; i < _nCourses; i++) {
+                                        Function fDose =
+                                            _listToggle[0] ? getBed : getEqd2;
+                                        netDose += fDose(
+                                                double.parse(
+                                                    _listControllerDose[i].text),
+                                                double.parse(
+                                                    _listControllerFractions[i]
+                                                        .text),
+                                                _valueAbRatio) *
+                                            (1 - _listPercentForgiven[i] / 100);
+                                      }
+                                      showDialog(
+                                          context: (context),
+                                          builder: (context) {
+                                            return ComputeDialog(
+                                              isBed: _listToggle[0],
+                                              maxDose: double.parse(
+                                                  _controllerMaxDose.text),
+                                              netDose: netDose,
+                                              ab: _valueAbRatio,
+                                            );
+                                          });
+                                    } else {
+                                      Scaffold.of(context).showSnackBar(
+                                        SnackBar(
+                                          backgroundColor:
+                                              Theme.of(context).primaryColor,
+                                          content: Text(
+                                            'Invalid numeric input!',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline1,
+                                            textAlign: TextAlign.center,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  }
-                                },
+                                      );
+                                    }
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  }
-                }),
-          ),
-        ],
+                            ],
+                          ),
+                        ],
+                      );
+                    }
+                  }),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+            child: Icon(
+              _nCourses == _nCoursesMax ? Icons.lock : Icons.add,
+              size: Theme.of(context).textTheme.headline2.fontSize,
+            ),
+            backgroundColor: Colors.blue,
+            onPressed: () {
+              if (_nCourses < _nCoursesMax) {
+                setState(() {
+                  _nCourses++;
+                  _listPercentForgiven.add(0.0);
+                  _listControllerDose.add(TextEditingController(text: '0'));
+                  _listControllerFractions.add(TextEditingController(text: '0'));
+                });
+              }
+            }),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       ),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(
-            _nCourses == _nCoursesMax ? Icons.lock : Icons.add,
-            size: Theme.of(context).textTheme.headline2.fontSize,
-          ),
-          backgroundColor: Colors.blue,
-          onPressed: () {
-            if (_nCourses < _nCoursesMax) {
-              setState(() {
-                _nCourses++;
-                _listPercentForgiven.add(0.0);
-                _listControllerDose.add(TextEditingController(text: '0'));
-                _listControllerFractions.add(TextEditingController(text: '0'));
-              });
-            }
-          }),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
 }

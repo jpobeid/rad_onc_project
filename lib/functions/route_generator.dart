@@ -4,6 +4,7 @@ import 'package:rad_onc_project/apps/rad_onc_apps/probabilities_app/probabilitie
 import 'package:rad_onc_project/apps/rad_onc_apps/scaling_time_app/scaling_time_plot.dart';
 import 'package:rad_onc_project/apps/rad_onc_apps/tumor_volume_app/tumor_volume_app.dart';
 import 'package:rad_onc_project/apps/rad_physics_apps/mu_calc_app/mu_calc_app.dart';
+import 'package:rad_onc_project/apps/settings_apps/curve_settings.dart';
 import 'package:rad_onc_project/pages/settings_page.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 
@@ -24,6 +25,9 @@ class RouteGenerator {
       //region Settings
       case (SettingsPage.routeName):
         return MaterialPageRoute(builder: (context) => SettingsPage());
+        break;
+      case (CurveSettings.routeName):
+        return MaterialPageRoute(builder: (context) => CurveSettings());
         break;
       //endregion Settings
 

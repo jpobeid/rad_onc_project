@@ -30,16 +30,18 @@ class _EffectiveDoseState extends State<EffectiveDose> {
   Widget build(BuildContext context) {
     loadCSV('assets/effective_dose_data.csv');
     if (dataDose != null) {
-      return Scaffold(
-        appBar: RadAppBar(
-          strAppTitle: datas.mapAppNames[1][1],
+      return SafeArea(
+        child: Scaffold(
+          appBar: RadAppBar(
+            strAppTitle: datas.mapAppNames[1][1],
+          ),
+          body: ListView.builder(
+              itemCount: dataDose.length,
+              itemBuilder: (context, index) {
+                return makeRow(context, fractionHeightRow, fractionHeightRowFirst,
+                    widthBorder, listHorizontalFlex, dataDose, index);
+              }),
         ),
-        body: ListView.builder(
-            itemCount: dataDose.length,
-            itemBuilder: (context, index) {
-              return makeRow(context, fractionHeightRow, fractionHeightRowFirst,
-                  widthBorder, listHorizontalFlex, dataDose, index);
-            }),
       );
     } else {
       return Scaffold();
