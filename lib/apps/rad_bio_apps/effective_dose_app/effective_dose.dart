@@ -12,8 +12,8 @@ class EffectiveDose extends StatefulWidget {
 }
 
 class _EffectiveDoseState extends State<EffectiveDose> {
-  static const double fractionHeightRow = 0.1;
-  static const double fractionHeightRowFirst = 0.125;
+  static const double fractionHeightRow = 0.08;
+  static const double fractionHeightRowFirst = 0.1;
   static const double widthBorder = 1;
   static const List<int> listHorizontalFlex = [3, 2];
 

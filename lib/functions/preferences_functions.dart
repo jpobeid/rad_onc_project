@@ -3,7 +3,7 @@ import 'package:rad_onc_project/data/particle_data.dart' as particles;
 
 Future<List<Map<String, List<double>>>> readPreferences() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  // Depth initialize
+  // Depth initialize or read
   Map<String, List<double>> mapDepth = {};
   for (String e in particles.listStrParticle) {
     String strKey = 'depth' + e;
@@ -18,7 +18,7 @@ Future<List<Map<String, List<double>>>> readPreferences() async {
       mapDepth.addAll({e: listDepth});
     }
   }
-  // PDD initialize
+  // PDD initialize or read
   Map<String, List<double>> mapPdd = {};
   for (String e in particles.listStrParticle) {
     String strKey = 'pdd' + e;

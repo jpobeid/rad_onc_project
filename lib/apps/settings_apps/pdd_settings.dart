@@ -14,20 +14,29 @@ class PddSettings extends StatefulWidget {
   const PddSettings({Key? key}) : super(key: key);
 
   static const List<int> listColumnFlex = [1, 8];
+  static const Map<int, FlexColumnWidth> mapColumnWidthFlex = {
+    0: FlexColumnWidth(3),
+    1: FlexColumnWidth(3),
+    2: FlexColumnWidth(1)
+  };
   static const double sizeIcon = 32;
+  static const int maxTableRows = 40;
+  static const int minTableRows = 10;
+  static const int nSnackDuration = 600;
 
   @override
   _PddSettingsState createState() => _PddSettingsState();
 }
 
 class _PddSettingsState extends State<PddSettings> {
-  late SharedPreferences _prefs;
   Map<String, List<double>> _mapDepth = {};
   Map<String, List<double>> _mapPdd = {};
   Object? _nParticle = 0;
   bool _isEditing = false;
   List<TextEditingController> _listControllerDepth = [];
   List<TextEditingController> _listControllerPdd = [];
+  List<TableRow> _listTableRows = [];
+  bool _toRebuildTable = true;
 
   Future<void> readPreferences() async {
     List<Map<String, List<double>>> results = await funcPrefs.readPreferences();
@@ -38,9 +47,9 @@ class _PddSettingsState extends State<PddSettings> {
 
   Future<void> writePreferences(String strParticle, List<String> listStrDepth,
       List<String> listStrPdd) async {
-    _prefs = await SharedPreferences.getInstance();
-    _prefs.setStringList('depth' + strParticle, listStrDepth);
-    _prefs.setStringList('pdd' + strParticle, listStrPdd);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setStringList('depth' + strParticle, listStrDepth);
+    prefs.setStringList('pdd' + strParticle, listStrPdd);
   }
 
   @override
@@ -49,39 +58,110 @@ class _PddSettingsState extends State<PddSettings> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    bool canBuild = _mapDepth.isNotEmpty && _mapPdd.isNotEmpty;
-    if (canBuild) {
-      Map<double, double> mapParticle = Map.fromIterables(
-          _mapDepth[particles.listStrParticle[_nParticle.hashCode]]!,
-          _mapPdd[particles.listStrParticle[_nParticle.hashCode]]!);
-      List<TableRow> listTableRows = [];
-      mapParticle.forEach((key, value) {
-        if (!_isEditing) {
-          listTableRows.add(TableRow(
+  IconButton deleteButton() {
+    return IconButton(
+      padding: EdgeInsets.all(0),
+      alignment: Alignment.topCenter,
+      icon: Icon(
+        Icons.clear,
+        color: Colors.white,
+      ),
+      onPressed: () {
+        if (_listTableRows.length > PddSettings.minTableRows) {
+          setState(() {
+            _toRebuildTable = false;
+            _listControllerDepth.remove(_listControllerDepth.last);
+            _listControllerPdd.remove(_listControllerPdd.last);
+            _listTableRows.remove(_listTableRows.last);
+            _listTableRows.last = TableRow(
+              children: [
+                fields.textFieldSetting(context, _listControllerDepth.last),
+                fields.textFieldSetting(context, _listControllerPdd.last),
+                deleteButton(),
+              ],
+            );
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              duration: Duration(milliseconds: PddSettings.nSnackDuration),
+              content: Text(
+                'Too few rows!',
+                style: Theme.of(context).textTheme.headline1,
+              )));
+        }
+      },
+    );
+  }
+
+  void buildTable(String strParticle) {
+    Map<double, double> mapParticle =
+        Map.fromIterables(_mapDepth[strParticle]!, _mapPdd[strParticle]!);
+    _listTableRows = [
+      TableRow(
+        children: [
+          Text(
+            'Depth [${strParticle[strParticle.length - 1] == 'X' ? 'cm' : 'mm'}]',
+            style: Theme.of(context).textTheme.headline1,
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            'PDD [%]',
+            style: Theme.of(context).textTheme.headline1,
+            textAlign: TextAlign.center,
+          ),
+          Container(),
+        ],
+      )
+    ];
+    mapParticle.forEach((key, value) {
+      if (!_isEditing) {
+        _listTableRows.add(
+          TableRow(
             children: [
               Text(
                 key.toString(),
                 style: Theme.of(context).textTheme.headline1,
+                textAlign: TextAlign.center,
               ),
               Text(
                 value.toString(),
                 style: Theme.of(context).textTheme.headline1,
+                textAlign: TextAlign.center,
               ),
+              Container(),
             ],
-          ));
-        } else {
-          _listControllerDepth.add(TextEditingController(text: key.toString()));
-          _listControllerPdd.add(TextEditingController(text: value.toString()));
-          listTableRows.add(TableRow(
-            children: [
-              fields.textFieldSetting(context, _listControllerDepth.last),
-              fields.textFieldSetting(context, _listControllerPdd.last),
-            ],
-          ));
-        }
-      });
+          ),
+        );
+      } else {
+        _listControllerDepth.add(TextEditingController(text: key.toString()));
+        _listControllerPdd.add(TextEditingController(text: value.toString()));
+        _listTableRows.add(TableRow(
+          children: [
+            fields.textFieldSetting(context, _listControllerDepth.last),
+            fields.textFieldSetting(context, _listControllerPdd.last),
+            key == mapParticle.keys.last ? deleteButton() : Container(),
+          ],
+        ));
+      }
+    });
+  }
+
+  void resetTable() {
+    _listTableRows.clear();
+    _listControllerDepth.clear();
+    _listControllerPdd.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bool canBuild = _mapDepth.isNotEmpty && _mapPdd.isNotEmpty;
+    if (canBuild) {
+      String strParticle = particles.listStrParticle[_nParticle.hashCode];
+      if (_toRebuildTable) {
+        buildTable(strParticle);
+      } else {
+        _toRebuildTable = true;
+      }
 
       return SafeArea(
         child: Scaffold(
@@ -128,25 +208,35 @@ class _PddSettingsState extends State<PddSettings> {
                                 _listControllerDepth, _listControllerPdd);
                             if (canSubmit) {
                               writePreferences(
-                                  particles
-                                      .listStrParticle[_nParticle.hashCode],
+                                  strParticle,
                                   _listControllerDepth
                                       .map((e) => e.text)
                                       .toList(),
                                   _listControllerPdd
                                       .map((e) => e.text)
                                       .toList());
-                              _listControllerDepth.clear();
-                              _listControllerPdd.clear();
+                              resetTable();
                               _isEditing = !_isEditing;
                               readPreferences();
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                      duration: Duration(milliseconds: PddSettings.nSnackDuration),
+                                      content: Text(
+                                        'Successfully saved values',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline1,
+                                      )));
                             } else {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
+                                      duration: Duration(milliseconds: PddSettings.nSnackDuration),
                                       content: Text(
-                                'Invalid inputs...',
-                                style: Theme.of(context).textTheme.headline1,
-                              )));
+                                        'Invalid inputs...',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline1,
+                                      )));
                             }
                           } else {
                             setState(() {
@@ -165,9 +255,8 @@ class _PddSettingsState extends State<PddSettings> {
                       child: _isEditing
                           ? IconButton(
                               onPressed: () {
-                                _listControllerDepth.clear();
-                                _listControllerPdd.clear();
                                 setState(() {
+                                  resetTable();
                                   _isEditing = !_isEditing;
                                 });
                               },
@@ -177,7 +266,46 @@ class _PddSettingsState extends State<PddSettings> {
                                 size: PddSettings.sizeIcon,
                               ),
                             )
-                          : Container(),
+                          : IconButton(
+                              onPressed: () async {
+                                bool? result = await showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text(
+                                            'Reset $strParticle defaults?'),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(true),
+                                              child: Text('Yes')),
+                                          TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(false),
+                                              child: Text('No')),
+                                        ],
+                                      );
+                                    });
+                                if (result != null && result) {
+                                  writePreferences(
+                                      strParticle,
+                                      particles.mapDefaultDepth[strParticle]!
+                                          .map((e) => e.toString())
+                                          .toList(),
+                                      particles.mapDefaultPdd[strParticle]!
+                                          .map((e) => e.toString())
+                                          .toList());
+                                  readPreferences();
+                                }
+                              },
+                              icon: Icon(
+                                Icons.restore_outlined,
+                                color: Colors.white,
+                                size: PddSettings.sizeIcon,
+                              ),
+                            ),
                     ),
                   ],
                 ),
@@ -187,13 +315,62 @@ class _PddSettingsState extends State<PddSettings> {
                 child: ListView(
                   children: [
                     Table(
-                      children: listTableRows,
+                      defaultVerticalAlignment: TableCellVerticalAlignment.top,
+                      columnWidths: PddSettings.mapColumnWidthFlex,
+                      children: _listTableRows,
                     ),
                   ],
                 ),
               ),
             ],
           ),
+          floatingActionButton: _isEditing
+              ? FloatingActionButton(
+                  backgroundColor: Colors.blue,
+                  child: Icon(
+                    Icons.add,
+                    size: PddSettings.sizeIcon,
+                  ),
+                  onPressed: () {
+                    if (_listTableRows.length < PddSettings.maxTableRows) {
+                      setState(() {
+                        _toRebuildTable = false;
+                        _listTableRows.last = TableRow(
+                          children: [
+                            fields.textFieldSetting(
+                                context, _listControllerDepth.last),
+                            fields.textFieldSetting(
+                                context, _listControllerPdd.last),
+                            Container(),
+                          ],
+                        );
+                        _listControllerDepth
+                            .add(TextEditingController(text: '0'));
+                        _listControllerPdd
+                            .add(TextEditingController(text: '0'));
+                        _listTableRows.add(TableRow(
+                          children: [
+                            fields.textFieldSetting(
+                                context, _listControllerDepth.last),
+                            fields.textFieldSetting(
+                                context, _listControllerPdd.last),
+                            deleteButton(),
+                          ],
+                        ));
+                      });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          duration: Duration(milliseconds: PddSettings.nSnackDuration),
+                          content: Text(
+                            'Too many rows!',
+                            style: Theme.of(context).textTheme.headline1,
+                          )));
+                    }
+                  },
+                )
+              : Container(),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
         ),
       );
     } else {
@@ -214,7 +391,11 @@ bool checkCanSubmit(List<TextEditingController> listControllerDepth,
   }
   bool isInvalidDepth = listDepths.any((element) => element > 100) ||
       listDepths.any((element) => element < 0);
+  List<double> listDepths2 = List.from(listDepths);
+  listDepths2.sort();
+  bool isDepthIncreasing = listDepths.every(
+      (element) => listDepths.indexOf(element) == listDepths2.indexOf(element));
   bool isInvalidPdd = listPdds.any((element) => element > 100) ||
       listPdds.any((element) => element < 0);
-  return !isInvalidDepth && !isInvalidPdd;
+  return !isInvalidDepth && !isInvalidPdd && isDepthIncreasing;
 }

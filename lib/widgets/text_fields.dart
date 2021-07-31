@@ -10,6 +10,8 @@ TextField textFieldSetting(
     textAlign: TextAlign.center,
     decoration: InputDecoration(
       contentPadding: EdgeInsets.all(0),
+      isCollapsed: true,
+      isDense: true,
     ),
   );
 }

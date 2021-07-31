@@ -20,9 +20,16 @@ class SettingsPage extends StatelessWidget {
             ListCard(
               pathImage: 'assets/pdd.jpg',
               strTitle: 'PDD Data',
-              strSubtitle: 'Edit parameters',
+              strSubtitle: 'Edit standard tables',
               trailingIcon: Icons.edit,
               strRouteName: '/settings-pdd-app',
+            ),
+            ListCard(
+              pathImage: 'assets/info.jpg',
+              strTitle: 'About',
+              strSubtitle: 'App info',
+              trailingIcon: Icons.settings,
+              strRouteName: '/settings-about-app',
             ),
           ],
         ),
