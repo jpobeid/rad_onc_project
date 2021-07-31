@@ -10,10 +10,10 @@ import 'dart:math' as math;
 class ScalingTimePlot extends StatefulWidget {
   static const routeName = '/scaling-time-plot-app';
 
-  final List<DateTime> listDateTime;
-  final List<String> listStrValues;
+  final List<DateTime>? listDateTime;
+  final List<String>? listStrValues;
 
-  const ScalingTimePlot({Key key, this.listDateTime, this.listStrValues})
+  const ScalingTimePlot({Key? key, this.listDateTime, this.listStrValues})
       : super(key: key);
 
   @override
@@ -57,22 +57,22 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
     'Years',
   ];
 
-  int _valueInterpol = 0;
+  int? _valueInterpol = 0;
   Function _valueFunction = roots.fExp;
-  int _valueScale = 0;
-  int _valueUnits = 0;
+  int? _valueScale = 0;
+  int? _valueUnits = 0;
   List<double> _listCrosshairsData = [0, 0, 0];
   List<String> _listCrosshairsString = ['', '', 'true'];
 
-  List<double> _listAbsDays;
-  int _elapsedDays;
-  List<double> _listRelDays;
-  List<String> _listPossibleUnits;
-  List<double> _listValues;
-  double _maxValue;
-  String _strTimeUnit;
-  List<double> _normListX;
-  List<double> _normListY;
+  List<double>? _listAbsDays;
+  int? _elapsedDays;
+  List<double>? _listRelDays;
+  late List<String> _listPossibleUnits;
+  List<double>? _listValues;
+  double? _maxValue;
+  String? _strTimeUnit;
+  List<double>? _normListX;
+  List<double>? _normListY;
   List<double> _listFunctionNormArgs = [];
   List<double> _listFunctionArgs = [];
 
@@ -82,18 +82,18 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
   }
 
   void updateMainVars() {
-    _listAbsDays = widget.listDateTime
+    _listAbsDays = widget.listDateTime!
         .map((e) => e.millisecondsSinceEpoch / 1000 / 60 / 60 / 24)
         .toList();
-    _elapsedDays = (_listAbsDays
+    _elapsedDays = (_listAbsDays!
                 .reduce((value, element) => math.max(value, element)) -
-            _listAbsDays.reduce((value, element) => math.min(value, element)))
+            _listAbsDays!.reduce((value, element) => math.min(value, element)))
         .round();
-    _listRelDays = _listAbsDays.map((e) => (e - _listAbsDays[0])).toList();
+    _listRelDays = _listAbsDays!.map((e) => (e - _listAbsDays![0])).toList();
     List<bool> listCanBeUnit = [
-      _elapsedDays < 365,
-      _elapsedDays > 30,
-      _elapsedDays >= 365
+      _elapsedDays! < 365,
+      _elapsedDays! > 30,
+      _elapsedDays! >= 365
     ];
     _listPossibleUnits = [];
     int i = 0;
@@ -103,10 +103,10 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
       }
       i++;
     });
-    _listValues = widget.listStrValues.map((e) => double.parse(e)).toList();
+    _listValues = widget.listStrValues!.map((e) => double.parse(e)).toList();
     _maxValue =
-        _listValues.reduce((value, element) => math.max(value, element));
-    _strTimeUnit = _listPossibleUnits[_valueUnits];
+        _listValues!.reduce((value, element) => math.max(value, element));
+    _strTimeUnit = _listPossibleUnits[_valueUnits!];
     //Normalize lists for computations and plotting
     _normListX = getNormList(_listAbsDays, true);
     _normListY = getNormList(_listValues, false);
@@ -115,45 +115,45 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
     switch (_valueInterpol) {
       case 0:
         _valueFunction = roots.fExp;
-        _listFunctionArgs.add(_listValues[0]);
-        _listFunctionNormArgs.add(_normListY[0]);
-        double normBetaPrime = roots.getBetaPrime(_normListX, _normListY);
+        _listFunctionArgs.add(_listValues![0]);
+        _listFunctionNormArgs.add(_normListY![0]);
+        double normBetaPrime = roots.getBetaPrime(_normListX!, _normListY);
         double normBeta =
             roots.tuneNormBeta(normBetaPrime, _normListX, _normListY);
         _listFunctionNormArgs.add(normBeta);
         //Get TRUE beta for use with computations, this is based on non-normalized values
         double beta = roots.getBeta(
-            normBeta, getConvertedDt(_elapsedDays.toDouble(), _strTimeUnit));
+            normBeta, getConvertedDt(_elapsedDays!.toDouble(), _strTimeUnit));
         _listFunctionArgs.add(beta);
         break;
       case 1:
         _valueFunction = lsqr.fLine;
-        double normB = lsqr.getB(_normListX, _normListY);
-        _listFunctionNormArgs.add(lsqr.getM(_normListX, _normListY, normB));
+        double normB = lsqr.getB(_normListX!, _normListY!);
+        _listFunctionNormArgs.add(lsqr.getM(_normListX!, _normListY!, normB));
         _listFunctionNormArgs.add(normB);
-        double b = lsqr.getB(_listRelDays, _listValues);
-        double m = lsqr.getM(_listRelDays, _listValues, b);
+        double b = lsqr.getB(_listRelDays!, _listValues!);
+        double m = lsqr.getM(_listRelDays!, _listValues!, b);
         _listFunctionArgs.add(m);
         _listFunctionArgs.add(b);
         break;
       default:
         _valueFunction = roots.fExp;
-        _listFunctionArgs.add(_listValues[0]);
-        _listFunctionNormArgs.add(_listValues[0]);
-        double normBetaPrime = roots.getBetaPrime(_normListX, _normListY);
+        _listFunctionArgs.add(_listValues![0]);
+        _listFunctionNormArgs.add(_listValues![0]);
+        double normBetaPrime = roots.getBetaPrime(_normListX!, _normListY);
         double normBeta =
             roots.tuneNormBeta(normBetaPrime, _normListX, _normListY);
         _listFunctionNormArgs.add(normBeta);
         //Get TRUE beta for use with computations, this is based on non-normalized values
         double beta = roots.getBeta(
-            normBeta, getConvertedDt(_elapsedDays.toDouble(), _strTimeUnit));
+            normBeta, getConvertedDt(_elapsedDays!.toDouble(), _strTimeUnit));
         _listFunctionArgs.add(beta);
         break;
     }
   }
 
-  Container buildCanvas(int elapsedDays, String strTimeUnit, double maxValue,
-      List<double> normListX, List<double> normListY, double normBeta) {
+  Container buildCanvas(int? elapsedDays, String? strTimeUnit, double? maxValue,
+      List<double>? normListX, List<double>? normListY, double normBeta) {
     return Container(
       color: Colors.grey[200],
       child: CustomPaint(
@@ -214,7 +214,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                             absX < maxAbsX &&
                             absYd < maxAbsY) {
                           setState(() {
-                            List<double> listDiffX = _normListX
+                            List<double> listDiffX = _normListX!
                                 .map((e) =>
                                     (e - (details.localPosition.dx / maxAbsX))
                                         .abs())
@@ -223,16 +223,16 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                                 (value, element) => math.min(value, element)));
                             //Set the double data for the crosshairs
                             _listCrosshairsData[0] =
-                                _normListX[indexX] * maxAbsX;
+                                _normListX![indexX] * maxAbsX;
                             _listCrosshairsData[1] =
-                                (1 - _normListY[indexX]) * maxAbsY;
+                                (1 - _normListY![indexX]) * maxAbsY;
                             _listCrosshairsData[2] = 1;
                             //Set the string data for the crosshairs
-                            DateTime selectedDate = widget.listDateTime[indexX];
+                            DateTime selectedDate = widget.listDateTime![indexX];
                             _listCrosshairsString[0] =
                                 '${selectedDate.month}/${selectedDate.day}/${selectedDate.year}';
                             _listCrosshairsString[1] =
-                                _listValues[indexX].toStringAsFixed(2);
+                                _listValues![indexX].toStringAsFixed(2);
                           });
                         }
                       },
@@ -258,7 +258,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                             _listCrosshairsData[1] = maxAbsY -
                                 _valueFunction([
                                   _listFunctionNormArgs[0] * maxAbsY,
-                                  _listFunctionArgs[1] * (maxAbsY / _maxValue),
+                                  _listFunctionArgs[1] * (maxAbsY / _maxValue!),
                                 ], (absX / maxAbsX));
                           }
                           _listCrosshairsData[1] = _listCrosshairsData[1] < 0
@@ -272,10 +272,10 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                             //Set the double data for the crosshairs
                             _listCrosshairsData[2] = 1;
                             //Set the string data for the crosshairs
-                            double dtDays = _elapsedDays * (absX / maxAbsX);
+                            double dtDays = _elapsedDays! * (absX / maxAbsX);
                             DateTime selectedDate =
                                 DateTime.fromMillisecondsSinceEpoch(
-                                    ((_listAbsDays[0] + dtDays) *
+                                    ((_listAbsDays![0] + dtDays) *
                                             1000 *
                                             60 *
                                             60 *
@@ -285,7 +285,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                                 '${selectedDate.month}/${selectedDate.day}/${selectedDate.year}';
                             _listCrosshairsString[1] =
                                 ((1 - _listCrosshairsData[1] / maxAbsY) *
-                                        _maxValue)
+                                        _maxValue!)
                                     .toStringAsFixed(2);
                           });
                         }
@@ -337,7 +337,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                                   ),
                                 ),
                               ],
-                              onChanged: (index) {
+                              onChanged: (dynamic index) {
                                 setState(() {
                                   _valueInterpol = index;
                                   updateMainVars();
@@ -354,7 +354,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                               dropdownColor: colorDropList,
                               items: getScaleMenu(context, listStrScale,
                                   _listFunctionArgs, _valueInterpol),
-                              onChanged: (index) {
+                              onChanged: (dynamic index) {
                                 setState(() {
                                   _valueScale = index;
                                   updateMainVars();
@@ -369,7 +369,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                               value: _valueUnits,
                               dropdownColor: colorDropList,
                               items: getUnitsMenu(context, _listPossibleUnits),
-                              onChanged: (index) {
+                              onChanged: (dynamic index) {
                                 setState(() {
                                   _valueUnits = index;
                                   updateMainVars();
@@ -386,7 +386,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                               color: Theme.of(context).primaryColor,
                               borderRadius: BorderRadius.circular(sizeRadius),
                             ),
-                            child: FlatButton(
+                            child: TextButton(
                               child: Text(
                                 'Get metrics',
                                 style: Theme.of(context).textTheme.headline2,
@@ -427,16 +427,16 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
 }
 
 class PlotPaint extends CustomPainter {
-  final BuildContext context;
-  final int elapsedDays;
-  final String strTimeUnit;
-  final double maxY;
-  final List<double> normListX;
-  final List<double> normListY;
+  final BuildContext? context;
+  final int? elapsedDays;
+  final String? strTimeUnit;
+  final double? maxY;
+  final List<double>? normListX;
+  final List<double>? normListY;
   final activeFunction;
   final functionNormArgs;
-  final List<double> listCrosshairsDouble;
-  final List<String> listCrosshairsString;
+  final List<double>? listCrosshairsDouble;
+  final List<String>? listCrosshairsString;
 
   static const double sizeTickLength = 0.02;
   static const Color colorAxis = Colors.indigoAccent;
@@ -462,11 +462,11 @@ class PlotPaint extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    List<double> listNTicks =
-        getListNTicks(elapsedDays.toDouble(), strTimeUnit, maxY);
-    double nTicksX = listNTicks[0];
-    double nTicksY = listNTicks[1];
-    double nOrderY = listNTicks[2];
+    List<double?> listNTicks =
+        getListNTicks(elapsedDays!.toDouble(), strTimeUnit, maxY!);
+    double nTicksX = listNTicks[0]!;
+    double nTicksY = listNTicks[1]!;
+    double nOrderY = listNTicks[2]!;
     double strokeWidthAxis = 3;
     if (nTicksX > 180) {
       strokeWidthAxis = 1;
@@ -485,13 +485,13 @@ class PlotPaint extends CustomPainter {
     TextPainter paintText = TextPainter(
         text: TextSpan(
             text: nOrderY > 0 ? 'x10^${nOrderY.round()}' : '',
-            style: Theme.of(context).textTheme.subtitle2),
+            style: Theme.of(context!).textTheme.subtitle2),
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr);
     paintText.layout();
     paintText.paint(
         canvas,
-        normListY[0] < normListY.last
+        normListY![0] < normListY!.last
             ? Offset(size.width * fractionOffsetText,
                 size.height * fractionOffsetText)
             : Offset(size.width * (1 - fractionOffsetText * 4),
@@ -499,7 +499,7 @@ class PlotPaint extends CustomPainter {
 
     //Draw base points (on top)
     drawPlotPoints(
-        canvas, size, normListX, normListY, colorPoints, strokeWidthPoints);
+        canvas, size, normListX!, normListY!, colorPoints, strokeWidthPoints);
 
     //Draw crosshairs
     drawCrosshairs(
@@ -508,9 +508,9 @@ class PlotPaint extends CustomPainter {
       getPaintCrosshairs(colorAxis, strokeWidthCrosshairs),
       getPaintPoints(
           colorAxis, strokeWidthCrosshairs * scaleWidthCrosshairPoints),
-      listCrosshairsDouble[0],
-      listCrosshairsDouble[1],
-      listCrosshairsDouble[2],
+      listCrosshairsDouble![0],
+      listCrosshairsDouble![1],
+      listCrosshairsDouble![2],
       listCrosshairsString,
     );
   }
@@ -521,8 +521,8 @@ class PlotPaint extends CustomPainter {
   }
 }
 
-List<double> getListNTicks(double maxX, String unitsX, double maxY) {
-  double nTicksX;
+List<double?> getListNTicks(double maxX, String? unitsX, double maxY) {
+  double? nTicksX;
   if (unitsX == 'Days') {
     nTicksX = maxX / 1;
   } else if (unitsX == 'Months') {
@@ -543,7 +543,7 @@ List<double> getListNTicks(double maxX, String unitsX, double maxY) {
 
 //region menu functions
 List<DropdownMenuItem> getScaleMenu(BuildContext context,
-    List<String> listStrScale, List<double> listArgs, int valueInterpol) {
+    List<String> listStrScale, List<double> listArgs, int? valueInterpol) {
   List<DropdownMenuItem> listOut = [];
   int indexStart = (valueInterpol == 0 ? listArgs[1] >= 0 : listArgs[0] >= 0)
       ? 0
@@ -579,7 +579,7 @@ List<DropdownMenuItem> getUnitsMenu(
 //endregion menu functions
 
 //region calc functions
-double getConvertedDt(double elapsedDays, String strTimeUnit) {
+double getConvertedDt(double elapsedDays, String? strTimeUnit) {
   double dt = elapsedDays;
   if (strTimeUnit == 'Months') {
     dt = dt * (12 / 365);
@@ -594,8 +594,8 @@ double getScalingTime(
     List<double> listArgs,
     List<double> listScale,
     int indexScale,
-    int elapsedDays,
-    String strTimeUnit) {
+    int? elapsedDays,
+    String? strTimeUnit) {
   //Must be the case that if beta/m>0:N>1 and that if beta/m<0:N<1
   int indexStart = (fX == roots.fExp ? listArgs[1] >= 0 : listArgs[0] >= 0)
       ? 0
@@ -606,35 +606,35 @@ double getScalingTime(
     tNx = math.log(N) / listArgs[1];
   } else {
     //This is an average tNx! Also equal to mid-line tNx since this changes with X in the linear case
-    tNx = (N - 1) * (elapsedDays / 2 + listArgs[1] / listArgs[0]);
+    tNx = (N - 1) * (elapsedDays! / 2 + listArgs[1] / listArgs[0]);
     tNx = getConvertedDt(tNx, strTimeUnit);
   }
   return tNx;
 }
 
-double getAvgVelocity(Function fX, List<double> args, int dtDays, double dt) {
+double getAvgVelocity(Function fX, List<double> args, int? dtDays, double dt) {
   if (fX == roots.fExp) {
     return (args[0] / dt) * (math.exp(args[1] * dt) - 1);
   } else {
-    return args[0] * (dtDays / dt);
+    return args[0] * (dtDays! / dt);
   }
 }
 
 double getMeanSquaredError(Function fX, List<double> functionArgs,
-    List<double> listX, List<double> listY, int elapsedDays, double dt) {
+    List<double> listX, List<double>? listY, int? elapsedDays, double dt) {
   List<double> listPredictedY;
   if (fX == lsqr.fLine) {
     listPredictedY =
         List<double>.from(listX.map((e) => fX(functionArgs, e)).toList());
   } else {
-    double betaDays = functionArgs[1] * (dt / elapsedDays);
+    double betaDays = functionArgs[1] * (dt / elapsedDays!);
     listPredictedY = List<double>.from(
         listX.map((e) => fX([functionArgs[0], betaDays], e)).toList());
   }
   double sumDy = 0;
   int i = 0;
   listPredictedY.forEach((element) {
-    sumDy += math.pow((element - listY[i]), 2);
+    sumDy += math.pow((element - listY![i]), 2);
     i++;
   });
   return sumDy / listX.length;
@@ -649,13 +649,13 @@ void showDialogMessage(
   double radiusBorderDialog,
   List<String> listStrScale,
   List<double> listNScale,
-  int valueScale,
-  List<double> listRelX,
-  List<double> listY,
-  int valueInterpol,
+  int? valueScale,
+  List<double>? listRelX,
+  List<double>? listY,
+  int? valueInterpol,
   List<double> listArgs,
-  int elapsedDays,
-  String strTimeUnit,
+  int? elapsedDays,
+  String? strTimeUnit,
 ) {
   showDialog(
       builder: (context) {
@@ -693,7 +693,7 @@ void showDialogMessage(
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      '${valueInterpol == 0 ? argB.toStringAsFixed(3) : getAvgVelocity(fX, listArgs, elapsedDays, getConvertedDt(elapsedDays.toDouble(), strTimeUnit)).toStringAsFixed(3)} [$strTimeUnit\u207b\u00b9]',
+                      '${valueInterpol == 0 ? argB.toStringAsFixed(3) : getAvgVelocity(fX, listArgs, elapsedDays, getConvertedDt(elapsedDays!.toDouble(), strTimeUnit)).toStringAsFixed(3)} [$strTimeUnit\u207b\u00b9]',
                       style: Theme.of(context).textTheme.headline2,
                       textAlign: TextAlign.center,
                     ),
@@ -702,7 +702,7 @@ void showDialogMessage(
                 TableRow(
                   children: [
                     Text(
-                      '${valueInterpol == 0 ? '' : 'Avg. '}${listStrScale[(valueInterpol == 0 ? argB >= 0 : argA >= 0) ? valueScale : (listStrScale.length / 2).floor() + valueScale]} Time:',
+                      '${valueInterpol == 0 ? '' : 'Avg. '}${listStrScale[(valueInterpol == 0 ? argB >= 0 : argA >= 0) ? valueScale! : (listStrScale.length / 2).floor() + valueScale!]} Time:',
                       style: Theme.of(context).textTheme.headline2,
                       textAlign: TextAlign.center,
                     ),
@@ -721,7 +721,7 @@ void showDialogMessage(
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      '${getAvgVelocity(fX, listArgs, elapsedDays, getConvertedDt(elapsedDays.toDouble(), strTimeUnit)).toStringAsFixed(3)} [$strTimeUnit\u207b\u00b9]',
+                      '${getAvgVelocity(fX, listArgs, elapsedDays, getConvertedDt(elapsedDays!.toDouble(), strTimeUnit)).toStringAsFixed(3)} [$strTimeUnit\u207b\u00b9]',
                       style: Theme.of(context).textTheme.headline2,
                       textAlign: TextAlign.center,
                     ),
@@ -735,7 +735,7 @@ void showDialogMessage(
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      '${getMeanSquaredError(fX, listArgs, listRelX, listY, elapsedDays, getConvertedDt(elapsedDays.toDouble(), strTimeUnit)).toStringAsFixed(3)}',
+                      '${getMeanSquaredError(fX, listArgs, listRelX!, listY, elapsedDays, getConvertedDt(elapsedDays.toDouble(), strTimeUnit)).toStringAsFixed(3)}',
                       style: Theme.of(context).textTheme.headline2,
                       textAlign: TextAlign.center,
                     ),

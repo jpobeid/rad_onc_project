@@ -79,195 +79,197 @@ class _TumorVolumeState extends State<TumorVolume> {
   @override
   Widget build(BuildContext context) {
     double heightApp = MediaQuery.of(context).size.height;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: RadAppBar(
-        strAppTitle: datas.mapAppNames[0][0],
-      ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: heightApp * listHeightFractions[0],
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height * listHeightFractions[1],
-            child: RadToggleButton(
-              strOption1: 'Spherical',
-              strOption2: 'Ellipsoidal',
-              fractionToggleWidth: fractionToggleWidth,
-              sizeBorderRadius: sizeBorderRadius,
-              listIsSelected: _isSelected,
-              functionOnPressed: functionTogglePressed,
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: RadAppBar(
+          strAppTitle: datas.mapAppNames[0]![0],
+        ),
+        body: Column(
+          children: [
+            SizedBox(
+              height: heightApp * listHeightFractions[0],
             ),
-          ),
-          SizedBox(
-            height: heightApp * listHeightFractions[0],
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height * listHeightFractions[2],
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                if (_isSelected[0]) {
-                  return Table(
-                    columnWidths: {
-                      0: FlexColumnWidth(listHorizontalFlex[0]),
-                      1: FlexColumnWidth(listHorizontalFlex[1])
-                    },
-                    children: [
-                      makeTableRow(
-                          context, 'Diameter:', makeTextField, ctrlSpherical),
-                    ],
-                  );
-                } else {
-                  return Table(
-                    columnWidths: {
-                      0: FlexColumnWidth(listHorizontalFlex[0]),
-                      1: FlexColumnWidth(listHorizontalFlex[1])
-                    },
-                    children: [
-                      makeTableRow(context, 'Diameter 1:', makeTextField,
-                          ctrlEllipsoidal1),
-                      makeTableRow(context, 'Diameter 2:', makeTextField,
-                          ctrlEllipsoidal2),
-                      makeTableRow(context, 'Diameter 3:', makeTextField,
-                          ctrlEllipsoidal3),
-                    ],
-                  );
-                }
+            Container(
+              height: MediaQuery.of(context).size.height * listHeightFractions[1],
+              child: RadToggleButton(
+                strOption1: 'Spherical',
+                strOption2: 'Ellipsoidal',
+                fractionToggleWidth: fractionToggleWidth,
+                sizeBorderRadius: sizeBorderRadius,
+                listIsSelected: _isSelected,
+                functionOnPressed: functionTogglePressed,
+              ),
+            ),
+            SizedBox(
+              height: heightApp * listHeightFractions[0],
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * listHeightFractions[2],
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  if (_isSelected[0]) {
+                    return Table(
+                      columnWidths: {
+                        0: FlexColumnWidth(listHorizontalFlex[0]),
+                        1: FlexColumnWidth(listHorizontalFlex[1])
+                      },
+                      children: [
+                        makeTableRow(
+                            context, 'Diameter:', makeTextField, ctrlSpherical),
+                      ],
+                    );
+                  } else {
+                    return Table(
+                      columnWidths: {
+                        0: FlexColumnWidth(listHorizontalFlex[0]),
+                        1: FlexColumnWidth(listHorizontalFlex[1])
+                      },
+                      children: [
+                        makeTableRow(context, 'Diameter 1:', makeTextField,
+                            ctrlEllipsoidal1),
+                        makeTableRow(context, 'Diameter 2:', makeTextField,
+                            ctrlEllipsoidal2),
+                        makeTableRow(context, 'Diameter 3:', makeTextField,
+                            ctrlEllipsoidal3),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ),
+            SizedBox(
+              height: heightApp * listHeightFractions[0],
+            ),
+            TextButton(
+              child: Container(
+                height:
+                    MediaQuery.of(context).size.height * listHeightFractions[3],
+                width: MediaQuery.of(context).size.width * fractionToggleWidth,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).textTheme.headline1!.color,
+                  borderRadius: BorderRadius.circular(sizeBorderRadius),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'Compute',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: Theme.of(context).textTheme.headline2!.fontSize,
+                    fontWeight: Theme.of(context).textTheme.headline2!.fontWeight,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                  ),
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  if (_isSelected[0]) {
+                    bool isStrDValid = textFieldDoubleValidation(
+                        ctrlSpherical.text,
+                        false,
+                        false,
+                        true,
+                        true,
+                        1000,
+                        0,
+                        3,
+                        3);
+                    _strVolAns = isStrDValid
+                        ? getVolumeSpherical(ctrlSpherical.text)
+                            .toStringAsFixed(2)
+                        : 'N/A';
+                    _strSAAns = isStrDValid
+                        ? getSASpherical(ctrlSpherical.text).toStringAsFixed(2)
+                        : 'N/A';
+                  } else {
+                    bool isStrD1Valid = textFieldDoubleValidation(
+                        ctrlEllipsoidal1.text,
+                        false,
+                        false,
+                        true,
+                        true,
+                        1000,
+                        0,
+                        3,
+                        3);
+                    bool isStrD2Valid = textFieldDoubleValidation(
+                        ctrlEllipsoidal2.text,
+                        false,
+                        false,
+                        true,
+                        true,
+                        1000,
+                        0,
+                        3,
+                        3);
+                    bool isStrD3Valid = textFieldDoubleValidation(
+                        ctrlEllipsoidal3.text,
+                        false,
+                        false,
+                        true,
+                        true,
+                        1000,
+                        0,
+                        3,
+                        3);
+                    _strVolAns = (isStrD1Valid && isStrD2Valid && isStrD3Valid)
+                        ? getVolumeEllipsoidal(ctrlEllipsoidal1.text,
+                                ctrlEllipsoidal2.text, ctrlEllipsoidal3.text)
+                            .toStringAsFixed(2)
+                        : 'N/A';
+                    _strSAAns = (isStrD1Valid && isStrD2Valid && isStrD3Valid)
+                        ? getSAEllipsoidal(ctrlEllipsoidal1.text,
+                                ctrlEllipsoidal2.text, ctrlEllipsoidal3.text)
+                            .toStringAsFixed(2)
+                        : 'N/A';
+                  }
+                });
               },
             ),
-          ),
-          SizedBox(
-            height: heightApp * listHeightFractions[0],
-          ),
-          FlatButton(
-            child: Container(
-              height:
-                  MediaQuery.of(context).size.height * listHeightFractions[3],
-              width: MediaQuery.of(context).size.width * fractionToggleWidth,
-              decoration: BoxDecoration(
-                color: Theme.of(context).textTheme.headline1.color,
-                borderRadius: BorderRadius.circular(sizeBorderRadius),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                'Compute',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.headline2.fontSize,
-                  fontWeight: Theme.of(context).textTheme.headline2.fontWeight,
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                ),
+            SizedBox(
+              height: heightApp * listHeightFractions[0],
+            ),
+            Container(
+              height: listHeightFractions[4],
+              child: Table(
+                border: TableBorder.all(
+                    color: Theme.of(context).primaryColor,
+                    width: sizeBorderWidth),
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: [
+                  TableRow(
+                    children: [
+                      Text(
+                        'Volume:',
+                        style: Theme.of(context).textTheme.headline2,
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        _strVolAns,
+                        style: Theme.of(context).textTheme.headline2,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text(
+                        'Surface Area:',
+                        style: Theme.of(context).textTheme.headline2,
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        _strSAAns,
+                        style: Theme.of(context).textTheme.headline2,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            onPressed: () {
-              setState(() {
-                if (_isSelected[0]) {
-                  bool isStrDValid = textFieldDoubleValidation(
-                      ctrlSpherical.text,
-                      false,
-                      false,
-                      true,
-                      true,
-                      1000,
-                      0,
-                      3,
-                      3);
-                  _strVolAns = isStrDValid
-                      ? getVolumeSpherical(ctrlSpherical.text)
-                          .toStringAsFixed(2)
-                      : 'N/A';
-                  _strSAAns = isStrDValid
-                      ? getSASpherical(ctrlSpherical.text).toStringAsFixed(2)
-                      : 'N/A';
-                } else {
-                  bool isStrD1Valid = textFieldDoubleValidation(
-                      ctrlEllipsoidal1.text,
-                      false,
-                      false,
-                      true,
-                      true,
-                      1000,
-                      0,
-                      3,
-                      3);
-                  bool isStrD2Valid = textFieldDoubleValidation(
-                      ctrlEllipsoidal2.text,
-                      false,
-                      false,
-                      true,
-                      true,
-                      1000,
-                      0,
-                      3,
-                      3);
-                  bool isStrD3Valid = textFieldDoubleValidation(
-                      ctrlEllipsoidal3.text,
-                      false,
-                      false,
-                      true,
-                      true,
-                      1000,
-                      0,
-                      3,
-                      3);
-                  _strVolAns = (isStrD1Valid && isStrD2Valid && isStrD3Valid)
-                      ? getVolumeEllipsoidal(ctrlEllipsoidal1.text,
-                              ctrlEllipsoidal2.text, ctrlEllipsoidal3.text)
-                          .toStringAsFixed(2)
-                      : 'N/A';
-                  _strSAAns = (isStrD1Valid && isStrD2Valid && isStrD3Valid)
-                      ? getSAEllipsoidal(ctrlEllipsoidal1.text,
-                              ctrlEllipsoidal2.text, ctrlEllipsoidal3.text)
-                          .toStringAsFixed(2)
-                      : 'N/A';
-                }
-              });
-            },
-          ),
-          SizedBox(
-            height: heightApp * listHeightFractions[0],
-          ),
-          Container(
-            height: listHeightFractions[4],
-            child: Table(
-              border: TableBorder.all(
-                  color: Theme.of(context).primaryColor,
-                  width: sizeBorderWidth),
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: [
-                TableRow(
-                  children: [
-                    Text(
-                      'Volume:',
-                      style: Theme.of(context).textTheme.headline2,
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      _strVolAns,
-                      style: Theme.of(context).textTheme.headline2,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-                TableRow(
-                  children: [
-                    Text(
-                      'Surface Area:',
-                      style: Theme.of(context).textTheme.headline2,
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      _strSAAns,
-                      style: Theme.of(context).textTheme.headline2,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

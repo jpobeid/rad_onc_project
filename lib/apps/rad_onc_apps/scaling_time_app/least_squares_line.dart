@@ -15,7 +15,7 @@ double getB(List<double> listX, List<double> listY){
     i++;
   });
   double sumX = listX.reduce((value, element) => value+element);
-  double sumX2 = listX.map((e) => math.pow(e, 2)).reduce((value, element) => value+element);
+  double sumX2 = listX.map((e) => math.pow(e, 2)).reduce((value, element) => value+element) as double;
   double sumY = listY.reduce((value, element) => value+element);
   double sumXY = listXY.reduce((value, element) => value+element);
   double numerator = sumXY-(sumY/sumX)*sumX2;

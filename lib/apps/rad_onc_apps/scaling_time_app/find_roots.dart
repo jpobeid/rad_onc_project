@@ -19,16 +19,16 @@ List<double> getNormList(List<double> list, bool isZeroed) {
   }
 }
 
-double getBetaPrime(List<double> normListX, List<double> normListY) {
+double getBetaPrime(List<double> normListX, List<double>? normListY) {
   double netSum = 0;
   for (int i = 1; i < normListX.length; i++) {
-    netSum += math.log(normListY[i] / normListY[0]) / normListX[i];
+    netSum += math.log(normListY![i] / normListY[0]) / normListX[i];
   }
   return netSum / (normListX.length - 1);
 }
 
 double tuneNormBeta(
-    double betaPrime, List<double> normListX, List<double> normListY) {
+    double betaPrime, List<double>? normListX, List<double>? normListY) {
   const epsilon0 = 5;
   List<double> listDifference = [];
   int epsilon;
@@ -45,10 +45,10 @@ double tuneNormBeta(
     seqTuning.add(i * sizeStep);
   }
   for (double b in seqTuning) {
-    double sumExp = normListX
-        .map((e) => fExp([normListY[0], b], e))
+    double sumExp = normListX!
+        .map((e) => fExp([normListY![0], b], e))
         .reduce((value, element) => value + element);
-    double sumY = normListY.reduce((value, element) => value + element);
+    double sumY = normListY!.reduce((value, element) => value + element);
     listDifference.add((sumExp - sumY).abs());
   }
   double minDifference =

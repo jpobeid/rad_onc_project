@@ -5,6 +5,7 @@ import 'package:rad_onc_project/functions/text_field_validation.dart' as check;
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/widgets/rad_toggle_button.dart';
 import 'package:rad_onc_project/data/main_data.dart' as datas;
+import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
 
 class ToleranceApp extends StatefulWidget {
   static const routeName = '/tolerance-app';
@@ -69,232 +70,226 @@ class _ToleranceAppState extends State<ToleranceApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: RadAppBar(
-        strAppTitle: datas.mapAppNames[1][2],
-      ),
-      body: Column(
-        children: [
-          TitleRow(
-            strText: 'Dose Type',
-            isCancelable: false,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-                vertical:
-                    MediaQuery.of(context).size.height * fractionHeightPadding),
-            child: RadToggleButton(
-              strOption1: listStrDoseType[0],
-              strOption2: listStrDoseType[1],
-              fractionToggleWidth: fractionToggleWidth,
-              sizeBorderRadius: sizeToggleBorderRadius,
-              listIsSelected: _listToggle,
-              functionOnPressed: functionTogglePressed,
+    return SafeArea(
+      child: Scaffold(
+        appBar: RadAppBar(
+          strAppTitle: datas.mapAppNames[1]![2],
+        ),
+        body: Column(
+          children: [
+            TitleRow(
+              strText: 'Dose Type',
+              isCancelable: false,
             ),
-          ),
-          TitleRow(
-            strText: 'RadBio Parameters',
-            isCancelable: false,
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: Text(
-                  'Max ${listStrDoseType[_listToggle.indexOf(true)]} (Gy):',
-                  style: Theme.of(context).textTheme.headline2,
-                  textAlign: TextAlign.start,
-                ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical:
+                      MediaQuery.of(context).size.height * fractionHeightPadding),
+              child: RadToggleButton(
+                strOption1: listStrDoseType[0],
+                strOption2: listStrDoseType[1],
+                fractionToggleWidth: fractionToggleWidth,
+                sizeBorderRadius: sizeToggleBorderRadius,
+                listIsSelected: _listToggle,
+                functionOnPressed: functionTogglePressed,
               ),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  '\u03b1/\u03b2',
-                  style: Theme.of(context).textTheme.headline2,
-                  textAlign: TextAlign.end,
+            ),
+            TitleRow(
+              strText: 'RadBio Parameters',
+              isCancelable: false,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'Max ${listStrDoseType[_listToggle.indexOf(true)]} (Gy):',
+                    style: Theme.of(context).textTheme.headline2,
+                    textAlign: TextAlign.start,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: listHorizontalFlex1[0],
-                child: TextField(
-                  controller: _controllerMaxDose,
-                  maxLength: 5,
-                  keyboardType: TextInputType.number,
-                  style: Theme.of(context).textTheme.headline2,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(0), isDense: true),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    '\u03b1/\u03b2',
+                    style: Theme.of(context).textTheme.headline2,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: listHorizontalFlex1[1],
-                child: Slider(
-                  min: 1,
-                  max: 10,
-                  divisions: 18,
-                  value: _valueAbRatio,
-                  label: _valueAbRatio.toString(),
-                  onChanged: (value) {
-                    setState(() {
-                      _valueAbRatio = value;
-                    });
-                  },
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: listHorizontalFlex1[0],
+                  child: fields.textFieldDose(context, _controllerMaxDose),
                 ),
-              ),
-            ],
-          ),
-          Divider(
-            thickness: sizeDivider,
-            color: Theme.of(context).textTheme.headline2.color,
-          ),
-          Expanded(
-            child: ListView.builder(
-                itemCount: _nCourses + 1,
-                itemBuilder: (context, index) {
-                  if (index <= _nCourses - 1) {
-                    return CourseInfo(
-                      nCourse: index + 1,
-                      listPercentForgiven: _listPercentForgiven,
-                      listControllerDose: _listControllerDose,
-                      listControllerFractions: _listControllerFractions,
-                      isCancelable:
-                          (index > 0 && index == _nCourses - 1) ? true : false,
-                      functionCancelPressed: functionCancelPressed,
-                    );
-                  } else {
-                    return Column(
-                      children: [
-                        Divider(
-                          thickness: sizeDivider,
-                          color: Theme.of(context).textTheme.headline2.color,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color:
-                                    Theme.of(context).textTheme.headline2.color,
-                                borderRadius: BorderRadius.circular(
-                                    sizeToggleBorderRadius),
-                              ),
-                              width: MediaQuery.of(context).size.width *
-                                  fractionButtonWidth,
-                              height: MediaQuery.of(context).size.height *
-                                  fractionButtonHeight,
-                              child: FlatButton(
-                                child: Text(
-                                  'Compute',
-                                  style: TextStyle(
-                                      fontSize: Theme.of(context)
-                                          .textTheme
-                                          .headline2
-                                          .fontSize,
-                                      fontWeight: Theme.of(context)
-                                          .textTheme
-                                          .headline2
-                                          .fontWeight,
-                                      color: Theme.of(context)
-                                          .scaffoldBackgroundColor),
+                Expanded(
+                  flex: listHorizontalFlex1[1],
+                  child: Slider(
+                    min: 1,
+                    max: 10,
+                    divisions: 18,
+                    value: _valueAbRatio,
+                    label: _valueAbRatio.toString(),
+                    onChanged: (value) {
+                      setState(() {
+                        _valueAbRatio = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+            Divider(
+              thickness: sizeDivider,
+              color: Theme.of(context).textTheme.headline2!.color,
+            ),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: _nCourses + 1,
+                  itemBuilder: (context, index) {
+                    if (index <= _nCourses - 1) {
+                      return CourseInfo(
+                        nCourse: index + 1,
+                        listPercentForgiven: _listPercentForgiven,
+                        listControllerDose: _listControllerDose,
+                        listControllerFractions: _listControllerFractions,
+                        isCancelable:
+                            (index > 0 && index == _nCourses - 1) ? true : false,
+                        functionCancelPressed: functionCancelPressed,
+                      );
+                    } else {
+                      return Column(
+                        children: [
+                          Divider(
+                            thickness: sizeDivider,
+                            color: Theme.of(context).textTheme.headline2!.color,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color:
+                                      Theme.of(context).textTheme.headline2!.color,
+                                  borderRadius: BorderRadius.circular(
+                                      sizeToggleBorderRadius),
                                 ),
-                                onPressed: () {
-                                  String strMaxDose = _controllerMaxDose.text;
-                                  List<String> listStrDose = _listControllerDose
-                                      .map((e) => e.text)
-                                      .toList();
-                                  List<String> listStrFractions =
-                                      _listControllerFractions
-                                          .map((e) => e.text)
-                                          .toList();
-                                  if (checkIsValid(strMaxDose, listStrDose,
-                                      listStrFractions)) {
-                                    double netDose = 0;
-                                    for (int i = 0; i < _nCourses; i++) {
-                                      Function fDose =
-                                          _listToggle[0] ? getBed : getEqd2;
-                                      netDose += fDose(
-                                              double.parse(
-                                                  _listControllerDose[i].text),
-                                              double.parse(
-                                                  _listControllerFractions[i]
-                                                      .text),
-                                              _valueAbRatio) *
-                                          (1 - _listPercentForgiven[i] / 100);
-                                    }
-                                    showDialog(
-                                        context: (context),
-                                        builder: (context) {
-                                          return ComputeDialog(
-                                            isBed: _listToggle[0],
-                                            maxDose: double.parse(
-                                                _controllerMaxDose.text),
-                                            netDose: netDose,
-                                            ab: _valueAbRatio,
-                                          );
-                                        });
-                                  } else {
-                                    Scaffold.of(context).showSnackBar(
-                                      SnackBar(
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
-                                        content: Text(
-                                          'Invalid numeric input!',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline1,
-                                          textAlign: TextAlign.center,
+                                width: MediaQuery.of(context).size.width *
+                                    fractionButtonWidth,
+                                height: MediaQuery.of(context).size.height *
+                                    fractionButtonHeight,
+                                child: TextButton(
+                                  child: Text(
+                                    'Compute',
+                                    style: TextStyle(
+                                        fontSize: Theme.of(context)
+                                            .textTheme
+                                            .headline2!
+                                            .fontSize,
+                                        fontWeight: Theme.of(context)
+                                            .textTheme
+                                            .headline2!
+                                            .fontWeight,
+                                        color: Theme.of(context)
+                                            .scaffoldBackgroundColor),
+                                  ),
+                                  onPressed: () {
+                                    String strMaxDose = _controllerMaxDose.text;
+                                    List<String> listStrDose = _listControllerDose
+                                        .map((e) => e.text)
+                                        .toList();
+                                    List<String> listStrFractions =
+                                        _listControllerFractions
+                                            .map((e) => e.text)
+                                            .toList();
+                                    if (checkIsValid(strMaxDose, listStrDose,
+                                        listStrFractions)) {
+                                      double netDose = 0;
+                                      for (int i = 0; i < _nCourses; i++) {
+                                        Function fDose =
+                                            _listToggle[0] ? getBed : getEqd2;
+                                        netDose += fDose(
+                                                double.parse(
+                                                    _listControllerDose[i].text),
+                                                double.parse(
+                                                    _listControllerFractions[i]
+                                                        .text),
+                                                _valueAbRatio) *
+                                            (1 - _listPercentForgiven[i] / 100);
+                                      }
+                                      showDialog(
+                                          context: (context),
+                                          builder: (context) {
+                                            return ComputeDialog(
+                                              isBed: _listToggle[0],
+                                              maxDose: double.parse(
+                                                  _controllerMaxDose.text),
+                                              netDose: netDose,
+                                              ab: _valueAbRatio,
+                                            );
+                                          });
+                                    } else {
+                                      Scaffold.of(context).showSnackBar(
+                                        SnackBar(
+                                          backgroundColor:
+                                              Theme.of(context).primaryColor,
+                                          content: Text(
+                                            'Invalid numeric input!',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline1,
+                                            textAlign: TextAlign.center,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  }
-                                },
+                                      );
+                                    }
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  }
-                }),
-          ),
-        ],
+                            ],
+                          ),
+                        ],
+                      );
+                    }
+                  }),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+            child: Icon(
+              _nCourses == _nCoursesMax ? Icons.lock : Icons.add,
+              size: Theme.of(context).textTheme.headline2!.fontSize,
+            ),
+            backgroundColor: Colors.blue,
+            onPressed: () {
+              if (_nCourses < _nCoursesMax) {
+                setState(() {
+                  _nCourses++;
+                  _listPercentForgiven.add(0.0);
+                  _listControllerDose.add(TextEditingController(text: '0'));
+                  _listControllerFractions.add(TextEditingController(text: '0'));
+                });
+              }
+            }),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       ),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(
-            _nCourses == _nCoursesMax ? Icons.lock : Icons.add,
-            size: Theme.of(context).textTheme.headline2.fontSize,
-          ),
-          backgroundColor: Colors.blue,
-          onPressed: () {
-            if (_nCourses < _nCoursesMax) {
-              setState(() {
-                _nCourses++;
-                _listPercentForgiven.add(0.0);
-                _listControllerDose.add(TextEditingController(text: '0'));
-                _listControllerFractions.add(TextEditingController(text: '0'));
-              });
-            }
-          }),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
 }
 
 //region accessory widgets
 class CourseInfo extends StatefulWidget {
-  final int nCourse;
-  final List<double> listPercentForgiven;
-  final List<TextEditingController> listControllerDose;
-  final List<TextEditingController> listControllerFractions;
-  final bool isCancelable;
-  final Function functionCancelPressed;
+  final int? nCourse;
+  final List<double>? listPercentForgiven;
+  final List<TextEditingController>? listControllerDose;
+  final List<TextEditingController>? listControllerFractions;
+  final bool? isCancelable;
+  final Function? functionCancelPressed;
 
   const CourseInfo(
-      {Key key,
+      {Key? key,
       this.nCourse,
       this.listPercentForgiven,
       this.listControllerDose,
@@ -310,7 +305,7 @@ class CourseInfo extends StatefulWidget {
 class _CourseInfoState extends State<CourseInfo> {
   @override
   Widget build(BuildContext context) {
-    int index = widget.nCourse - 1;
+    int index = widget.nCourse! - 1;
     return Column(
       children: [
         TitleRow(
@@ -340,28 +335,12 @@ class _CourseInfoState extends State<CourseInfo> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
-              child: TextField(
-                controller: widget.listControllerDose[index],
-                maxLength: 5,
-                keyboardType: TextInputType.number,
-                style: Theme.of(context).textTheme.headline2,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(0),
-                ),
-              ),
+              child: fields.textFieldDose(
+                  context, widget.listControllerDose![index]),
             ),
             Expanded(
-              child: TextField(
-                controller: widget.listControllerFractions[index],
-                maxLength: 2,
-                keyboardType: TextInputType.number,
-                style: Theme.of(context).textTheme.headline2,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(0),
-                ),
-              ),
+              child: fields.textFieldFraction(
+                  context, widget.listControllerFractions![index]),
             ),
           ],
         ),
@@ -373,14 +352,14 @@ class _CourseInfoState extends State<CourseInfo> {
             ),
             Expanded(
               child: Slider(
-                value: widget.listPercentForgiven[index],
-                label: widget.listPercentForgiven[index].round().toString(),
+                value: widget.listPercentForgiven![index],
+                label: widget.listPercentForgiven![index].round().toString(),
                 min: 0,
                 max: 100,
                 divisions: 20,
                 onChanged: (value) {
                   setState(() {
-                    widget.listPercentForgiven[index] = value;
+                    widget.listPercentForgiven![index] = value;
                   });
                 },
               ),
@@ -393,12 +372,12 @@ class _CourseInfoState extends State<CourseInfo> {
 }
 
 class TitleRow extends StatelessWidget {
-  final String strText;
-  final bool isCancelable;
-  final Function functionCancelPressed;
+  final String? strText;
+  final bool? isCancelable;
+  final Function? functionCancelPressed;
 
   const TitleRow(
-      {Key key, this.strText, this.isCancelable, this.functionCancelPressed})
+      {Key? key, this.strText, this.isCancelable, this.functionCancelPressed})
       : super(key: key);
 
   static const double fractionHeight = 0.0525;
@@ -415,25 +394,25 @@ class TitleRow extends StatelessWidget {
           Expanded(
             flex: listHorizontalFlex[0],
             child: Text(
-              strText,
+              strText!,
               style: TextStyle(
-                fontSize: Theme.of(context).textTheme.headline2.fontSize,
-                fontWeight: Theme.of(context).textTheme.headline2.fontWeight,
+                fontSize: Theme.of(context).textTheme.headline2!.fontSize,
+                fontWeight: Theme.of(context).textTheme.headline2!.fontWeight,
                 color: Theme.of(context).scaffoldBackgroundColor,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          isCancelable
+          isCancelable!
               ? Expanded(
                   flex: listHorizontalFlex[1],
-                  child: FlatButton(
+                  child: TextButton(
                     child: Icon(
                       Icons.cancel_outlined,
-                      size: Theme.of(context).textTheme.headline2.fontSize,
+                      size: Theme.of(context).textTheme.headline2!.fontSize,
                     ),
                     onPressed: () {
-                      functionCancelPressed();
+                      functionCancelPressed!();
                     },
                   ),
                 )
@@ -445,13 +424,13 @@ class TitleRow extends StatelessWidget {
 }
 
 class ComputeDialog extends StatefulWidget {
-  final bool isBed;
-  final double maxDose;
-  final double netDose;
-  final double ab;
+  final bool? isBed;
+  final double? maxDose;
+  final double? netDose;
+  final double? ab;
 
   const ComputeDialog(
-      {Key key, this.isBed, this.maxDose, this.netDose, this.ab})
+      {Key? key, this.isBed, this.maxDose, this.netDose, this.ab})
       : super(key: key);
 
   static const double sizeBorderWidth = 4;
@@ -466,7 +445,7 @@ class ComputeDialog extends StatefulWidget {
 }
 
 class _ComputeDialogState extends State<ComputeDialog> {
-  int _valueDropdown = 0;
+  int? _valueDropdown = 0;
   TextEditingController _controllerQuantity = TextEditingController(text: '0');
 
   Row makeDropdownRow() {
@@ -510,7 +489,7 @@ class _ComputeDialogState extends State<ComputeDialog> {
                 ),
               ],
               dropdownColor: Colors.blueGrey,
-              onChanged: (int value) {
+              onChanged: (int? value) {
                 setState(() {
                   _valueDropdown = value;
                   _controllerQuantity.text = '0';
@@ -535,7 +514,7 @@ class _ComputeDialogState extends State<ComputeDialog> {
           builder: (context) {
             if (isReserve && _valueDropdown == 0) {
               return makeDropdownRow();
-            } else if (isReserve && _valueDropdown > 0) {
+            } else if (isReserve && _valueDropdown! > 0) {
               bool isValid = _valueDropdown == 1
                   ? check.textFieldDoubleValidation(_controllerQuantity.text,
                       false, false, false, true, 100, 0, 2, 3)
@@ -543,8 +522,8 @@ class _ComputeDialogState extends State<ComputeDialog> {
                       false, false, false, false, 100, 0, 0, 0);
               String strAns;
               if (isValid) {
-                double R = (widget.maxDose - widget.netDose);
-                double nAns = getPartition(widget.isBed, _valueDropdown == 1, R,
+                double R = (widget.maxDose! - widget.netDose!);
+                double nAns = getPartition(widget.isBed!, _valueDropdown == 1, R,
                     double.parse(_controllerQuantity.text), widget.ab);
                 strAns = nAns >= 0 ? nAns.toStringAsFixed(2) : 'N/A (<0)';
               } else {
@@ -555,7 +534,7 @@ class _ComputeDialogState extends State<ComputeDialog> {
                 children: [
                   makeDropdownRow(),
                   Divider(
-                    color: Theme.of(context).textTheme.headline2.color,
+                    color: Theme.of(context).textTheme.headline2!.color,
                     thickness: sizeDivider,
                   ),
                   Row(
@@ -571,27 +550,17 @@ class _ComputeDialogState extends State<ComputeDialog> {
                       ),
                       Expanded(
                         flex: listHorizontalFlex[1],
-                        child: TextField(
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.all(0),
-                            isDense: true,
-                          ),
-                          keyboardType: TextInputType.number,
-                          maxLength: _valueDropdown == 1 ? 5 : 2,
-                          style: Theme.of(context).textTheme.headline2,
-                          textAlign: TextAlign.center,
-                          controller: _controllerQuantity,
-                          onChanged: (text) {
-                            setState(() {
-                              //Pass
-                            });
-                          },
-                        ),
+                        child: _valueDropdown == 1
+                            ? fields.textFieldDose(context, _controllerQuantity,
+                                funcOnChanged: (text) => setState)
+                            : fields.textFieldFraction(
+                                context, _controllerQuantity,
+                                funcOnChanged: (text) => setState),
                       ),
                     ],
                   ),
                   Divider(
-                    color: Theme.of(context).textTheme.headline2.color,
+                    color: Theme.of(context).textTheme.headline2!.color,
                     thickness: sizeDivider,
                   ),
                   Table(
@@ -616,11 +585,11 @@ class _ComputeDialogState extends State<ComputeDialog> {
                                   style: TextStyle(
                                       fontSize: Theme.of(context)
                                           .textTheme
-                                          .headline2
+                                          .headline2!
                                           .fontSize,
                                       fontWeight: Theme.of(context)
                                           .textTheme
-                                          .headline2
+                                          .headline2!
                                           .fontWeight,
                                       color: Theme.of(context).primaryColor),
                                 ),
@@ -647,7 +616,7 @@ class _ComputeDialogState extends State<ComputeDialog> {
               );
             } else {
               return Text(
-                'Prior net ${widget.isBed ? 'BED' : 'EQD-2'} leaves no reserve dose available',
+                'Prior net ${widget.isBed! ? 'BED' : 'EQD-2'} leaves no reserve dose available',
                 style: Theme.of(context).textTheme.headline2,
                 textAlign: TextAlign.center,
               );
@@ -666,7 +635,7 @@ class _ComputeDialogState extends State<ComputeDialog> {
 
   @override
   Widget build(BuildContext context) {
-    double diffDose = (widget.maxDose - widget.netDose);
+    double diffDose = (widget.maxDose! - widget.netDose!);
     bool isReserve = diffDose > 0;
     return Center(
       child: Container(
@@ -695,12 +664,12 @@ class _ComputeDialogState extends State<ComputeDialog> {
                 TableRow(
                   children: [
                     Text(
-                      'Max ${widget.isBed ? 'BED' : 'EQD-2'}:',
+                      'Max ${widget.isBed! ? 'BED' : 'EQD-2'}:',
                       style: Theme.of(context).textTheme.headline2,
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      widget.maxDose.toStringAsFixed(2),
+                      widget.maxDose!.toStringAsFixed(2),
                       style: Theme.of(context).textTheme.headline2,
                       textAlign: TextAlign.center,
                     ),
@@ -709,12 +678,12 @@ class _ComputeDialogState extends State<ComputeDialog> {
                 TableRow(
                   children: [
                     Text(
-                      'Net ${widget.isBed ? 'BED' : 'EQD-2'}:',
+                      'Net ${widget.isBed! ? 'BED' : 'EQD-2'}:',
                       style: Theme.of(context).textTheme.headline2,
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      widget.netDose.toStringAsFixed(2),
+                      widget.netDose!.toStringAsFixed(2),
                       style: Theme.of(context).textTheme.headline2,
                       textAlign: TextAlign.center,
                     ),
@@ -739,7 +708,7 @@ class _ComputeDialogState extends State<ComputeDialog> {
               ],
             ),
             Divider(
-              color: Theme.of(context).textTheme.headline1.color,
+              color: Theme.of(context).textTheme.headline1!.color,
               thickness: ComputeDialog.sizeDivider,
             ),
             dialogScaffold(isReserve),
@@ -777,15 +746,15 @@ double fromEqd2GetN(double R, double D, double ab) {
   return math.pow(D, 2) / (ab * (R * (1 + 2 / ab) - D));
 }
 
-double getPartition(bool isBed, bool isDose, double R, double q, double ab) {
+double getPartition(bool isBed, bool isDose, double R, double q, double? ab) {
   if (isBed && isDose) {
-    return fromBedGetN(R, q, ab);
+    return fromBedGetN(R, q, ab!);
   } else if (isBed && !isDose) {
-    return fromBedGetD(R, q, ab);
+    return fromBedGetD(R, q, ab!);
   } else if (!isBed && isDose) {
-    return fromEqd2GetN(R, q, ab);
+    return fromEqd2GetN(R, q, ab!);
   } else {
-    return fromEqd2GetD(R, q, ab);
+    return fromEqd2GetD(R, q, ab!);
   }
 }
 

@@ -66,15 +66,15 @@ void drawFrame(Canvas canvas, Size size, double maxX, double nTicksY,
 //endregion frame
 
 //region list functions and points/curve
-List<double> getNormList(List<double> list, bool isZeroed) {
+List<double> getNormList(List<double>? list, bool isZeroed) {
   if (isZeroed) {
-    double minElement = list.reduce((value, element) => min(value, element));
+    double minElement = list!.reduce((value, element) => min(value, element));
     List<double> listZeroed = list.map((e) => e - minElement).toList();
     double maxElement =
         listZeroed.reduce((value, element) => max(value, element));
     return listZeroed.map((e) => e / maxElement).toList();
   } else {
-    double maxElement = list.reduce((value, element) => max(value, element));
+    double maxElement = list!.reduce((value, element) => max(value, element));
     return list.map((e) => e / maxElement).toList();
   }
 }
@@ -103,16 +103,16 @@ void drawPlotPoints(Canvas canvas, Size size, List<double> normListX,
 }
 
 void drawPlotCurve(Canvas canvas, Size size, int nPoints, Paint paintCurve,
-    Function fX, var normArgs) {
+    Function? fX, var normArgs) {
   List<double> normSeqX = [];
   List<double> seqFx;
   for (int i = 0; i <= nPoints; i++) {
     normSeqX.add(i / nPoints);
   }
   if (normArgs == null) {
-    seqFx = List<double>.from(normSeqX.map((e) => fX(e)).toList());
+    seqFx = List<double>.from(normSeqX.map((e) => fX!(e)).toList());
   } else {
-    seqFx = List<double>.from(normSeqX.map((e) => fX(normArgs, e)).toList());
+    seqFx = List<double>.from(normSeqX.map((e) => fX!(normArgs, e)).toList());
   }
   canvas.drawPoints(
       PointMode.lines, getListOffsets(size, normSeqX, seqFx), paintCurve);
@@ -128,7 +128,7 @@ void drawCrosshairs(
     double absX,
     double absYd,
     double toDraw,
-    List<String> listDisplayCoordinates) {
+    List<String>? listDisplayCoordinates) {
   bool check2 = absYd < 0 ? false : true;
   if (toDraw == 1&&check2) {
     List<Offset> listCrosshairPoints = [
@@ -141,7 +141,7 @@ void drawCrosshairs(
     canvas.drawPoints(PointMode.points, listCrosshairPoints, paintPoints);
     canvas.drawLine(
         listCrosshairPoints[1], listCrosshairPoints[2], paintCrosshairs);
-    if (listDisplayCoordinates[2] == 'true') {
+    if (listDisplayCoordinates![2] == 'true') {
       TextPainter textX = TextPainter(
         text: TextSpan(
             text: ' ${listDisplayCoordinates[0]} ',

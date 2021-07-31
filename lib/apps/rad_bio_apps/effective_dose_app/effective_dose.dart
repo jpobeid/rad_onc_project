@@ -17,7 +17,7 @@ class _EffectiveDoseState extends State<EffectiveDose> {
   static const double widthBorder = 1;
   static const List<int> listHorizontalFlex = [3, 2];
 
-  List<List<dynamic>> dataDose;
+  List<List<dynamic>>? dataDose;
 
   Future<void> loadCSV(pathCsv) async {
     String strData = await rootBundle.loadString(pathCsv);
@@ -30,16 +30,18 @@ class _EffectiveDoseState extends State<EffectiveDose> {
   Widget build(BuildContext context) {
     loadCSV('assets/effective_dose_data.csv');
     if (dataDose != null) {
-      return Scaffold(
-        appBar: RadAppBar(
-          strAppTitle: datas.mapAppNames[1][1],
+      return SafeArea(
+        child: Scaffold(
+          appBar: RadAppBar(
+            strAppTitle: datas.mapAppNames[1]![1],
+          ),
+          body: ListView.builder(
+              itemCount: dataDose!.length,
+              itemBuilder: (context, index) {
+                return makeRow(context, fractionHeightRow, fractionHeightRowFirst,
+                    widthBorder, listHorizontalFlex, dataDose!, index);
+              }),
         ),
-        body: ListView.builder(
-            itemCount: dataDose.length,
-            itemBuilder: (context, index) {
-              return makeRow(context, fractionHeightRow, fractionHeightRowFirst,
-                  widthBorder, listHorizontalFlex, dataDose, index);
-            }),
       );
     } else {
       return Scaffold();
@@ -67,8 +69,8 @@ Container makeRow(
       child: Text(
         dataDose[index][0].toString(),
         style: TextStyle(
-            fontSize: Theme.of(context).textTheme.headline2.fontSize,
-            fontWeight: Theme.of(context).textTheme.headline2.fontWeight,
+            fontSize: Theme.of(context).textTheme.headline2!.fontSize,
+            fontWeight: Theme.of(context).textTheme.headline2!.fontWeight,
             color: Theme.of(context).scaffoldBackgroundColor),
       ),
     );

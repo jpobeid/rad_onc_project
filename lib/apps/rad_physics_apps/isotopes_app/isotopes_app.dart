@@ -1,11 +1,11 @@
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/data/main_data.dart' as datas;
 
-List<List<dynamic>> dataIsotopes;
+List<List<dynamic>>? dataIsotopes;
 
 class IsotopesApp extends StatefulWidget {
   static const routeName = '/isotopes-app';
@@ -32,9 +32,9 @@ class _IsotopesAppState extends State<IsotopesApp> {
   static const int indexColumnKeys = 3;
 
   static const Map<int, IconData> mapTrailIcon = {
-    0: FlutterIcons.access_point_mco,
-    1: FlutterIcons.syringe_faw5s,
-    2: FlutterIcons.pill_mco,
+    0: FontAwesomeIcons.radiation,
+    1: FontAwesomeIcons.syringe,
+    2: FontAwesomeIcons.pills,
   };
 
   static const double fractionDialogHeight = 0.65;
@@ -58,167 +58,169 @@ class _IsotopesAppState extends State<IsotopesApp> {
   @override
   Widget build(BuildContext context) {
     if (dataIsotopes != null) {
-      return Scaffold(
-        appBar: RadAppBar(
-          strAppTitle: datas.mapAppNames[2][1],
-        ),
-        body: ListView.builder(
-          itemCount: dataIsotopes.length,
-          itemBuilder: (context, index) {
-            if (index > indexRowKeys) {
-              return Card(
-                color: Theme.of(context).backgroundColor,
-                child: ListTile(
-                  leading: Icon(
-                    FlutterIcons.atom_faw5s,
-                    color: Theme.of(context).textTheme.subtitle2.color,
-                  ),
-                  title: Text(
-                    dataIsotopes[index][0],
-                    style: Theme.of(context).textTheme.headline1,
-                  ),
-                  subtitle: Text(
-                    dataIsotopes[index][1],
-                    style: Theme.of(context).textTheme.subtitle2,
-                  ),
-                  trailing: Icon(
-                    mapTrailIcon[dataIsotopes[index]
-                        [dataIsotopes[0].indexOf('type')]],
-                    color: Theme.of(context).textTheme.subtitle2.color,
-                  ),
-                  onTap: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Dialog(
-                            child: Container(
-                                height: MediaQuery.of(context).size.height *
-                                    fractionDialogHeight,
-                                decoration: BoxDecoration(
-                                  color:
-                                      Theme.of(context).scaffoldBackgroundColor,
-                                  border: Border.all(
-                                      color: Theme.of(context).primaryColor,
-                                      width: thickBorderMain),
-                                ),
-                                child: ListView(
-                                  // mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${dataIsotopes[index][0]}',
-                                      style:
-                                          Theme.of(context).textTheme.headline2,
-                                    ),
-                                    Text(
-                                      '(${dataIsotopes[index][1]})',
-                                      style:
-                                          Theme.of(context).textTheme.headline1,
-                                    ),
-                                    Divider(
-                                      color: Theme.of(context).primaryColor,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              fractionMainDivider,
-                                      thickness: thickBorderMain,
-                                    ),
-                                    Table(
-                                      border: TableBorder.symmetric(
-                                          inside: BorderSide(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              width: thickBorderInner)),
-                                      defaultVerticalAlignment:
-                                          TableCellVerticalAlignment.middle,
-                                      columnWidths: {
-                                        0: FlexColumnWidth(2),
-                                        1: FlexColumnWidth(1)
-                                      },
-                                      children: makeRows(
-                                          context,
-                                          index,
-                                          indexRowKeys,
-                                          indexColumnKeys,
-                                          dataIsotopes),
-                                    ),
-                                    Divider(
-                                      color: Theme.of(context).primaryColor,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              fractionMainDivider,
-                                      thickness: thickBorderMain,
-                                    ),
-                                    FlatButton(
-                                      child: Container(
-                                          padding:
-                                              EdgeInsets.all(thickBorderMain),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            borderRadius: BorderRadius.circular(
-                                                thickBorderMain),
-                                            border: Border.all(
+      return SafeArea(
+        child: Scaffold(
+          appBar: RadAppBar(
+            strAppTitle: datas.mapAppNames[2]![1],
+          ),
+          body: ListView.builder(
+            itemCount: dataIsotopes!.length,
+            itemBuilder: (context, index) {
+              if (index > indexRowKeys) {
+                return Card(
+                  color: Theme.of(context).backgroundColor,
+                  child: ListTile(
+                    leading: Icon(
+                      FontAwesomeIcons.atom,
+                      color: Theme.of(context).textTheme.subtitle2!.color,
+                    ),
+                    title: Text(
+                      dataIsotopes![index][0],
+                      style: Theme.of(context).textTheme.headline1,
+                    ),
+                    subtitle: Text(
+                      dataIsotopes![index][1],
+                      style: Theme.of(context).textTheme.subtitle2,
+                    ),
+                    trailing: Icon(
+                      mapTrailIcon[dataIsotopes![index]
+                          [dataIsotopes![0].indexOf('type')]],
+                      color: Theme.of(context).textTheme.subtitle2!.color,
+                    ),
+                    onTap: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Dialog(
+                              child: Container(
+                                  height: MediaQuery.of(context).size.height *
+                                      fractionDialogHeight,
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).scaffoldBackgroundColor,
+                                    border: Border.all(
+                                        color: Theme.of(context).primaryColor,
+                                        width: thickBorderMain),
+                                  ),
+                                  child: ListView(
+                                    // mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${dataIsotopes![index][0]}',
+                                        style:
+                                            Theme.of(context).textTheme.headline2,
+                                      ),
+                                      Text(
+                                        '(${dataIsotopes![index][1]})',
+                                        style:
+                                            Theme.of(context).textTheme.headline1,
+                                      ),
+                                      Divider(
+                                        color: Theme.of(context).primaryColor,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                fractionMainDivider,
+                                        thickness: thickBorderMain,
+                                      ),
+                                      Table(
+                                        border: TableBorder.symmetric(
+                                            inside: BorderSide(
                                                 color: Theme.of(context)
-                                                    .textTheme
-                                                    .headline1
-                                                    .color,
-                                                width: thickBorderMain),
-                                          ),
-                                          child: Text(
-                                            'Compute Activity',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline2,
-                                          )),
-                                      onPressed: () {
-                                        bool isBioPresent = (dataIsotopes[index][
-                                                    listColumnNames.indexOf(
-                                                        'bioHalfLife')] !=
-                                                null&&dataIsotopes[index][
-                                        listColumnNames.indexOf(
-                                            'bioHalfLife')] !='')
-                                            ? true
-                                            : false;
-                                        String charTimeUnit =
-                                            dataIsotopes[index][listColumnNames
-                                                    .indexOf('halfLife')]
-                                                .split(' ')[1];
-                                        String strPHL = dataIsotopes[index][
-                                                listColumnNames
-                                                    .indexOf('halfLife')]
-                                            .split(' ')[0];
-                                        String strTimeUnit =
-                                            getTimeUnit(charTimeUnit);
-                                        String strBHL = isBioPresent
-                                            ? dataIsotopes[index][
-                                                    listColumnNames
-                                                        .indexOf('bioHalfLife')]
-                                                .split(' ')[0]
-                                            : '';
-                                        String strSymbol = dataIsotopes[index][listColumnNames
-                                            .indexOf('symbol')];
-                                        Navigator.pushNamed(
-                                            context, '/time-decay-dose-app',
-                                            arguments: [
-                                              true,
-                                              isBioPresent,
-                                              strTimeUnit,
-                                              strPHL,
-                                              strBHL,
-                                              strSymbol,
-                                            ]);
-                                      },
-                                    ),
-                                  ],
-                                )),
-                          );
-                        });
-                  },
-                ),
-              );
-            } else {
-              return Container();
-            }
-          },
+                                                    .primaryColor,
+                                                width: thickBorderInner)),
+                                        defaultVerticalAlignment:
+                                            TableCellVerticalAlignment.middle,
+                                        columnWidths: {
+                                          0: FlexColumnWidth(2),
+                                          1: FlexColumnWidth(1)
+                                        },
+                                        children: makeRows(
+                                            context,
+                                            index,
+                                            indexRowKeys,
+                                            indexColumnKeys,
+                                            dataIsotopes!),
+                                      ),
+                                      Divider(
+                                        color: Theme.of(context).primaryColor,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                fractionMainDivider,
+                                        thickness: thickBorderMain,
+                                      ),
+                                      TextButton(
+                                        child: Container(
+                                            padding:
+                                                EdgeInsets.all(thickBorderMain),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Theme.of(context).primaryColor,
+                                              borderRadius: BorderRadius.circular(
+                                                  thickBorderMain),
+                                              border: Border.all(
+                                                  color: Theme.of(context)
+                                                      .textTheme
+                                                      .headline1!
+                                                      .color!,
+                                                  width: thickBorderMain),
+                                            ),
+                                            child: Text(
+                                              'Compute Activity',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline2,
+                                            )),
+                                        onPressed: () {
+                                          bool isBioPresent = (dataIsotopes![index][
+                                                      listColumnNames.indexOf(
+                                                          'bioHalfLife')] !=
+                                                  null&&dataIsotopes![index][
+                                          listColumnNames.indexOf(
+                                              'bioHalfLife')] !='')
+                                              ? true
+                                              : false;
+                                          String? charTimeUnit =
+                                              dataIsotopes![index][listColumnNames
+                                                      .indexOf('halfLife')]
+                                                  .split(' ')[1];
+                                          String? strPHL = dataIsotopes![index][
+                                                  listColumnNames
+                                                      .indexOf('halfLife')]
+                                              .split(' ')[0];
+                                          String strTimeUnit =
+                                              getTimeUnit(charTimeUnit);
+                                          String? strBHL = isBioPresent
+                                              ? dataIsotopes![index][
+                                                      listColumnNames
+                                                          .indexOf('bioHalfLife')]
+                                                  .split(' ')[0]
+                                              : '';
+                                          String? strSymbol = dataIsotopes![index][listColumnNames
+                                              .indexOf('symbol')];
+                                          Navigator.pushNamed(
+                                              context, '/time-decay-dose-app',
+                                              arguments: [
+                                                true,
+                                                isBioPresent,
+                                                strTimeUnit,
+                                                strPHL,
+                                                strBHL,
+                                                strSymbol,
+                                              ]);
+                                        },
+                                      ),
+                                    ],
+                                  )),
+                            );
+                          });
+                    },
+                  ),
+                );
+              } else {
+                return Container();
+              }
+            },
+          ),
         ),
       );
     } else {
@@ -257,7 +259,7 @@ List<TableRow> makeRows(BuildContext context, int index, int intRowKeys,
   return listTableRows;
 }
 
-String getTimeUnit(String char) {
+String getTimeUnit(String? char) {
   switch (char) {
     case ('m'):
       return '[Mins]';

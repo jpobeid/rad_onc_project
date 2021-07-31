@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class RadAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String strAppTitle;
+  final String? strAppTitle;
   final bool isActionable;
 
-  const RadAppBar({Key key, this.strAppTitle, this.isActionable = false})
+  const RadAppBar({Key? key, this.strAppTitle, this.isActionable = false})
       : super(key: key);
 
   @override
@@ -12,7 +12,7 @@ class RadAppBar extends StatelessWidget implements PreferredSizeWidget {
     if (isActionable) {
       return AppBar(
         title: Text(
-          strAppTitle,
+          strAppTitle!,
           style: Theme.of(context).textTheme.headline1,
         ),
         actions: [
@@ -26,7 +26,7 @@ class RadAppBar extends StatelessWidget implements PreferredSizeWidget {
     } else {
       return AppBar(
         title: Text(
-          strAppTitle,
+          strAppTitle!,
           style: Theme.of(context).textTheme.headline1,
         ),
       );

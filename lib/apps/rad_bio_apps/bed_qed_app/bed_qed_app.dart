@@ -1,24 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'dart:math';
 
 import 'package:rad_onc_project/functions/text_field_validation.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/data/main_data.dart' as datas;
-
-class Controller extends GetxController {
-  var nSlider = (3.0).obs;
-  var strDose = ''.obs;
-  var strFractions = ''.obs;
-  var strX = ''.obs;
-
-  void resetValues() {
-    nSlider.value = (3.0);
-    strDose.value = '';
-    strFractions.value = '';
-    strX.value = '';
-  }
-}
+import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
 
 class BedQedCalc extends StatefulWidget {
   static const routeName = '/bed-qed-app';
@@ -29,20 +15,17 @@ class BedQedCalc extends StatefulWidget {
 }
 
 class _BedQedCalcState extends State<BedQedCalc> {
-  final ctrl = Get.put(Controller());
-
-  @override
-  void initState() {
-    ctrl.resetValues();
-    super.initState();
-  }
+  TextEditingController _controllerDose = TextEditingController(text: '');
+  TextEditingController _controllerFractions = TextEditingController(text: '');
+  TextEditingController _controllerRate = TextEditingController(text: '');
+  double _nAbRatio = 3.0;
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Scaffold(
+    return SafeArea(
+      child: Scaffold(
         appBar: RadAppBar(
-          strAppTitle: datas.mapAppNames[1][0],
+          strAppTitle: datas.mapAppNames[1]![0],
         ),
         body: Column(
           children: [
@@ -59,55 +42,24 @@ class _BedQedCalcState extends State<BedQedCalc> {
                     'Total dose (Gy):',
                     style: Theme.of(context).textTheme.headline2,
                   ),
-                  TextField(
-                    decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(0.0), isDense: true),
-                    keyboardType: TextInputType.number,
-                    maxLength: 5,
-                    style: Theme.of(context).textTheme.headline2,
-                    textAlign: TextAlign.center,
-                    onChanged: (text) {
-                      ctrl.strDose.value = text;
-                    },
-                  ),
+                  fields.textFieldDose(context, _controllerDose,
+                      funcOnChanged: (text) => setState),
                 ]),
                 TableRow(children: [
                   Text(
                     'Total fractions:',
                     style: Theme.of(context).textTheme.headline2,
                   ),
-                  TextField(
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(0),
-                      isDense: true,
-                    ),
-                    keyboardType: TextInputType.number,
-                    maxLength: 2,
-                    style: Theme.of(context).textTheme.headline2,
-                    textAlign: TextAlign.center,
-                    onChanged: (text) {
-                      ctrl.strFractions.value = text;
-                    },
-                  ),
+                  fields.textFieldFraction(context, _controllerFractions,
+                      funcOnChanged: (text) => setState),
                 ]),
                 TableRow(children: [
                   Text(
                     'X (Gy/Fx):',
                     style: Theme.of(context).textTheme.headline2,
                   ),
-                  TextField(
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(0),
-                      isDense: true,
-                    ),
-                    keyboardType: TextInputType.number,
-                    maxLength: 5,
-                    style: Theme.of(context).textTheme.headline2,
-                    textAlign: TextAlign.center,
-                    onChanged: (text) {
-                      ctrl.strX.value = text;
-                    },
-                  ),
+                  fields.textFieldDose(context, _controllerRate,
+                      funcOnChanged: (text) => setState),
                 ]),
                 TableRow(children: [
                   TableCell(
@@ -116,14 +68,16 @@ class _BedQedCalcState extends State<BedQedCalc> {
                       min: 1,
                       max: 10,
                       divisions: 18,
-                      value: ctrl.nSlider.value,
+                      value: _nAbRatio,
                       onChanged: (n) {
-                        ctrl.nSlider.value = n;
+                        setState(() {
+                          _nAbRatio = n;
+                        });
                       },
                     ),
                   ),
                   Text(
-                    '\u03b1/\u03b2\n${ctrl.nSlider.value}',
+                    '\u03b1/\u03b2\n$_nAbRatio',
                     style: Theme.of(context).textTheme.headline2,
                     textAlign: TextAlign.center,
                   ),
@@ -146,23 +100,23 @@ class _BedQedCalcState extends State<BedQedCalc> {
                     style: Theme.of(context).textTheme.headline2,
                   ),
                   Text(
-                    getBED(ctrl.strDose.value, ctrl.strFractions.value,
-                        ctrl.strX.value, ctrl.nSlider.value),
+                    getBED(_controllerDose.text, _controllerFractions.text,
+                        _controllerRate.text, _nAbRatio),
                     style: Theme.of(context).textTheme.headline2,
                     textAlign: TextAlign.center,
                   ),
                 ]),
                 TableRow(children: [
                   Text(
-                    checkStrings(ctrl.strDose.value, ctrl.strFractions.value,
-                            ctrl.strX.value)[1]
-                        ? 'EQD-${ctrl.strX.value} (Gy):'
+                    checkStrings(_controllerDose.text, _controllerFractions.text,
+                            _controllerRate.text)[1]
+                        ? 'EQD-${_controllerRate.text} (Gy):'
                         : 'EQD-X (Gy):',
                     style: Theme.of(context).textTheme.headline2,
                   ),
                   Text(
-                    getEQDx(ctrl.strDose.value, ctrl.strFractions.value,
-                        ctrl.strX.value, ctrl.nSlider.value),
+                    getEQDx(_controllerDose.text, _controllerFractions.text,
+                        _controllerRate.text, _nAbRatio),
                     style: Theme.of(context).textTheme.headline2,
                     textAlign: TextAlign.center,
                   ),

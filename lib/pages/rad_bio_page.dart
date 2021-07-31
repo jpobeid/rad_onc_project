@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rad_onc_project/widgets/list_card.dart';
 import 'package:rad_onc_project/widgets/nav_bar.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
@@ -32,23 +32,23 @@ class _RadBioPageState extends State<RadBioPage> {
         body: Column(children: [
           ListCard(
             pathImage: 'assets/alphabeta.jpg',
-            strTitle: datas.mapAppNames[1][0],
+            strTitle: datas.mapAppNames[1]![0],
             strSubtitle: 'Compute dose conversions',
-            trailingIcon: FlutterIcons.calculator_mco,
+            trailingIcon: FontAwesomeIcons.calculator,
             strRouteName: '/bed-qed-app',
           ),
           ListCard(
             pathImage: 'assets/ct.jpg',
-            strTitle: datas.mapAppNames[1][1],
+            strTitle: datas.mapAppNames[1]![1],
             strSubtitle: 'Imaging effective dose list',
-            trailingIcon: FlutterIcons.list_ul_faw,
+            trailingIcon: FontAwesomeIcons.list,
             strRouteName: '/effective-dose-app',
           ),
           ListCard(
             pathImage: 'assets/summation.jpg',
-            strTitle: datas.mapAppNames[1][2],
+            strTitle: datas.mapAppNames[1]![2],
             strSubtitle: 'Cumulative dose tolerance',
-            trailingIcon: FlutterIcons.calculator_mco,
+            trailingIcon: FontAwesomeIcons.calculator,
             strRouteName: '/tolerance-app',
           ),
         ]),

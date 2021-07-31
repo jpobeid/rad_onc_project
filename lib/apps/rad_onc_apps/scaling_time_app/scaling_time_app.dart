@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rad_onc_project/functions/text_field_validation.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rad_onc_project/data/main_data.dart' as datas;
 
 class ScalingTime extends StatefulWidget {
@@ -45,7 +45,7 @@ class _ScalingTimeState extends State<ScalingTime> {
         children: [
           Expanded(
             flex: listHorizontalFlex[0],
-            child: FlatButton(
+            child: TextButton(
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Text(
@@ -55,7 +55,7 @@ class _ScalingTimeState extends State<ScalingTime> {
                 ),
               ),
               onPressed: () async {
-                DateTime value = await showDatePicker(
+                DateTime? value = await showDatePicker(
                     context: context,
                     initialDate: listDateTime[index],
                     firstDate: DateTime(year0),
@@ -75,24 +75,24 @@ class _ScalingTimeState extends State<ScalingTime> {
               maxLength: 5,
               controller: listCtrl[index],
               style: TextStyle(
-                  fontSize: (Theme.of(context).textTheme.headline2.fontSize +
-                          Theme.of(context).textTheme.headline1.fontSize) /
+                  fontSize: (Theme.of(context).textTheme.headline2!.fontSize! +
+                          Theme.of(context).textTheme.headline1!.fontSize!) /
                       2,
-                  color: Theme.of(context).textTheme.headline1.color,
-                  fontWeight: Theme.of(context).textTheme.headline1.fontWeight),
+                  color: Theme.of(context).textTheme.headline1!.color,
+                  fontWeight: Theme.of(context).textTheme.headline1!.fontWeight),
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(0), isDense: true),
             ),
           ),
           Expanded(
-            child: FlatButton(
+            child: TextButton(
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Icon(
-                  isLast ? FlutterIcons.trash_alt_faw5 : Icons.remove,
-                  color: Theme.of(context).textTheme.headline2.color,
-                  size: Theme.of(context).textTheme.headline2.fontSize,
+                  isLast ? FontAwesomeIcons.timesCircle : Icons.remove,
+                  color: Theme.of(context).textTheme.headline2!.color,
+                  size: Theme.of(context).textTheme.headline2!.fontSize,
                 ),
               ),
               onPressed: () {
@@ -126,7 +126,7 @@ class _ScalingTimeState extends State<ScalingTime> {
         child: Scaffold(
           resizeToAvoidBottomInset: true,
           appBar: RadAppBar(
-            strAppTitle: datas.mapAppNames[0][1],
+            strAppTitle: datas.mapAppNames[0]![1],
           ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,10 +152,10 @@ class _ScalingTimeState extends State<ScalingTime> {
                           style: TextStyle(
                               color: Theme.of(context).scaffoldBackgroundColor,
                               fontSize:
-                              Theme.of(context).textTheme.headline2.fontSize,
+                              Theme.of(context).textTheme.headline2!.fontSize,
                               fontWeight: Theme.of(context)
                                   .textTheme
-                                  .headline2
+                                  .headline2!
                                   .fontWeight),
                           textAlign: TextAlign.center,
                         ),
@@ -167,10 +167,10 @@ class _ScalingTimeState extends State<ScalingTime> {
                           style: TextStyle(
                               color: Theme.of(context).scaffoldBackgroundColor,
                               fontSize:
-                              Theme.of(context).textTheme.headline2.fontSize,
+                              Theme.of(context).textTheme.headline2!.fontSize,
                               fontWeight: Theme.of(context)
                                   .textTheme
-                                  .headline2
+                                  .headline2!
                                   .fontWeight),
                           textAlign: TextAlign.center,
                         ),
@@ -179,10 +179,10 @@ class _ScalingTimeState extends State<ScalingTime> {
                         child: Align(
                             alignment: Alignment.center,
                             child: Icon(
-                              FlutterIcons.trash_alt_faw5,
+                              FontAwesomeIcons.timesCircle,
                               color: Theme.of(context).scaffoldBackgroundColor,
                               size:
-                              Theme.of(context).textTheme.headline2.fontSize,
+                              Theme.of(context).textTheme.headline2!.fontSize,
                             )),
                       ),
                     ],
@@ -213,17 +213,17 @@ class _ScalingTimeState extends State<ScalingTime> {
                 child: Container(
                   width: MediaQuery.of(context).size.width * fractionWidthCompute,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).textTheme.headline2.color,
+                    color: Theme.of(context).textTheme.headline2!.color,
                     borderRadius: BorderRadius.circular(radiusBorderAlert),
                   ),
-                  child: FlatButton(
+                  child: TextButton(
                     child: Text(
                       'Compute',
                       style: TextStyle(
                           fontSize:
-                          Theme.of(context).textTheme.headline2.fontSize,
+                          Theme.of(context).textTheme.headline2!.fontSize,
                           fontWeight:
-                          Theme.of(context).textTheme.headline2.fontWeight,
+                          Theme.of(context).textTheme.headline2!.fontWeight,
                           color: Theme.of(context).scaffoldBackgroundColor),
                     ),
                     onPressed: () {
@@ -255,7 +255,7 @@ class _ScalingTimeState extends State<ScalingTime> {
             backgroundColor: Colors.blue,
             child: Icon(
               Icons.add,
-              size: Theme.of(context).textTheme.headline2.fontSize,
+              size: Theme.of(context).textTheme.headline2!.fontSize,
             ),
             onPressed: () {
               setState(() {

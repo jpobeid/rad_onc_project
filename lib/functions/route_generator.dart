@@ -7,6 +7,7 @@ import 'package:rad_onc_project/apps/rad_physics_apps/mu_calc_app/mu_calc_app.da
 import 'package:rad_onc_project/pages/settings_page.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 
+import '../apps/settings_apps/pdd_settings.dart';
 import '../apps/rad_bio_apps/bed_qed_app/bed_qed_app.dart';
 import '../apps/rad_bio_apps/effective_dose_app/effective_dose.dart';
 import '../apps/rad_onc_apps/scaling_time_app/scaling_time_app.dart';
@@ -18,12 +19,15 @@ import '../pages/rad_onc_page.dart';
 import '../pages/rad_physics_page.dart';
 
 class RouteGenerator {
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    final List<dynamic> args = settings.arguments;
+  static Route<dynamic>? generateRoute(RouteSettings settings) {
+    final List<dynamic>? args = settings.arguments as List<dynamic>?;
     switch (settings.name) {
       //region Settings
       case (SettingsPage.routeName):
         return MaterialPageRoute(builder: (context) => SettingsPage());
+        break;
+      case (PddSettings.routeName):
+        return MaterialPageRoute(builder: (context) => PddSettings());
         break;
       //endregion Settings
 

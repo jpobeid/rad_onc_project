@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rad_onc_project/widgets/list_card.dart';
 import 'package:rad_onc_project/widgets/nav_bar.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
@@ -41,23 +41,23 @@ class _RadOncPageState extends State<RadOncPage> {
         body: Column(children: [
           ListCard(
             pathImage: 'assets/volume.jpg',
-            strTitle: datas.mapAppNames[0][0],
+            strTitle: datas.mapAppNames[0]![0],
             strSubtitle: 'Estimate volume from size',
-            trailingIcon: FlutterIcons.calculator_mco,
+            trailingIcon: FontAwesomeIcons.calculator,
             strRouteName: '/tumor-volume-app',
           ),
           ListCard(
             pathImage: 'assets/scaling.jpg',
-            strTitle: datas.mapAppNames[0][1],
+            strTitle: datas.mapAppNames[0]![1],
             strSubtitle: 'Compute/plot biomarker trend',
-            trailingIcon: FlutterIcons.chart_line_mco,
+            trailingIcon: FontAwesomeIcons.chartLine,
             strRouteName: '/scaling-time-app',
           ),
           ListCard(
             pathImage: 'assets/scaling.jpg',
-            strTitle: datas.mapAppNames[0][2],
+            strTitle: datas.mapAppNames[0]![2],
             strSubtitle: 'Compute probabilities',
-            trailingIcon: FlutterIcons.calculator_mco,
+            trailingIcon: FontAwesomeIcons.calculator,
             strRouteName: '/probabilities-app',
           ),
         ]),
