@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rad_onc_project/widgets/nav_bar.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
@@ -22,45 +23,59 @@ class _RadPhysicsPageState extends State<RadPhysicsPage> {
   }
 
   @override
+  void initState() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: RadAppBar(
-          strAppTitle: 'Radiation Oncology App',
-          isActionable: true,
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      return SafeArea(
+        child: Scaffold(
+          appBar: RadAppBar(
+            strAppTitle: 'Radiation Oncology App',
+            isActionable: true,
+          ),
+          body: Column(
+            children: [
+              ListCard(
+                pathImage: 'assets/pdd.jpg',
+                strTitle: datas.mapAppNames[2]![0],
+                strSubtitle: 'Dose-depth relationships',
+                trailingIcon: FontAwesomeIcons.chartLine,
+                strRouteName: '/pdd-app',
+              ),
+              ListCard(
+                pathImage: 'assets/isotope.jpg',
+                strTitle: datas.mapAppNames[2]![1],
+                strSubtitle: 'Info on important isotopes',
+                trailingIcon: FontAwesomeIcons.list,
+                strRouteName: '/isotopes-app',
+              ),
+              ListCard(
+                pathImage: 'assets/time.jpg',
+                strTitle: datas.mapAppNames[2]![2],
+                strSubtitle: 'Activity rates/sums over time',
+                trailingIcon: FontAwesomeIcons.calculator,
+                strRouteName: '/time-decay-dose-app',
+              ),
+              ListCard(
+                pathImage: 'assets/time.jpg',
+                strTitle: datas.mapAppNames[2]![3],
+                strSubtitle: 'Compute monitor units',
+                trailingIcon: FontAwesomeIcons.calculator,
+                strRouteName: '/mu-calc-app',
+              ),
+            ],
+          ),
+          bottomNavigationBar: NavBar(indexNav: _indexPage, callback: setIndex),
         ),
-        body: Column(children: [
-          ListCard(
-            pathImage: 'assets/pdd.jpg',
-            strTitle: datas.mapAppNames[2]![0],
-            strSubtitle: 'Dose-depth relationships',
-            trailingIcon: FontAwesomeIcons.chartLine,
-            strRouteName: '/pdd-app',
-          ),
-          ListCard(
-            pathImage: 'assets/isotope.jpg',
-            strTitle: datas.mapAppNames[2]![1],
-            strSubtitle: 'Info on important isotopes',
-            trailingIcon: FontAwesomeIcons.list,
-            strRouteName: '/isotopes-app',
-          ),
-          ListCard(
-            pathImage: 'assets/time.jpg',
-            strTitle: datas.mapAppNames[2]![2],
-            strSubtitle: 'Activity rates/sums over time',
-            trailingIcon: FontAwesomeIcons.calculator,
-            strRouteName: '/time-decay-dose-app',
-          ),
-          ListCard(
-            pathImage: 'assets/time.jpg',
-            strTitle: datas.mapAppNames[2]![3],
-            strSubtitle: 'Compute monitor units',
-            trailingIcon: FontAwesomeIcons.calculator,
-            strRouteName: '/mu-calc-app',
-          ),
-        ]),
-        bottomNavigationBar: NavBar(indexNav: _indexPage, callback: setIndex),
-      ),
-    );
+      );
+    } else {
+      return Container();
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
+import 'package:collection/collection.dart' as cols;
 
 class AboutApp extends StatelessWidget {
   static const String routeName = '/settings-about-app';
