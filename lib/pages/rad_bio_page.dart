@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rad_onc_project/widgets/list_card.dart';
 import 'package:rad_onc_project/widgets/nav_bar.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
-import 'package:rad_onc_project/data/main_data.dart' as datas;
+import 'package:rad_onc_project/data/global_data.dart' as datas;
 
 class RadBioPage extends StatefulWidget {
   static const routeName = '/rad-bio-page';
@@ -45,7 +45,7 @@ class _RadBioPageState extends State<RadBioPage> {
             strRouteName: '/effective-dose-app',
           ),
           ListCard(
-            pathImage: 'assets/summation.jpg',
+            pathImage: 'assets/sigma.jpg',
             strTitle: datas.mapAppNames[1]![2],
             strSubtitle: 'Cumulative dose tolerance',
             trailingIcon: FontAwesomeIcons.calculator,

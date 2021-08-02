@@ -26,6 +26,8 @@ TextField textFieldDose(BuildContext context, TextEditingController controller,
     textAlign: TextAlign.center,
     decoration: InputDecoration(
       contentPadding: EdgeInsets.all(0),
+      isCollapsed: true,
+      isDense: true,
     ),
     onChanged: funcOnChanged as void Function(String)?,
   );
@@ -42,6 +44,8 @@ TextField textFieldFraction(
     textAlign: TextAlign.center,
     decoration: InputDecoration(
       contentPadding: EdgeInsets.all(0),
+      isCollapsed: true,
+      isDense: true,
     ),
     onChanged: funcOnChanged as void Function(String)?,
   );

@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:rad_onc_project/functions/text_field_validation.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
-import 'package:rad_onc_project/data/main_data.dart' as datas;
+import 'package:rad_onc_project/data/global_data.dart' as datas;
 import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
 
 class BedQedCalc extends StatefulWidget {

@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:rad_onc_project/functions/text_field_validation.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:rad_onc_project/data/main_data.dart' as datas;
+import 'package:rad_onc_project/data/global_data.dart' as datas;
 
 class ScalingTime extends StatefulWidget {
   static const routeName = '/scaling-time-app';

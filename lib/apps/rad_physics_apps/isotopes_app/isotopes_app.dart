@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
-import 'package:rad_onc_project/data/main_data.dart' as datas;
+import 'package:rad_onc_project/data/global_data.dart' as datas;
 
 List<List<dynamic>>? dataIsotopes;
 

@@ -3,7 +3,7 @@ import 'package:rad_onc_project/functions/text_field_validation.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'dart:math' as math;
 import 'package:rad_onc_project/widgets/rad_toggle_button.dart';
-import 'package:rad_onc_project/data/main_data.dart' as datas;
+import 'package:rad_onc_project/data/global_data.dart' as datas;
 
 class TumorVolume extends StatefulWidget {
   static const String routeName = '/tumor-volume-app';

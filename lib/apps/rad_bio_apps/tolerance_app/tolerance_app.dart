@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rad_onc_project/functions/text_field_validation.dart' as check;
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/widgets/rad_toggle_button.dart';
-import 'package:rad_onc_project/data/main_data.dart' as datas;
+import 'package:rad_onc_project/data/global_data.dart' as datas;
 import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
 
 class ToleranceApp extends StatefulWidget {

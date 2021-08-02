@@ -3,7 +3,7 @@ import 'package:rad_onc_project/functions/text_field_validation.dart';
 import 'package:rad_onc_project/widgets/rad_toggle_button.dart';
 import 'dart:math' as math;
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
-import 'package:rad_onc_project/data/main_data.dart' as datas;
+import 'package:rad_onc_project/data/global_data.dart' as datas;
 
 class TimeDecayDoseApp extends StatefulWidget {
   static const routeName = '/time-decay-dose-app';
@@ -74,13 +74,13 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
     );
   }
 
-  void functionTogglePressed(){
+  void functionTogglePressed() {
     setState(() {
       _isSelected = _isSelected.map((e) => !e).toList();
       resetIsCompute();
     });
   }
-  
+
   @override
   void initState() {
     _isBioHalfLife = widget.isBioPresent;
@@ -106,8 +106,13 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
     if (_isCompute) {
       strAns = checkStrings(_isBioHalfLife, ctrlA0.text, ctrlPHL.text,
               ctrlBHL.text, ctrlDT.text)
-          ? computeAns(_isSelected[0], _isBioHalfLife!, ctrlA0.text,
-                  ctrlPHL.text, _isBioHalfLife! ? ctrlBHL.text : '', ctrlDT.text)
+          ? computeAns(
+                  _isSelected[0],
+                  _isBioHalfLife!,
+                  ctrlA0.text,
+                  ctrlPHL.text,
+                  _isBioHalfLife! ? ctrlBHL.text : '',
+                  ctrlDT.text)
               .toStringAsFixed(2)
           : 'N/A';
     }
@@ -125,7 +130,7 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
             ),
             Expanded(
               flex: listVerticalFlex[1],
-              child:           RadToggleButton(
+              child: RadToggleButton(
                 strOption1: 'Differential',
                 strOption2: 'Cumulative',
                 fractionToggleWidth: fractionWidthButtons,
@@ -190,7 +195,8 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
                       ),
                     ),
                     _isBioHalfLife!
-                        ? makeTextField(context, 5, ctrlBHL, !widget.fromIsotopes)
+                        ? makeTextField(
+                            context, 5, ctrlBHL, !widget.fromIsotopes)
                         : Container(),
                   ]),
                   TableRow(children: [
@@ -238,7 +244,8 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
                   child: Text(
                     _isCompute ? 'Reset' : 'Compute',
                     style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.headline1!.fontSize,
+                        fontSize:
+                            Theme.of(context).textTheme.headline1!.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).scaffoldBackgroundColor),
                   ),
@@ -274,8 +281,9 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
                             children: [
                               TextSpan(text: 'Final '),
                               TextSpan(
-                                text:
-                                    _isSelected[0] ? 'Activity/Dose\n' : 'TOTAL',
+                                text: _isSelected[0]
+                                    ? 'Activity/Dose\n'
+                                    : 'TOTAL',
                                 style: TextStyle(
                                     fontSize: Theme.of(context)
                                         .textTheme
@@ -333,7 +341,8 @@ bool checkStrings(
   bool validStrPHL = textFieldDoubleValidation(strPHL, false, false, false,
       true, math.pow(10, maxDigits) as int, 0, maxDigits, maxDigits);
   bool validStrBHL = textFieldDoubleValidation(strBHL, false, false, false,
-      true, math.pow(10, maxDigits) as int, 0, maxDigits, maxDigits) || strBHL=='\u221e';
+          true, math.pow(10, maxDigits) as int, 0, maxDigits, maxDigits) ||
+      strBHL == '\u221e';
   bool validStrDT = textFieldDoubleValidation(strDT, false, false, true, true,
       math.pow(10, maxDigits) as int, 0, maxDigits, maxDigits);
   return (validStrA0 && validStrPHL && (!isBio! || validStrBHL) && validStrDT);
@@ -345,7 +354,7 @@ double computeAns(bool isDiff, bool isBio, String strA0, String strPHL,
   double pHL = double.parse(strPHL);
   double dt = double.parse(strDT);
   double eHL;
-  if (isBio&&strBHL!='\u221e') {
+  if (isBio && strBHL != '\u221e') {
     double bHL = double.parse(strBHL);
     eHL = 1 / ((1 / pHL) + (1 / bHL));
   } else {

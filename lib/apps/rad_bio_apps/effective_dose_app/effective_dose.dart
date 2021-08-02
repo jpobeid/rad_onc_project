@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:csv/csv.dart' as csv;
 import 'package:flutter/services.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
-import 'package:rad_onc_project/data/main_data.dart' as datas;
+import 'package:rad_onc_project/data/global_data.dart' as datas;
 
 class EffectiveDose extends StatefulWidget {
   static const routeName = '/effective-dose-app';

@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
-import 'package:collection/collection.dart' as cols;
+import 'package:rad_onc_project/data/global_data.dart' as globals;
 
 class AboutApp extends StatelessWidget {
   static const String routeName = '/settings-about-app';
 
   const AboutApp({Key? key}) : super(key: key);
-
-  static const String strAuthor = 'Jean-Pierre Obeid';
-  static const String strInstitution = 'Stanford University';
-  static const String strDate = '2021';
-  static const String strVersion = '1.0.0';
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +20,17 @@ class AboutApp extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Designed & written by: \n ${AboutApp.strAuthor}',
+                'Designed & written by: \n ${globals.appAuthor}',
                 style: Theme.of(context).textTheme.headline2,
                 textAlign: TextAlign.center,
               ),
               Text(
-                '\n Written at: \n ${AboutApp.strInstitution}',
+                '\n Written at: \n ${globals.appInstitution}',
                 style: Theme.of(context).textTheme.headline2,
                 textAlign: TextAlign.center,
               ),
               Text(
-                '\n Release date: ${AboutApp.strDate} \n Version: ${AboutApp.strVersion}',
+                '\n Release date: ${globals.appYear} \n Version: ${globals.appVersion}',
                 style: Theme.of(context).textTheme.headline1,
                 textAlign: TextAlign.center,
               ),

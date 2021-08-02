@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 class RadToggleButton extends StatefulWidget {
   final String? strOption1;
   final String? strOption2;
-  final double? fractionToggleWidth;
-  final double? sizeBorderRadius;
   final List<bool>? listIsSelected;
   final Function? functionOnPressed;
+  final double? fractionToggleWidth;
+  final double? sizeBorderRadius;
 
-  const RadToggleButton(
-      {Key? key,
-      this.strOption1,
-      this.strOption2,
-      this.fractionToggleWidth,
-      this.sizeBorderRadius,
-      this.listIsSelected,
-      this.functionOnPressed})
-      : super(key: key);
+  const RadToggleButton({
+    Key? key,
+    required this.strOption1,
+    required this.strOption2,
+    required this.listIsSelected,
+    required this.functionOnPressed,
+    this.fractionToggleWidth = 0.8,
+    this.sizeBorderRadius = 10,
+  }) : super(key: key);
 
   @override
   _RadToggleButtonState createState() => _RadToggleButtonState();

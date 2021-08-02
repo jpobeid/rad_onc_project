@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rad_onc_project/widgets/nav_bar.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/widgets/list_card.dart';
-import 'package:rad_onc_project/data/main_data.dart' as datas;
+import 'package:rad_onc_project/data/global_data.dart' as datas;
 
 class RadPhysicsPage extends StatefulWidget {
   static const routeName = '/rad-physics-page';
@@ -63,7 +63,7 @@ class _RadPhysicsPageState extends State<RadPhysicsPage> {
                 strRouteName: '/time-decay-dose-app',
               ),
               ListCard(
-                pathImage: 'assets/time.jpg',
+                pathImage: 'assets/total_fluence.jpg',
                 strTitle: datas.mapAppNames[2]![3],
                 strSubtitle: 'Compute monitor units',
                 trailingIcon: FontAwesomeIcons.calculator,
