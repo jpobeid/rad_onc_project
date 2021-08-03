@@ -42,7 +42,7 @@ class _MUCalcAppState extends State<MUCalcApp> {
   bool _isBlock = false;
 
   Future<void> initPreferences() async {
-    List<Map> results = await funcPrefs.readPreferences();
+    List<dynamic> results = await funcPrefs.readPreferences(context);
     _mapDepth = Map<String, List<double>>.from(results[0]);
     _mapPdd = Map<String, Map<int, List<double>>>.from(results[1]);
     setState(() {});

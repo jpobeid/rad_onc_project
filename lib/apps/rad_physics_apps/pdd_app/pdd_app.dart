@@ -12,7 +12,7 @@ import 'package:rad_onc_project/functions/preferences_functions.dart'
 class PddApp extends StatefulWidget {
   static const routeName = '/pdd-app';
 
-  static const int nSize = 10;
+  static const int nSize = 4;
   static const int xSkip = 1;
   static const Color colorPhoton = Colors.pink;
   static const Color colorElectron = Colors.indigoAccent;
@@ -36,7 +36,7 @@ class _PddAppState extends State<PddApp> {
   bool _isFixedAxis = false;
 
   Future<void> initPreferences() async {
-    List<Map> results = await funcPrefs.readPreferences();
+    List<dynamic> results = await funcPrefs.readPreferences(context);
     _mapDepth = Map<String, List<double>>.from(results[0]);
     _mapPdd = Map<String, Map<int, List<double>>>.from(results[1]);
     setState(() {});

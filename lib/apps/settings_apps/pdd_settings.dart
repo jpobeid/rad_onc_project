@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/data/particle_data.dart' as particles;
-import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rad_onc_project/functions/preferences_functions.dart'
     as funcPrefs;
+import 'package:rad_onc_project/widgets/rad_app_bar.dart';
+import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PddSettings extends StatefulWidget {
   static const routeName = '/settings-pdd-app';
@@ -40,7 +38,7 @@ class _PddSettingsState extends State<PddSettings> {
   bool _toRebuildTable = true;
 
   Future<void> readPreferences() async {
-    List<Map> results = await funcPrefs.readPreferences();
+    List<dynamic> results = await funcPrefs.readPreferences(context);
     _mapDepth = Map<String, List<double>>.from(results[0]);
     _mapPdd = Map<String, Map<int, List<double>>>.from(results[1]);
     setState(() {});
@@ -197,9 +195,9 @@ class _PddSettingsState extends State<PddSettings> {
                                 ),
                               )
                               .toList(),
-                          onChanged: (num? index) {
+                          onChanged: (int? index) {
                             setState(() {
-                              _iParticle = index!.toInt();
+                              _iParticle = index!;
                               _iFieldSize = 0;
                             });
                           },
@@ -212,16 +210,12 @@ class _PddSettingsState extends State<PddSettings> {
                         child: DropdownButton(
                           value: _iFieldSize,
                           dropdownColor: Colors.blueGrey,
-                          items: particles.mapDefaultPdd[strParticle]!.keys
-                              .toList()
+                          items: listSizes
                               .map(
                                 (e) => DropdownMenuItem(
-                                  value: particles
-                                      .mapDefaultPdd[strParticle]!.keys
-                                      .toList()
-                                      .indexOf(e),
+                                  value: listSizes.indexOf(e),
                                   child: Text(
-                                    e.toString(),
+                                    e.toString() + ' cm',
                                     style:
                                         Theme.of(context).textTheme.headline1,
                                   ),
@@ -230,7 +224,7 @@ class _PddSettingsState extends State<PddSettings> {
                               .toList(),
                           onChanged: (int? index) {
                             setState(() {
-                              _iFieldSize = index!.toInt();
+                              _iFieldSize = index!;
                             });
                           },
                         ),
@@ -314,7 +308,7 @@ class _PddSettingsState extends State<PddSettings> {
                                     builder: (context) {
                                       return AlertDialog(
                                         title: Text(
-                                            'Reset $strParticle defaults?'),
+                                            'Reset $strParticle ($nSize cm) defaults?'),
                                         actions: [
                                           TextButton(
                                               onPressed: () =>
@@ -330,17 +324,18 @@ class _PddSettingsState extends State<PddSettings> {
                                       );
                                     });
                                 if (result != null && result) {
-                                  writePreferences(
-                                      strParticle,
-                                      nSize,
-                                      particles.mapDefaultDepth[strParticle]!
-                                          .map((e) => e.toString())
-                                          .toList(),
-                                      particles
-                                          .mapDefaultPdd[strParticle]![nSize]!
-                                          .map((e) => e.toString())
-                                          .toList());
-                                  readPreferences();
+                                  print('WRITING STUFF!!!');//##########
+                                  // writePreferences(
+                                  //     strParticle,
+                                  //     nSize,
+                                  //     particles.mapDefaultDepth[strParticle]!
+                                  //         .map((e) => e.toString())
+                                  //         .toList(),
+                                  //     particles
+                                  //         .mapDefaultPdd[strParticle]![nSize]!
+                                  //         .map((e) => e.toString())
+                                  //         .toList());
+                                  // readPreferences();
                                 }
                               },
                               icon: Icon(
