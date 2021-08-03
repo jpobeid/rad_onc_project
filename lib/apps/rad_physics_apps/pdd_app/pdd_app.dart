@@ -12,6 +12,7 @@ import 'package:rad_onc_project/functions/preferences_functions.dart'
 class PddApp extends StatefulWidget {
   static const routeName = '/pdd-app';
 
+  static const int nSize = 10;
   static const int xSkip = 1;
   static const Color colorPhoton = Colors.pink;
   static const Color colorElectron = Colors.indigoAccent;
@@ -26,7 +27,7 @@ class PddApp extends StatefulWidget {
 
 class _PddAppState extends State<PddApp> {
   Map<String, List<double>> _mapDepth = {};
-  Map<String, List<double>> _mapPdd = {};
+  Map<String, Map<int, List<double>>> _mapPdd = {};
   int _nParticle = 0;
   bool _isPhoton = true;
   List<double?> _listCrosshairInfo = [0, 0, 0];
@@ -35,9 +36,9 @@ class _PddAppState extends State<PddApp> {
   bool _isFixedAxis = false;
 
   Future<void> initPreferences() async {
-    List<Map<String, List<double>>> results = await funcPrefs.readPreferences();
-    _mapDepth = results[0];
-    _mapPdd = results[1];
+    List<Map> results = await funcPrefs.readPreferences();
+    _mapDepth = Map<String, List<double>>.from(results[0]);
+    _mapPdd = Map<String, Map<int, List<double>>>.from(results[1]);
     setState(() {});
   }
 
@@ -95,13 +96,14 @@ class _PddAppState extends State<PddApp> {
     bool canBuild = false;
     if (_mapDepth.isNotEmpty && _mapPdd.isNotEmpty) {
       listActiveDepth = _mapDepth[strParticle]!;
-      listActivePdd = _mapPdd[strParticle]!;
-      maxDepthE =
-          _mapDepth['16E']!.reduce((value, element) => maths.max(value, element));
+      listActivePdd = _mapPdd[strParticle]![PddApp.nSize]!;
+      maxDepthE = _mapDepth['16E']!
+          .reduce((value, element) => maths.max(value, element));
       canBuild = true;
     }
 
-    if (canBuild && MediaQuery.of(context).orientation == Orientation.landscape) {
+    if (canBuild &&
+        MediaQuery.of(context).orientation == Orientation.landscape) {
       int sumFlex = PddApp.listFlex.reduce((value, element) => value + element);
       TextStyle textStyle = Theme.of(context).textTheme.headline1!;
       return SafeArea(

@@ -27,7 +27,7 @@ class MUCalcApp extends StatefulWidget {
 
 class _MUCalcAppState extends State<MUCalcApp> {
   Map<String, List<double>> _mapDepth = {};
-  Map<String, List<double>> _mapPdd = {};
+  Map<String, Map<int, List<double>>> _mapPdd = {};
   List<bool> _listToggle = [true, false];
   int _nParticle = 0;
   TextEditingController _controllerDose =
@@ -42,9 +42,9 @@ class _MUCalcAppState extends State<MUCalcApp> {
   bool _isBlock = false;
 
   Future<void> initPreferences() async {
-    List<Map<String, List<double>>> results = await funcPrefs.readPreferences();
-    _mapDepth = results[0];
-    _mapPdd = results[1];
+    List<Map> results = await funcPrefs.readPreferences();
+    _mapDepth = Map<String, List<double>>.from(results[0]);
+    _mapPdd = Map<String, Map<int, List<double>>>.from(results[1]);
     setState(() {});
   }
 
@@ -304,10 +304,16 @@ double? getScatter(Map<double, double> mapScatter, double eqSqr) {
   }
 }
 
-double? getPdd(Map<String, List<double>> mapDepth,
-    Map<String, List<double>> mapPdd, String strParticle, double depth) {
+double? getPdd(
+    Map<String, List<double>> mapDepth,
+    Map<String, Map<int, List<double>>> mapPdd,
+    String strParticle,
+    double depth) {
+  //Gotta work on this to allow for double field size!!!!!
+  //For now pretend its int = 10 (HARD CODED!!!)############
   List<double> listDepth = mapDepth[strParticle]!.toList();
-  List<double> listPdd = mapPdd[strParticle]!.toList();
+  List<double> listPdd = mapPdd[strParticle]![10]!.toList();
+
   int i = listDepth.indexWhere((element) => element > depth);
   if (i >= 2 && i <= listDepth.length - 2) {
     la.Vector4 vecConstants = splines.getConstants(

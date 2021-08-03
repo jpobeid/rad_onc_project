@@ -30,8 +30,9 @@ class PddSettings extends StatefulWidget {
 
 class _PddSettingsState extends State<PddSettings> {
   Map<String, List<double>> _mapDepth = {};
-  Map<String, List<double>> _mapPdd = {};
-  Object? _nParticle = 0;
+  Map<String, Map<int, List<double>>> _mapPdd = {};
+  int _iParticle = 0;
+  int _iFieldSize = 0;
   bool _isEditing = false;
   List<TextEditingController> _listControllerDepth = [];
   List<TextEditingController> _listControllerPdd = [];
@@ -39,17 +40,18 @@ class _PddSettingsState extends State<PddSettings> {
   bool _toRebuildTable = true;
 
   Future<void> readPreferences() async {
-    List<Map<String, List<double>>> results = await funcPrefs.readPreferences();
-    _mapDepth = results[0];
-    _mapPdd = results[1];
+    List<Map> results = await funcPrefs.readPreferences();
+    _mapDepth = Map<String, List<double>>.from(results[0]);
+    _mapPdd = Map<String, Map<int, List<double>>>.from(results[1]);
     setState(() {});
   }
 
-  Future<void> writePreferences(String strParticle, List<String> listStrDepth,
-      List<String> listStrPdd) async {
+  Future<void> writePreferences(String strParticle, int nSize,
+      List<String> listStrDepth, List<String> listStrPdd) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList('depth' + strParticle, listStrDepth);
-    prefs.setStringList('pdd' + strParticle, listStrPdd);
+    prefs.setStringList(
+        'pdd' + strParticle + '-' + nSize.toString(), listStrPdd);
   }
 
   @override
@@ -93,9 +95,9 @@ class _PddSettingsState extends State<PddSettings> {
     );
   }
 
-  void buildTable(String strParticle) {
-    Map<double, double> mapParticle =
-        Map.fromIterables(_mapDepth[strParticle]!, _mapPdd[strParticle]!);
+  void buildTable(String strParticle, int nSize) {
+    Map<double, double> mapParticle = Map.fromIterables(
+        _mapDepth[strParticle]!, _mapPdd[strParticle]![nSize]!);
     _listTableRows = [
       TableRow(
         children: [
@@ -154,11 +156,14 @@ class _PddSettingsState extends State<PddSettings> {
 
   @override
   Widget build(BuildContext context) {
+    if (_mapPdd['6X'] != null) {}
     bool canBuild = _mapDepth.isNotEmpty && _mapPdd.isNotEmpty;
     if (canBuild) {
-      String strParticle = particles.listStrParticle[_nParticle.hashCode];
+      String strParticle = particles.listStrParticle[_iParticle];
+      List<int> listSizes = _mapPdd[strParticle]!.keys.toList();
+      int nSize = listSizes[_iFieldSize];
       if (_toRebuildTable) {
-        buildTable(strParticle);
+        buildTable(strParticle, nSize);
       } else {
         _toRebuildTable = true;
       }
@@ -178,7 +183,7 @@ class _PddSettingsState extends State<PddSettings> {
                       child: IgnorePointer(
                         ignoring: _isEditing,
                         child: DropdownButton(
-                          value: _nParticle,
+                          value: _iParticle,
                           dropdownColor: Colors.blueGrey,
                           items: particles.listStrParticle
                               .map(
@@ -192,9 +197,40 @@ class _PddSettingsState extends State<PddSettings> {
                                 ),
                               )
                               .toList(),
-                          onChanged: (index) {
+                          onChanged: (num? index) {
                             setState(() {
-                              _nParticle = index;
+                              _iParticle = index!.toInt();
+                              _iFieldSize = 0;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: IgnorePointer(
+                        ignoring: _isEditing,
+                        child: DropdownButton(
+                          value: _iFieldSize,
+                          dropdownColor: Colors.blueGrey,
+                          items: particles.mapDefaultPdd[strParticle]!.keys
+                              .toList()
+                              .map(
+                                (e) => DropdownMenuItem(
+                                  value: particles
+                                      .mapDefaultPdd[strParticle]!.keys
+                                      .toList()
+                                      .indexOf(e),
+                                  child: Text(
+                                    e.toString(),
+                                    style:
+                                        Theme.of(context).textTheme.headline1,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (int? index) {
+                            setState(() {
+                              _iFieldSize = index!.toInt();
                             });
                           },
                         ),
@@ -209,6 +245,7 @@ class _PddSettingsState extends State<PddSettings> {
                             if (canSubmit) {
                               writePreferences(
                                   strParticle,
+                                  nSize,
                                   _listControllerDepth
                                       .map((e) => e.text)
                                       .toList(),
@@ -218,9 +255,11 @@ class _PddSettingsState extends State<PddSettings> {
                               resetTable();
                               _isEditing = !_isEditing;
                               readPreferences();
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                      duration: Duration(milliseconds: PddSettings.nSnackDuration),
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      duration: Duration(
+                                          milliseconds:
+                                              PddSettings.nSnackDuration),
                                       content: Text(
                                         'Successfully saved values',
                                         style: Theme.of(context)
@@ -228,9 +267,11 @@ class _PddSettingsState extends State<PddSettings> {
                                             .headline1,
                                       )));
                             } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                      duration: Duration(milliseconds: PddSettings.nSnackDuration),
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      duration: Duration(
+                                          milliseconds:
+                                              PddSettings.nSnackDuration),
                                       content: Text(
                                         'Invalid inputs...',
                                         style: Theme.of(context)
@@ -291,10 +332,12 @@ class _PddSettingsState extends State<PddSettings> {
                                 if (result != null && result) {
                                   writePreferences(
                                       strParticle,
+                                      nSize,
                                       particles.mapDefaultDepth[strParticle]!
                                           .map((e) => e.toString())
                                           .toList(),
-                                      particles.mapDefaultPdd[strParticle]!
+                                      particles
+                                          .mapDefaultPdd[strParticle]![nSize]!
                                           .map((e) => e.toString())
                                           .toList());
                                   readPreferences();
@@ -360,7 +403,8 @@ class _PddSettingsState extends State<PddSettings> {
                       });
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration: Duration(milliseconds: PddSettings.nSnackDuration),
+                          duration: Duration(
+                              milliseconds: PddSettings.nSnackDuration),
                           content: Text(
                             'Too many rows!',
                             style: Theme.of(context).textTheme.headline1,
