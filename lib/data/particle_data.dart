@@ -1,3 +1,5 @@
+const int indexKeyDepth = 0;
+
 const List<String> listStrParticle = [
   '6X',
   '10X',

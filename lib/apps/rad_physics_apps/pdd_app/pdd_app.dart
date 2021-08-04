@@ -8,11 +8,11 @@ import 'package:vector_math/vector_math.dart' as vec;
 import 'package:rad_onc_project/data/particle_data.dart' as particles;
 import 'package:rad_onc_project/functions/preferences_functions.dart'
     as funcPrefs;
+import 'package:rad_onc_project/functions/spline_functions.dart' as splines;
 
 class PddApp extends StatefulWidget {
   static const routeName = '/pdd-app';
 
-  static const int nSize = 4;
   static const int xSkip = 1;
   static const Color colorPhoton = Colors.pink;
   static const Color colorElectron = Colors.indigoAccent;
@@ -26,9 +26,9 @@ class PddApp extends StatefulWidget {
 }
 
 class _PddAppState extends State<PddApp> {
-  Map<String, List<double>> _mapDepth = {};
-  Map<String, Map<int, List<double>>> _mapPdd = {};
+  Map<String, Map<String, List<double>>> _mapPdd = {};
   int _nParticle = 0;
+  late String _keyDepth;
   bool _isPhoton = true;
   List<double?> _listCrosshairInfo = [0, 0, 0];
   String _strDose = 'N/A';
@@ -37,8 +37,7 @@ class _PddAppState extends State<PddApp> {
 
   Future<void> initPreferences() async {
     List<dynamic> results = await funcPrefs.readPreferences(context);
-    _mapDepth = Map<String, List<double>>.from(results[0]);
-    _mapPdd = Map<String, Map<int, List<double>>>.from(results[1]);
+    _mapPdd = results[1];
     setState(() {});
   }
 
@@ -90,16 +89,30 @@ class _PddAppState extends State<PddApp> {
   @override
   Widget build(BuildContext context) {
     String strParticle = particles.listStrParticle[_nParticle];
+    late String strSize;
     late List<double> listActiveDepth;
     late List<double> listActivePdd;
     late double maxDepthE;
     bool canBuild = false;
-    if (_mapDepth.isNotEmpty && _mapPdd.isNotEmpty) {
-      listActiveDepth = _mapDepth[strParticle]!;
-      listActivePdd = _mapPdd[strParticle]![PddApp.nSize]!;
-      maxDepthE = _mapDepth['16E']!
-          .reduce((value, element) => maths.max(value, element));
+    if (_mapPdd.isNotEmpty) {
       canBuild = true;
+      List<String> listSizes = _mapPdd[strParticle]!.keys.toList();
+      _keyDepth = listSizes[particles.indexKeyDepth];
+      listSizes.removeAt(particles.indexKeyDepth);
+      //######Default action, but need to actually have list elements selectable
+      strSize = listSizes[0];
+      listActiveDepth = _mapPdd[strParticle]![_keyDepth]!;
+      listActivePdd = _mapPdd[strParticle]![strSize]!;
+
+      //Try filtration here! ###
+      Map<double, double> mapActive = Map.fromIterables(listActiveDepth, listActivePdd);
+      mapActive = splines.filterMapDensity(mapActive);
+      listActiveDepth = mapActive.keys.toList();
+      listActivePdd = mapActive.values.toList();
+      print(listActivePdd.length);
+
+      maxDepthE = _mapPdd[particles.listStrParticle.last]!['Depth-mm']!
+          .reduce((value, element) => maths.max(value, element));
     }
 
     if (canBuild &&
@@ -219,20 +232,14 @@ class _PddAppState extends State<PddApp> {
                             },
                           ),
                           Text(
-                            'EqSqr (cm):',
+                            'EqSqr (cm):\n$strSize',
                             style: textStyle,
+                            textAlign: TextAlign.center,
                           ),
                           Text(
-                            '10 x 10',
+                            'SSD (cm):\n100',
                             style: textStyle,
-                          ),
-                          Text(
-                            'SSD (cm):',
-                            style: textStyle,
-                          ),
-                          Text(
-                            '100',
-                            style: textStyle,
+                            textAlign: TextAlign.center,
                           ),
                           LayoutBuilder(builder: (context, constraints) {
                             return (Container(

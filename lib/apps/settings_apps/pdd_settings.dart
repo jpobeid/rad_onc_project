@@ -5,19 +5,21 @@ import 'package:rad_onc_project/functions/preferences_functions.dart'
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:collection/collection.dart' as collects;
 
 class PddSettings extends StatefulWidget {
   static const routeName = '/settings-pdd-app';
 
   const PddSettings({Key? key}) : super(key: key);
 
-  static const List<int> listColumnFlex = [1, 8];
+  static const List<int> listColumnFlex = [1, 7, 1];
   static const Map<int, FlexColumnWidth> mapColumnWidthFlex = {
     0: FlexColumnWidth(3),
     1: FlexColumnWidth(3),
     2: FlexColumnWidth(1)
   };
   static const double sizeIcon = 32;
+  static const double sizeThicknessDivider = 2;
   static const int maxTableRows = 40;
   static const int minTableRows = 10;
   static const int nSnackDuration = 600;
@@ -27,10 +29,10 @@ class PddSettings extends StatefulWidget {
 }
 
 class _PddSettingsState extends State<PddSettings> {
-  Map<String, List<double>> _mapDepth = {};
-  Map<String, Map<int, List<double>>> _mapPdd = {};
+  Map<String, Map<String, List<double>>> _mapPdd = {};
   int _iParticle = 0;
   int _iFieldSize = 0;
+  late String _keyDepth;
   bool _isEditing = false;
   List<TextEditingController> _listControllerDepth = [];
   List<TextEditingController> _listControllerPdd = [];
@@ -39,17 +41,18 @@ class _PddSettingsState extends State<PddSettings> {
 
   Future<void> readPreferences() async {
     List<dynamic> results = await funcPrefs.readPreferences(context);
-    _mapDepth = Map<String, List<double>>.from(results[0]);
-    _mapPdd = Map<String, Map<int, List<double>>>.from(results[1]);
+    _mapPdd = Map<String, Map<String, List<double>>>.from(results[1]);
     setState(() {});
   }
 
-  Future<void> writePreferences(String strParticle, int nSize,
+  Future<void> writePreferences(String strParticle, String strSize,
       List<String> listStrDepth, List<String> listStrPdd) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setStringList('depth' + strParticle, listStrDepth);
-    prefs.setStringList(
-        'pdd' + strParticle + '-' + nSize.toString(), listStrPdd);
+    String preferenceKeyDepth =
+        funcPrefs.makePreferenceKey(strParticle, _keyDepth);
+    String preferenceKeyPdd = funcPrefs.makePreferenceKey(strParticle, strSize);
+    prefs.setStringList(preferenceKeyDepth, listStrDepth);
+    prefs.setStringList(preferenceKeyPdd, listStrPdd);
   }
 
   @override
@@ -93,14 +96,14 @@ class _PddSettingsState extends State<PddSettings> {
     );
   }
 
-  void buildTable(String strParticle, int nSize) {
+  void buildTable(String strParticle, String strSize) {
     Map<double, double> mapParticle = Map.fromIterables(
-        _mapDepth[strParticle]!, _mapPdd[strParticle]![nSize]!);
+        _mapPdd[strParticle]![_keyDepth]!, _mapPdd[strParticle]![strSize]!);
     _listTableRows = [
       TableRow(
         children: [
           Text(
-            'Depth [${strParticle[strParticle.length - 1] == 'X' ? 'cm' : 'mm'}]',
+            _keyDepth.split('-')[0] + ' [${_keyDepth.split('-')[1]}]',
             style: Theme.of(context).textTheme.headline1,
             textAlign: TextAlign.center,
           ),
@@ -154,14 +157,15 @@ class _PddSettingsState extends State<PddSettings> {
 
   @override
   Widget build(BuildContext context) {
-    if (_mapPdd['6X'] != null) {}
-    bool canBuild = _mapDepth.isNotEmpty && _mapPdd.isNotEmpty;
+    bool canBuild = _mapPdd.isNotEmpty;
     if (canBuild) {
       String strParticle = particles.listStrParticle[_iParticle];
-      List<int> listSizes = _mapPdd[strParticle]!.keys.toList();
-      int nSize = listSizes[_iFieldSize];
+      List<String> listSizes = _mapPdd[strParticle]!.keys.toList();
+      _keyDepth = listSizes[particles.indexKeyDepth];
+      listSizes.removeAt(particles.indexKeyDepth);
+      String strSize = listSizes[_iFieldSize];
       if (_toRebuildTable) {
-        buildTable(strParticle, nSize);
+        buildTable(strParticle, strSize);
       } else {
         _toRebuildTable = true;
       }
@@ -190,7 +194,7 @@ class _PddSettingsState extends State<PddSettings> {
                                   child: Text(
                                     e,
                                     style:
-                                        Theme.of(context).textTheme.headline1,
+                                        Theme.of(context).textTheme.headline2,
                                   ),
                                 ),
                               )
@@ -217,7 +221,7 @@ class _PddSettingsState extends State<PddSettings> {
                                   child: Text(
                                     e.toString() + ' cm',
                                     style:
-                                        Theme.of(context).textTheme.headline1,
+                                        Theme.of(context).textTheme.headline2,
                                   ),
                                 ),
                               )
@@ -230,6 +234,33 @@ class _PddSettingsState extends State<PddSettings> {
                         ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+              Divider(
+                color: Theme.of(context).primaryColor,
+                thickness: PddSettings.sizeThicknessDivider,
+              ),
+              Expanded(
+                flex: PddSettings.listColumnFlex[1],
+                child: ListView(
+                  children: [
+                    Table(
+                      defaultVerticalAlignment: TableCellVerticalAlignment.top,
+                      columnWidths: PddSettings.mapColumnWidthFlex,
+                      children: _listTableRows,
+                    ),
+                  ],
+                ),
+              ),
+              Divider(
+                color: Theme.of(context).primaryColor,
+                thickness: PddSettings.sizeThicknessDivider,
+              ),
+              Expanded(
+                flex: PddSettings.listColumnFlex[2],
+                child: Row(
+                  children: [
                     Expanded(
                       child: IconButton(
                         onPressed: () {
@@ -239,7 +270,7 @@ class _PddSettingsState extends State<PddSettings> {
                             if (canSubmit) {
                               writePreferences(
                                   strParticle,
-                                  nSize,
+                                  strSize,
                                   _listControllerDepth
                                       .map((e) => e.text)
                                       .toList(),
@@ -281,7 +312,7 @@ class _PddSettingsState extends State<PddSettings> {
                         },
                         icon: Icon(
                           _isEditing ? Icons.check_circle_outline : Icons.edit,
-                          color: Colors.white,
+                          color: Colors.green,
                           size: PddSettings.sizeIcon,
                         ),
                       ),
@@ -297,7 +328,7 @@ class _PddSettingsState extends State<PddSettings> {
                               },
                               icon: Icon(
                                 Icons.cancel_outlined,
-                                color: Colors.white,
+                                color: Colors.red,
                                 size: PddSettings.sizeIcon,
                               ),
                             )
@@ -308,7 +339,7 @@ class _PddSettingsState extends State<PddSettings> {
                                     builder: (context) {
                                       return AlertDialog(
                                         title: Text(
-                                            'Reset $strParticle ($nSize cm) defaults?'),
+                                            'Reset $strParticle ($strSize cm) defaults?'),
                                         actions: [
                                           TextButton(
                                               onPressed: () =>
@@ -324,42 +355,32 @@ class _PddSettingsState extends State<PddSettings> {
                                       );
                                     });
                                 if (result != null && result) {
-                                  print('WRITING STUFF!!!');//##########
-                                  // writePreferences(
-                                  //     strParticle,
-                                  //     nSize,
-                                  //     particles.mapDefaultDepth[strParticle]!
-                                  //         .map((e) => e.toString())
-                                  //         .toList(),
-                                  //     particles
-                                  //         .mapDefaultPdd[strParticle]![nSize]!
-                                  //         .map((e) => e.toString())
-                                  //         .toList());
-                                  // readPreferences();
+                                  //To reset/write defaults
+                                  Map<String, Map<String, List<double>>>
+                                      mapPddDefault =
+                                      await funcPrefs.loadDefaults(context);
+                                  writePreferences(
+                                      strParticle,
+                                      strSize,
+                                      mapPddDefault[strParticle]![_keyDepth]!
+                                          .map((e) => e.toString())
+                                          .toList(),
+                                      mapPddDefault[strParticle]![strSize]!
+                                          .map((e) => e.toString())
+                                          .toList());
+                                  readPreferences();
                                 }
                               },
                               icon: Icon(
                                 Icons.restore_outlined,
-                                color: Colors.white,
+                                color: Colors.orange,
                                 size: PddSettings.sizeIcon,
                               ),
                             ),
                     ),
                   ],
                 ),
-              ),
-              Expanded(
-                flex: PddSettings.listColumnFlex[1],
-                child: ListView(
-                  children: [
-                    Table(
-                      defaultVerticalAlignment: TableCellVerticalAlignment.top,
-                      columnWidths: PddSettings.mapColumnWidthFlex,
-                      children: _listTableRows,
-                    ),
-                  ],
-                ),
-              ),
+              )
             ],
           ),
           floatingActionButton: _isEditing
@@ -420,6 +441,10 @@ class _PddSettingsState extends State<PddSettings> {
 
 bool checkCanSubmit(List<TextEditingController> listControllerDepth,
     List<TextEditingController> listControllerPdd) {
+  double minDepth = 0;
+  double maxDepth = 100;
+  double minPdd = 0;
+  double maxPdd = 100;
   List<double> listDepths;
   List<double> listPdds;
   try {
@@ -428,13 +453,13 @@ bool checkCanSubmit(List<TextEditingController> listControllerDepth,
   } catch (e) {
     return false;
   }
-  bool isInvalidDepth = listDepths.any((element) => element > 100) ||
-      listDepths.any((element) => element < 0);
+  bool isInvalidDepth = listDepths.any((element) => element > maxDepth) ||
+      listDepths.any((element) => element < minDepth);
   List<double> listDepths2 = List.from(listDepths);
   listDepths2.sort();
-  bool isDepthIncreasing = listDepths.every(
-      (element) => listDepths.indexOf(element) == listDepths2.indexOf(element));
-  bool isInvalidPdd = listPdds.any((element) => element > 100) ||
-      listPdds.any((element) => element < 0);
+  bool isDepthIncreasing =
+      collects.ListEquality().equals(listDepths, listDepths2);
+  bool isInvalidPdd = listPdds.any((element) => element > maxPdd) ||
+      listPdds.any((element) => element < minPdd);
   return !isInvalidDepth && !isInvalidPdd && isDepthIncreasing;
 }
