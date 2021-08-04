@@ -4,7 +4,6 @@ import 'package:rad_onc_project/functions/preferences_functions.dart'
     as funcPrefs;
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:collection/collection.dart' as collects;
 
 class PddSettings extends StatefulWidget {
@@ -32,7 +31,6 @@ class _PddSettingsState extends State<PddSettings> {
   Map<String, Map<String, List<double>>> _mapPdd = {};
   int _iParticle = 0;
   int _iFieldSize = 0;
-  late String _keyDepth;
   bool _isEditing = false;
   List<TextEditingController> _listControllerDepth = [];
   List<TextEditingController> _listControllerPdd = [];
@@ -41,18 +39,19 @@ class _PddSettingsState extends State<PddSettings> {
 
   Future<void> readPreferences() async {
     List<dynamic> results = await funcPrefs.readPreferences(context);
-    _mapPdd = Map<String, Map<String, List<double>>>.from(results[1]);
+    _mapPdd = results[1];
     setState(() {});
   }
 
   Future<void> writePreferences(String strParticle, String strSize,
       List<String> listStrDepth, List<String> listStrPdd) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String preferenceKeyDepth =
-        funcPrefs.makePreferenceKey(strParticle, _keyDepth);
-    String preferenceKeyPdd = funcPrefs.makePreferenceKey(strParticle, strSize);
-    prefs.setStringList(preferenceKeyDepth, listStrDepth);
-    prefs.setStringList(preferenceKeyPdd, listStrPdd);
+    print('WRITING!!!');
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String preferenceKeyDepth =
+    //     funcPrefs.makePreferenceKey(strParticle, _keyDepth);
+    // String preferenceKeyPdd = funcPrefs.makePreferenceKey(strParticle, strSize);
+    // prefs.setStringList(preferenceKeyDepth, listStrDepth);
+    // prefs.setStringList(preferenceKeyPdd, listStrPdd);
   }
 
   @override
@@ -96,14 +95,15 @@ class _PddSettingsState extends State<PddSettings> {
     );
   }
 
-  void buildTable(String strParticle, String strSize) {
+  void buildTable(String strParticle, String fieldSize) {
     Map<double, double> mapParticle = Map.fromIterables(
-        _mapPdd[strParticle]![_keyDepth]!, _mapPdd[strParticle]![strSize]!);
+        _mapPdd[strParticle]![fieldSize]!,
+        _mapPdd[strParticle]![fieldSize.split('-')[0]]!);
     _listTableRows = [
       TableRow(
         children: [
           Text(
-            _keyDepth.split('-')[0] + ' [${_keyDepth.split('-')[1]}]',
+            'Depth' + ' [${fieldSize.split('-')[1]}]',
             style: Theme.of(context).textTheme.headline1,
             textAlign: TextAlign.center,
           ),
@@ -160,12 +160,14 @@ class _PddSettingsState extends State<PddSettings> {
     bool canBuild = _mapPdd.isNotEmpty;
     if (canBuild) {
       String strParticle = particles.listStrParticle[_iParticle];
-      List<String> listSizes = _mapPdd[strParticle]!.keys.toList();
-      _keyDepth = listSizes[particles.indexKeyDepth];
-      listSizes.removeAt(particles.indexKeyDepth);
-      String strSize = listSizes[_iFieldSize];
+      List<String> listFieldSizes = _mapPdd[strParticle]!
+          .keys
+          .where((element) => element.contains('-'))
+          .toList();
+      String fieldSizeFull = listFieldSizes[_iFieldSize];
+      String fieldSizeN = fieldSizeFull.split('-')[0];
       if (_toRebuildTable) {
-        buildTable(strParticle, strSize);
+        buildTable(strParticle, fieldSizeFull);
       } else {
         _toRebuildTable = true;
       }
@@ -214,12 +216,12 @@ class _PddSettingsState extends State<PddSettings> {
                         child: DropdownButton(
                           value: _iFieldSize,
                           dropdownColor: Colors.blueGrey,
-                          items: listSizes
+                          items: listFieldSizes
                               .map(
                                 (e) => DropdownMenuItem(
-                                  value: listSizes.indexOf(e),
+                                  value: listFieldSizes.indexOf(e),
                                   child: Text(
-                                    e.toString() + ' cm',
+                                    e.split('-')[0] + ' cm',
                                     style:
                                         Theme.of(context).textTheme.headline2,
                                   ),
@@ -270,7 +272,7 @@ class _PddSettingsState extends State<PddSettings> {
                             if (canSubmit) {
                               writePreferences(
                                   strParticle,
-                                  strSize,
+                                  fieldSizeFull,
                                   _listControllerDepth
                                       .map((e) => e.text)
                                       .toList(),
@@ -339,7 +341,7 @@ class _PddSettingsState extends State<PddSettings> {
                                     builder: (context) {
                                       return AlertDialog(
                                         title: Text(
-                                            'Reset $strParticle ($strSize cm) defaults?'),
+                                            'Reset $strParticle ($fieldSizeN cm) defaults?'),
                                         actions: [
                                           TextButton(
                                               onPressed: () =>
@@ -356,16 +358,17 @@ class _PddSettingsState extends State<PddSettings> {
                                     });
                                 if (result != null && result) {
                                   //To reset/write defaults
-                                  Map<String, Map<String, List<double>>>
+                                  Map<String, Map<String, List<double?>>>
                                       mapPddDefault =
                                       await funcPrefs.loadDefaults(context);
                                   writePreferences(
                                       strParticle,
-                                      strSize,
-                                      mapPddDefault[strParticle]![_keyDepth]!
+                                      fieldSizeFull,
+                                      mapPddDefault[strParticle]![
+                                              fieldSizeFull]!
                                           .map((e) => e.toString())
                                           .toList(),
-                                      mapPddDefault[strParticle]![strSize]!
+                                      mapPddDefault[strParticle]![fieldSizeN]!
                                           .map((e) => e.toString())
                                           .toList());
                                   readPreferences();

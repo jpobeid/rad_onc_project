@@ -27,8 +27,8 @@ class PddApp extends StatefulWidget {
 
 class _PddAppState extends State<PddApp> {
   Map<String, Map<String, List<double>>> _mapPdd = {};
-  int _nParticle = 0;
-  late String _keyDepth;
+  int _iParticle = 0;
+  int _iFieldSize = 0;
   bool _isPhoton = true;
   List<double?> _listCrosshairInfo = [0, 0, 0];
   String _strDose = 'N/A';
@@ -58,7 +58,7 @@ class _PddAppState extends State<PddApp> {
     super.dispose();
   }
 
-  void resetDefaults() {
+  void resetGraphDefaults() {
     _listCrosshairInfo = [0, 0, 0];
     _strDose = 'N/A';
     _strDepth = 'N/A';
@@ -88,30 +88,27 @@ class _PddAppState extends State<PddApp> {
 
   @override
   Widget build(BuildContext context) {
-    String strParticle = particles.listStrParticle[_nParticle];
-    late String strSize;
+    String strParticle = particles.listStrParticle[_iParticle];
+    late List<String> listFieldSizes;
+    late String fieldSizeFull;
+    late String fieldSizeN;
     late List<double> listActiveDepth;
     late List<double> listActivePdd;
     late double maxDepthE;
     bool canBuild = false;
+
     if (_mapPdd.isNotEmpty) {
       canBuild = true;
-      List<String> listSizes = _mapPdd[strParticle]!.keys.toList();
-      _keyDepth = listSizes[particles.indexKeyDepth];
-      listSizes.removeAt(particles.indexKeyDepth);
-      //######Default action, but need to actually have list elements selectable
-      strSize = listSizes[0];
-      listActiveDepth = _mapPdd[strParticle]![_keyDepth]!;
-      listActivePdd = _mapPdd[strParticle]![strSize]!;
-
-      //Try filtration here! ###
-      Map<double, double> mapActive = Map.fromIterables(listActiveDepth, listActivePdd);
-      mapActive = splines.filterMapDensity(mapActive);
-      listActiveDepth = mapActive.keys.toList();
-      listActivePdd = mapActive.values.toList();
-      print(listActivePdd.length);
-
-      maxDepthE = _mapPdd[particles.listStrParticle.last]!['Depth-mm']!
+      listFieldSizes = _mapPdd[strParticle]!
+          .keys
+          .where((element) => element.contains('-'))
+          .toList();
+      fieldSizeFull = listFieldSizes[_iFieldSize];
+      fieldSizeN = fieldSizeFull.split('-')[0];
+      listActiveDepth = _mapPdd[strParticle]![fieldSizeFull]!;
+      listActivePdd = _mapPdd[strParticle]![fieldSizeN]!;
+      maxDepthE = _mapPdd[particles.listStrParticle.last]![
+              _mapPdd[particles.listStrParticle.last]!.keys.first]!
           .reduce((value, element) => maths.max(value, element));
     }
 
@@ -203,38 +200,59 @@ class _PddAppState extends State<PddApp> {
                           Text(
                             'Energy:',
                             style: textStyle,
+                            textAlign: TextAlign.center,
                           ),
                           DropdownButton(
-                            value: _nParticle,
+                            value: _iParticle,
                             dropdownColor: Colors.blueGrey,
                             items: particles.listStrParticle
                                 .map((e) => DropdownMenuItem(
                                       value:
                                           particles.listStrParticle.indexOf(e),
                                       child: Text(
-                                        e + '-PPD',
+                                        e,
                                         style: textStyle,
                                       ),
                                     ))
                                 .toList(),
                             onChanged: (int? val) {
-                              if (val != null) {
-                                String strParticle =
-                                    particles.listStrParticle[val];
-                                setState(() {
-                                  _nParticle = val;
-                                  _isPhoton =
-                                      strParticle[strParticle.length - 1] ==
-                                          'X';
-                                  resetDefaults();
-                                });
-                              }
+                              String strParticle =
+                                  particles.listStrParticle[val!];
+                              setState(() {
+                                _iParticle = val;
+                                _isPhoton =
+                                    strParticle[strParticle.length - 1] == 'X';
+                                resetGraphDefaults();
+                              });
                             },
                           ),
                           Text(
-                            'EqSqr (cm):\n$strSize',
+                            'EqSqr:',
                             style: textStyle,
                             textAlign: TextAlign.center,
+                          ),
+                          DropdownButton(
+                            value: _iFieldSize,
+                            dropdownColor: Colors.blueGrey,
+                            items: listFieldSizes
+                                .map((e) => DropdownMenuItem(
+                                      value: listFieldSizes.indexOf(e),
+                                      child: Text(
+                                        e,
+                                        style: textStyle,
+                                      ),
+                                    ))
+                                .toList(),
+                            onChanged: (int? val) {
+                              String strParticle =
+                                  particles.listStrParticle[val!];
+                              setState(() {
+                                _iFieldSize = val;
+                                _isPhoton =
+                                    strParticle[strParticle.length - 1] == 'X';
+                                resetGraphDefaults();
+                              });
+                            },
                           ),
                           Text(
                             'SSD (cm):\n100',
@@ -260,7 +278,7 @@ class _PddAppState extends State<PddApp> {
                                 onChanged: (checked) {
                                   setState(() {
                                     _isFixedAxis = !_isFixedAxis;
-                                    resetDefaults();
+                                    resetGraphDefaults();
                                   });
                                 },
                               ),

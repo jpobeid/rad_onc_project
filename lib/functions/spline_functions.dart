@@ -24,18 +24,3 @@ Vector4 getConstants(List<double> listX, List<double> listY) {
 double getInterpolatedY(Vector4 vecConstants, double x){
   return vecConstants[0] + vecConstants[1] * x + vecConstants[2] * maths.pow(x, 2) + vecConstants[3] * maths.pow(x, 3);
 }
-
-Map<double, double> filterMapDensity(Map<double, double> mapInput) {
-  int nLengthThreshold = 60;
-  if (mapInput.length > nLengthThreshold) {
-    List<double> listDepth = mapInput.keys.toList();
-    //Basic model!! ####
-    while (listDepth.length > nLengthThreshold) {
-      listDepth.retainWhere((element) => listDepth.indexOf(element) % 2 == 0);
-    }
-    mapInput.removeWhere((key, value) => !listDepth.contains(key));
-    return mapInput;
-  } else {
-    return mapInput;
-  }
-}
