@@ -83,8 +83,8 @@ class _ToleranceAppState extends State<ToleranceApp> {
             ),
             Padding(
               padding: EdgeInsets.symmetric(
-                  vertical:
-                      MediaQuery.of(context).size.height * fractionHeightPadding),
+                  vertical: MediaQuery.of(context).size.height *
+                      fractionHeightPadding),
               child: RadToggleButton(
                 strOption1: listStrDoseType[0],
                 strOption2: listStrDoseType[1],
@@ -155,8 +155,9 @@ class _ToleranceAppState extends State<ToleranceApp> {
                         listPercentForgiven: _listPercentForgiven,
                         listControllerDose: _listControllerDose,
                         listControllerFractions: _listControllerFractions,
-                        isCancelable:
-                            (index > 0 && index == _nCourses - 1) ? true : false,
+                        isCancelable: (index > 0 && index == _nCourses - 1)
+                            ? true
+                            : false,
                         functionCancelPressed: functionCancelPressed,
                       );
                     } else {
@@ -171,8 +172,10 @@ class _ToleranceAppState extends State<ToleranceApp> {
                             children: [
                               Container(
                                 decoration: BoxDecoration(
-                                  color:
-                                      Theme.of(context).textTheme.headline2!.color,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .headline2!
+                                      .color,
                                   borderRadius: BorderRadius.circular(
                                       sizeToggleBorderRadius),
                                 ),
@@ -197,9 +200,10 @@ class _ToleranceAppState extends State<ToleranceApp> {
                                   ),
                                   onPressed: () {
                                     String strMaxDose = _controllerMaxDose.text;
-                                    List<String> listStrDose = _listControllerDose
-                                        .map((e) => e.text)
-                                        .toList();
+                                    List<String> listStrDose =
+                                        _listControllerDose
+                                            .map((e) => e.text)
+                                            .toList();
                                     List<String> listStrFractions =
                                         _listControllerFractions
                                             .map((e) => e.text)
@@ -212,7 +216,8 @@ class _ToleranceAppState extends State<ToleranceApp> {
                                             _listToggle[0] ? getBed : getEqd2;
                                         netDose += fDose(
                                                 double.parse(
-                                                    _listControllerDose[i].text),
+                                                    _listControllerDose[i]
+                                                        .text),
                                                 double.parse(
                                                     _listControllerFractions[i]
                                                         .text),
@@ -269,7 +274,8 @@ class _ToleranceAppState extends State<ToleranceApp> {
                   _nCourses++;
                   _listPercentForgiven.add(0.0);
                   _listControllerDose.add(TextEditingController(text: '0'));
-                  _listControllerFractions.add(TextEditingController(text: '0'));
+                  _listControllerFractions
+                      .add(TextEditingController(text: '0'));
                 });
               }
             }),
@@ -406,10 +412,12 @@ class TitleRow extends StatelessWidget {
           isCancelable!
               ? Expanded(
                   flex: listHorizontalFlex[1],
-                  child: TextButton(
-                    child: Icon(
+                  child: IconButton(
+                    padding: EdgeInsets.all(0),
+                    icon: Icon(
                       Icons.cancel_outlined,
-                      size: Theme.of(context).textTheme.headline2!.fontSize,
+                      size: Theme.of(context).textTheme.headline2!.fontSize!,
+                      color: Colors.black,
                     ),
                     onPressed: () {
                       functionCancelPressed!();
@@ -523,8 +531,8 @@ class _ComputeDialogState extends State<ComputeDialog> {
               String strAns;
               if (isValid) {
                 double R = (widget.maxDose! - widget.netDose!);
-                double nAns = getPartition(widget.isBed!, _valueDropdown == 1, R,
-                    double.parse(_controllerQuantity.text), widget.ab);
+                double nAns = getPartition(widget.isBed!, _valueDropdown == 1,
+                    R, double.parse(_controllerQuantity.text), widget.ab);
                 strAns = nAns >= 0 ? nAns.toStringAsFixed(2) : 'N/A (<0)';
               } else {
                 strAns = 'N/A';

@@ -61,10 +61,11 @@ List<List<double>> filterLists(
 }
 
 String makePreferenceKey(
-    String particle, String fieldSize, List<dynamic> listDepth) {
+    String particle, String fieldSize, List<dynamic> listDepthMaterials) {
   //Example format: pdd6X_10 or pdd6X_10_cm
+  //Therefore listDepthMaterials accepts [bool isDepth, String unitsDepth]
   String prefixKey = 'pdd' + particle + '_' + fieldSize;
-  return listDepth[0] ? prefixKey + '_' + listDepth[1] : prefixKey;
+  return listDepthMaterials[0] ? prefixKey + '_' + listDepthMaterials[1] : prefixKey;
 }
 
 Future<List> readPreferences(BuildContext context) async {

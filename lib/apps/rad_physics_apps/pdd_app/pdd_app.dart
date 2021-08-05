@@ -30,10 +30,10 @@ class _PddAppState extends State<PddApp> {
   int _iParticle = 0;
   int _iFieldSize = 0;
   bool _isPhoton = true;
+  bool _isFixedAxis = false;
   List<double?> _listCrosshairInfo = [0, 0, 0];
   String _strDose = 'N/A';
   String _strDepth = 'N/A';
-  bool _isFixedAxis = false;
 
   Future<void> initPreferences() async {
     List<dynamic> results = await funcPrefs.readPreferences(context);
@@ -69,19 +69,18 @@ class _PddAppState extends State<PddApp> {
       double canvasHeight,
       double canvasWidth,
       double x0,
-      double maxDepthE,
+      double maxDepth,
       List<Offset> listCurve,
       List<double> listActiveDepth) {
     double? absX = (details.globalPosition.dx - x0);
-    double maxAbsX = (listActiveDepth.last / maxDepthE) * canvasWidth;
-    if (!(!_isPhoton && _isFixedAxis && absX! > maxAbsX)) {
+    double maxAbsX = (listActiveDepth.last / maxDepth) * canvasWidth;
+    if (!(_isFixedAxis && absX! > maxAbsX)) {
       double fractionAbsY =
           (canvasHeight - getCrosshairY(listCurve, absX)) / canvasHeight;
       _listCrosshairInfo = [absX, fractionAbsY, 1];
       fractionAbsY = fractionAbsY > 1 ? 1 : fractionAbsY;
-      double maxDepth =
-          (!_isPhoton && _isFixedAxis) ? maxDepthE : listActiveDepth.last;
-      _strDepth = (absX! * maxDepth / canvasWidth).toStringAsFixed(2);
+      double _maxDepth = (_isFixedAxis) ? maxDepth : listActiveDepth.last;
+      _strDepth = (absX! * _maxDepth / canvasWidth).toStringAsFixed(2);
       _strDose = (fractionAbsY * 100).toStringAsFixed(1);
     }
   }
@@ -92,9 +91,10 @@ class _PddAppState extends State<PddApp> {
     late List<String> listFieldSizes;
     late String fieldSizeFull;
     late String fieldSizeN;
+    late String fieldSizeUnit;
     late List<double> listActiveDepth;
     late List<double> listActivePdd;
-    late double maxDepthE;
+    late double maxDepth;
     bool canBuild = false;
 
     if (_mapPdd.isNotEmpty) {
@@ -105,11 +105,11 @@ class _PddAppState extends State<PddApp> {
           .toList();
       fieldSizeFull = listFieldSizes[_iFieldSize];
       fieldSizeN = fieldSizeFull.split('-')[0];
+      fieldSizeUnit = fieldSizeFull.split('-')[1];
       listActiveDepth = _mapPdd[strParticle]![fieldSizeFull]!;
       listActivePdd = _mapPdd[strParticle]![fieldSizeN]!;
-      maxDepthE = _mapPdd[particles.listStrParticle.last]![
-              _mapPdd[particles.listStrParticle.last]!.keys.first]!
-          .reduce((value, element) => maths.max(value, element));
+      maxDepth =
+          _isPhoton ? getMaxDepth(_mapPdd, 'X') : getMaxDepth(_mapPdd, 'E');
     }
 
     if (canBuild &&
@@ -139,10 +139,10 @@ class _PddAppState extends State<PddApp> {
                           PddApp.fractionCanvasWidth;
                   List<Offset> listCurve = getListOffsetCurve(
                       canvasSize,
-                      _normList(canvasSize, listActiveDepth, false, _isPhoton,
-                          _isFixedAxis, maxDepthE),
-                      _normList(canvasSize, listActivePdd, true, _isPhoton,
-                          _isFixedAxis, maxDepthE),
+                      _normList(canvasSize, listActiveDepth, false,
+                          _isFixedAxis, maxDepth),
+                      _normList(canvasSize, listActivePdd, true, _isFixedAxis,
+                          maxDepth),
                       PddApp.xSkip);
                   return Align(
                     alignment: Alignment.centerRight,
@@ -154,7 +154,7 @@ class _PddAppState extends State<PddApp> {
                         onHorizontalDragStart: (details) {
                           setState(() {
                             gestureFunction(details, canvasHeight, canvasWidth,
-                                x0, maxDepthE, listCurve, listActiveDepth);
+                                x0, maxDepth, listCurve, listActiveDepth);
                           });
                         },
                         onHorizontalDragUpdate: (details) {
@@ -166,7 +166,7 @@ class _PddAppState extends State<PddApp> {
                                   canvasHeight,
                                   canvasWidth,
                                   x0,
-                                  maxDepthE,
+                                  maxDepth,
                                   listCurve,
                                   listActiveDepth);
                             });
@@ -176,7 +176,7 @@ class _PddAppState extends State<PddApp> {
                           painter: PddPaint(
                               isPhoton: _isPhoton,
                               isFixedAxis: _isFixedAxis,
-                              maxDepthE: maxDepthE,
+                              maxDepth: maxDepth,
                               listDepth: listActiveDepth,
                               listPdd: listActivePdd,
                               colorAxis: Theme.of(context).primaryColor,
@@ -216,12 +216,11 @@ class _PddAppState extends State<PddApp> {
                                     ))
                                 .toList(),
                             onChanged: (int? val) {
-                              String strParticle =
-                                  particles.listStrParticle[val!];
                               setState(() {
-                                _iParticle = val;
-                                _isPhoton =
-                                    strParticle[strParticle.length - 1] == 'X';
+                                _iParticle = val!;
+                                _iFieldSize = 0;
+                                _isPhoton = particles.listStrParticle[val]
+                                    .endsWith('X');
                                 resetGraphDefaults();
                               });
                             },
@@ -244,20 +243,11 @@ class _PddAppState extends State<PddApp> {
                                     ))
                                 .toList(),
                             onChanged: (int? val) {
-                              String strParticle =
-                                  particles.listStrParticle[val!];
                               setState(() {
-                                _iFieldSize = val;
-                                _isPhoton =
-                                    strParticle[strParticle.length - 1] == 'X';
+                                _iFieldSize = val!;
                                 resetGraphDefaults();
                               });
                             },
-                          ),
-                          Text(
-                            'SSD (cm):\n100',
-                            style: textStyle,
-                            textAlign: TextAlign.center,
                           ),
                           LayoutBuilder(builder: (context, constraints) {
                             return (Container(
@@ -289,7 +279,7 @@ class _PddAppState extends State<PddApp> {
                       Column(
                         children: [
                           Text(
-                            'Dose (%):',
+                            'Dose [%]:',
                             style: textStyle,
                           ),
                           Text(
@@ -302,7 +292,7 @@ class _PddAppState extends State<PddApp> {
                               children: [
                                 TextSpan(text: 'Depth '),
                                 TextSpan(
-                                  text: '(${_isPhoton ? 'cm' : 'mm'}):',
+                                  text: '[$fieldSizeUnit]:',
                                   style: TextStyle(
                                       fontSize: textStyle.fontSize,
                                       fontWeight: FontWeight.bold,
@@ -336,7 +326,7 @@ class _PddAppState extends State<PddApp> {
 class PddPaint extends CustomPainter {
   final bool? isPhoton;
   final bool? isFixedAxis;
-  final double? maxDepthE;
+  final double? maxDepth;
   final List<double>? listDepth;
   final List<double>? listPdd;
   final Color? colorAxis;
@@ -346,7 +336,7 @@ class PddPaint extends CustomPainter {
   PddPaint(
       {this.isPhoton,
       this.isFixedAxis,
-      this.maxDepthE,
+      this.maxDepth,
       this.listDepth,
       this.listPdd,
       this.colorAxis,
@@ -359,17 +349,16 @@ class PddPaint extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    double maxDepth =
-        (isFixedAxis! && !isPhoton!) ? maxDepthE! : listDepth!.last;
+    double _maxDepth = isFixedAxis! ? maxDepth! : listDepth!.last;
 
-    plt.drawFrame(canvas, size, maxDepth, 10.0, sizeTickLength, colorAxis!,
+    plt.drawFrame(canvas, size, _maxDepth, 10.0, sizeTickLength, colorAxis!,
         strokeWidthAxis);
 
     //Normalize the list values to the canvas size
     List<double> _normListDepth =
-        _normList(size, listDepth, false, isPhoton, isFixedAxis, maxDepthE);
+        _normList(size, listDepth, false, isFixedAxis, _maxDepth);
     List<double> _normListPdd =
-        _normList(size, listPdd, true, isPhoton, isFixedAxis, maxDepthE);
+        _normList(size, listPdd, true, isFixedAxis, _maxDepth);
 
     //Draw PDD points and curves
     plt.drawPlotPoints(
@@ -415,14 +404,34 @@ class PddPaint extends CustomPainter {
 }
 
 //region General functions
+double getMaxDepth(
+    Map<String, Map<String, List<double>>> mapPdd, String particleSuffix) {
+  List<String> particleKeys =
+      mapPdd.keys.where((element) => element.endsWith(particleSuffix)).toList();
+  List<double> particleMaxes = [];
+  particleKeys.forEach((element) {
+    List<String> depthKeys = mapPdd[element]!
+        .keys
+        .where((element) => element.contains('-'))
+        .toList();
+    List<double> depthMaxes = depthKeys
+        .map((e) => mapPdd[element]![e]!
+            .reduce((value, element) => maths.max(value, element)))
+        .toList();
+    particleMaxes
+        .add(depthMaxes.reduce((value, element) => maths.max(value, element)));
+  });
+  return particleMaxes.reduce((value, element) => maths.max(value, element));
+}
+
 List<double> _normList(Size size, List<double>? list, bool isPdd,
-    bool? _isPhoton, bool? isFixedAxis, double? maxDepthE) {
+    bool? isFixedAxis, double? maxDepth) {
   const int maxPercent = 100;
   if (isPdd) {
     return list!.map((e) => e * size.height / maxPercent).toList();
   } else {
-    double? maxDepth = (!_isPhoton! && isFixedAxis!) ? maxDepthE : list!.last;
-    return list!.map((e) => e * size.width / maxDepth!).toList();
+    double? _maxDepth = (isFixedAxis!) ? maxDepth : list!.last;
+    return list!.map((e) => e * size.width / _maxDepth!).toList();
   }
 }
 

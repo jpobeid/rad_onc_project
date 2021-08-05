@@ -5,6 +5,7 @@ import 'package:rad_onc_project/functions/preferences_functions.dart'
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
 import 'package:collection/collection.dart' as collects;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PddSettings extends StatefulWidget {
   static const routeName = '/settings-pdd-app';
@@ -43,15 +44,17 @@ class _PddSettingsState extends State<PddSettings> {
     setState(() {});
   }
 
-  Future<void> writePreferences(String strParticle, String strSize,
-      List<String> listStrDepth, List<String> listStrPdd) async {
-    print('WRITING!!!');
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // String preferenceKeyDepth =
-    //     funcPrefs.makePreferenceKey(strParticle, _keyDepth);
-    // String preferenceKeyPdd = funcPrefs.makePreferenceKey(strParticle, strSize);
-    // prefs.setStringList(preferenceKeyDepth, listStrDepth);
-    // prefs.setStringList(preferenceKeyPdd, listStrPdd);
+  Future<void> writePreferences(String strParticle, String fieldSizeFull,
+      List<String> listDepths, List<String> listValues) async {
+    String strSize = fieldSizeFull.split('-')[0];
+    String units = fieldSizeFull.split('-')[1];
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String preferenceKeyDepths =
+        funcPrefs.makePreferenceKey(strParticle, strSize, [true, units]);
+    String preferenceKeyValues =
+        funcPrefs.makePreferenceKey(strParticle, strSize, [false, units]);
+    prefs.setStringList(preferenceKeyDepths, listDepths);
+    prefs.setStringList(preferenceKeyValues, listValues);
   }
 
   @override
@@ -361,14 +364,29 @@ class _PddSettingsState extends State<PddSettings> {
                                   Map<String, Map<String, List<double?>>>
                                       mapPddDefault =
                                       await funcPrefs.loadDefaults(context);
+                                  List<String> mapKeys =
+                                      mapPddDefault[strParticle]!.keys.toList();
+                                  String keyDepth =
+                                      mapKeys[particles.indexKeyDepth];
+                                  List<double?> listDepths =
+                                      mapPddDefault[strParticle]![keyDepth]!
+                                          .map((e) => e)
+                                          .toList();
+                                  List<double?> listValues =
+                                      mapPddDefault[strParticle]![fieldSizeN]!
+                                          .map((e) => e)
+                                          .toList();
+                                  List<List<double>> filteredLists =
+                                      funcPrefs.filterLists(
+                                          List<double?>.from(listDepths),
+                                          List<double?>.from(listValues));
                                   writePreferences(
                                       strParticle,
                                       fieldSizeFull,
-                                      mapPddDefault[strParticle]![
-                                              fieldSizeFull]!
+                                      filteredLists[0]
                                           .map((e) => e.toString())
                                           .toList(),
-                                      mapPddDefault[strParticle]![fieldSizeN]!
+                                      filteredLists[1]
                                           .map((e) => e.toString())
                                           .toList());
                                   readPreferences();

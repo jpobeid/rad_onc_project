@@ -26,9 +26,13 @@ def write_df_trim(df_filename, max_pdd_points):
         while (i_max + len(ser_k) / j) > max_pdd_points:
             j += 1
 
-        ser_k = ser_k.iloc[1::j]
+        ser_k = ser_k.iloc[0::j]
         ser_k_final = pd.concat([ser_k_0.iloc[0:i_max], ser_k])
         df_trim[k] = ser_k_final
+
+        # Ensure end value isnt NaN (to retain depth-axis relationship)
+        if df_trim[k].isna().iloc[-1]:
+            df_trim[k].iloc[-1] = ser_k_0.iloc[-1]
     
     df_trim.to_csv(''.join(df_filename.split('_Full')))
 
