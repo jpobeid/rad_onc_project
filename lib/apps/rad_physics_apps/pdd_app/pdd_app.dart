@@ -3,12 +3,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rad_onc_project/functions/draw_plot.dart' as plt;
-import 'package:vector_math/vector_math.dart' as vec;
 import 'package:rad_onc_project/data/particle_data.dart' as particles;
+import 'package:rad_onc_project/functions/draw_plot.dart' as plt;
 import 'package:rad_onc_project/functions/preferences_functions.dart'
     as funcPrefs;
-import 'package:rad_onc_project/functions/spline_functions.dart' as splines;
+import 'package:vector_math/vector_math.dart' as vec;
 
 class PddApp extends StatefulWidget {
   static const routeName = '/pdd-app';
@@ -36,8 +35,7 @@ class _PddAppState extends State<PddApp> {
   String _strDepth = 'N/A';
 
   Future<void> initPreferences() async {
-    List<dynamic> results = await funcPrefs.readPreferences(context);
-    _mapPdd = results[1];
+    _mapPdd = await funcPrefs.readPreferences(context);
     setState(() {});
   }
 
@@ -87,79 +85,58 @@ class _PddAppState extends State<PddApp> {
 
   @override
   Widget build(BuildContext context) {
-    String strParticle = particles.listStrParticle[_iParticle];
-    late List<String> listFieldSizes;
-    late String fieldSizeFull;
-    late String fieldSizeN;
-    late String fieldSizeUnit;
-    late List<double> listActiveDepth;
-    late List<double> listActivePdd;
-    late double maxDepth;
-    bool canBuild = false;
-
-    if (_mapPdd.isNotEmpty) {
-      canBuild = true;
-      listFieldSizes = _mapPdd[strParticle]!
-          .keys
-          .where((element) => element.contains('-'))
-          .toList();
-      fieldSizeFull = listFieldSizes[_iFieldSize];
-      fieldSizeN = fieldSizeFull.split('-')[0];
-      fieldSizeUnit = fieldSizeFull.split('-')[1];
-      listActiveDepth = _mapPdd[strParticle]![fieldSizeFull]!;
-      listActivePdd = _mapPdd[strParticle]![fieldSizeN]!;
-      maxDepth =
+    bool canBuild = _mapPdd.isNotEmpty;
+    if (canBuild) {
+      String strParticle = particles.listStrParticle[_iParticle];
+      List<dynamic> pddParameters =
+          funcPrefs.getPddParameters(_mapPdd, strParticle, _iFieldSize);
+      List<String> listFieldsUnits = pddParameters[0];
+      String depthUnit = pddParameters[1][2];
+      List<double> listActiveDepth = pddParameters[2];
+      List<double> listActivePdd = pddParameters[3];
+      double maxDepth =
           _isPhoton ? getMaxDepth(_mapPdd, 'X') : getMaxDepth(_mapPdd, 'E');
-    }
 
-    if (canBuild &&
-        MediaQuery.of(context).orientation == Orientation.landscape) {
-      int sumFlex = PddApp.listFlex.reduce((value, element) => value + element);
-      TextStyle textStyle = Theme.of(context).textTheme.headline1!;
-      return SafeArea(
-        child: Scaffold(
-          body: Row(
-            children: [
-              Expanded(
-                flex: PddApp.listFlex[0],
-                child: LayoutBuilder(builder: (context, constraints) {
-                  double canvasWidth =
-                      constraints.maxWidth * PddApp.fractionCanvasWidth;
-                  double canvasHeight =
-                      constraints.maxHeight * PddApp.fractionCanvasHeight;
-                  Size canvasSize = Size(canvasWidth, canvasHeight);
-                  double x0 = MediaQuery.of(context).size.width *
-                      PddApp.listFlex[0] /
-                      sumFlex *
-                      ((1 - PddApp.fractionCanvasWidth) / 2);
-                  double x1 = x0 +
-                      MediaQuery.of(context).size.width *
-                          PddApp.listFlex[0] /
-                          sumFlex *
-                          PddApp.fractionCanvasWidth;
-                  List<Offset> listCurve = getListOffsetCurve(
-                      canvasSize,
-                      _normList(canvasSize, listActiveDepth, false,
-                          _isFixedAxis, maxDepth),
-                      _normList(canvasSize, listActivePdd, true, _isFixedAxis,
-                          maxDepth),
-                      PddApp.xSkip);
-                  return Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      color: Theme.of(context).textTheme.headline1!.color,
-                      width: canvasWidth,
-                      height: canvasHeight,
-                      child: GestureDetector(
-                        onHorizontalDragStart: (details) {
-                          setState(() {
-                            gestureFunction(details, canvasHeight, canvasWidth,
-                                x0, maxDepth, listCurve, listActiveDepth);
-                          });
-                        },
-                        onHorizontalDragUpdate: (details) {
-                          if (details.globalPosition.dx > x0 &&
-                              details.globalPosition.dx < x1) {
+      if (MediaQuery.of(context).orientation == Orientation.landscape) {
+        int sumFlex =
+            PddApp.listFlex.reduce((value, element) => value + element);
+        TextStyle textStyle = Theme.of(context).textTheme.headline1!;
+        return SafeArea(
+          child: Scaffold(
+            body: Row(
+              children: [
+                Expanded(
+                  flex: PddApp.listFlex[0],
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    double canvasWidth =
+                        constraints.maxWidth * PddApp.fractionCanvasWidth;
+                    double canvasHeight =
+                        constraints.maxHeight * PddApp.fractionCanvasHeight;
+                    Size canvasSize = Size(canvasWidth, canvasHeight);
+                    double x0 = MediaQuery.of(context).size.width *
+                        PddApp.listFlex[0] /
+                        sumFlex *
+                        ((1 - PddApp.fractionCanvasWidth) / 2);
+                    double x1 = x0 +
+                        MediaQuery.of(context).size.width *
+                            PddApp.listFlex[0] /
+                            sumFlex *
+                            PddApp.fractionCanvasWidth;
+                    List<Offset> listCurve = getListOffsetCurve(
+                        canvasSize,
+                        _normList(canvasSize, listActiveDepth, false,
+                            _isFixedAxis, maxDepth),
+                        _normList(canvasSize, listActivePdd, true, _isFixedAxis,
+                            maxDepth),
+                        PddApp.xSkip);
+                    return Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        color: Theme.of(context).textTheme.headline1!.color,
+                        width: canvasWidth,
+                        height: canvasHeight,
+                        child: GestureDetector(
+                          onHorizontalDragStart: (details) {
                             setState(() {
                               gestureFunction(
                                   details,
@@ -170,155 +147,173 @@ class _PddAppState extends State<PddApp> {
                                   listCurve,
                                   listActiveDepth);
                             });
-                          }
-                        },
-                        child: CustomPaint(
-                          painter: PddPaint(
-                              isPhoton: _isPhoton,
-                              isFixedAxis: _isFixedAxis,
-                              maxDepth: maxDepth,
-                              listDepth: listActiveDepth,
-                              listPdd: listActivePdd,
-                              colorAxis: Theme.of(context).primaryColor,
-                              colorCrosshair: Colors.blueGrey,
-                              listCrosshairInfo: _listCrosshairInfo),
+                          },
+                          onHorizontalDragUpdate: (details) {
+                            if (details.globalPosition.dx > x0 &&
+                                details.globalPosition.dx < x1) {
+                              setState(() {
+                                gestureFunction(
+                                    details,
+                                    canvasHeight,
+                                    canvasWidth,
+                                    x0,
+                                    maxDepth,
+                                    listCurve,
+                                    listActiveDepth);
+                              });
+                            }
+                          },
+                          child: CustomPaint(
+                            painter: PddPaint(
+                                isPhoton: _isPhoton,
+                                isFixedAxis: _isFixedAxis,
+                                maxDepth: maxDepth,
+                                listDepth: listActiveDepth,
+                                listPdd: listActivePdd,
+                                colorAxis: Theme.of(context).primaryColor,
+                                colorCrosshair: Colors.blueGrey,
+                                listCrosshairInfo: _listCrosshairInfo),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }),
-              ),
-              Expanded(
-                flex: PddApp.listFlex[1],
-                child: Container(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            'Energy:',
-                            style: textStyle,
-                            textAlign: TextAlign.center,
-                          ),
-                          DropdownButton(
-                            value: _iParticle,
-                            dropdownColor: Colors.blueGrey,
-                            items: particles.listStrParticle
-                                .map((e) => DropdownMenuItem(
-                                      value:
-                                          particles.listStrParticle.indexOf(e),
-                                      child: Text(
-                                        e,
-                                        style: textStyle,
-                                      ),
-                                    ))
-                                .toList(),
-                            onChanged: (int? val) {
-                              setState(() {
-                                _iParticle = val!;
-                                _iFieldSize = 0;
-                                _isPhoton = particles.listStrParticle[val]
-                                    .endsWith('X');
-                                resetGraphDefaults();
-                              });
-                            },
-                          ),
-                          Text(
-                            'EqSqr:',
-                            style: textStyle,
-                            textAlign: TextAlign.center,
-                          ),
-                          DropdownButton(
-                            value: _iFieldSize,
-                            dropdownColor: Colors.blueGrey,
-                            items: listFieldSizes
-                                .map((e) => DropdownMenuItem(
-                                      value: listFieldSizes.indexOf(e),
-                                      child: Text(
-                                        e,
-                                        style: textStyle,
-                                      ),
-                                    ))
-                                .toList(),
-                            onChanged: (int? val) {
-                              setState(() {
-                                _iFieldSize = val!;
-                                resetGraphDefaults();
-                              });
-                            },
-                          ),
-                          LayoutBuilder(builder: (context, constraints) {
-                            return (Container(
-                              width: constraints.maxWidth *
-                                  PddApp.fractionWidthCheckbox,
-                              color: _isFixedAxis
-                                  ? Theme.of(context).scaffoldBackgroundColor
-                                  : Theme.of(context).primaryColor,
-                              child: CheckboxListTile(
-                                dense: true,
-                                contentPadding: EdgeInsets.all(0),
-                                value: _isFixedAxis,
-                                title: Text(
-                                  'Fix axis',
-                                  style: Theme.of(context).textTheme.headline1,
-                                  textAlign: TextAlign.center,
-                                ),
-                                onChanged: (checked) {
-                                  setState(() {
-                                    _isFixedAxis = !_isFixedAxis;
-                                    resetGraphDefaults();
-                                  });
-                                },
-                              ),
-                            ));
-                          }),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            'Dose [%]:',
-                            style: textStyle,
-                          ),
-                          Text(
-                            _strDose,
-                            style: textStyle,
-                          ),
-                          RichText(
-                            text: TextSpan(
+                    );
+                  }),
+                ),
+                Expanded(
+                  flex: PddApp.listFlex[1],
+                  child: Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          children: [
+                            Text(
+                              'Energy:',
                               style: textStyle,
-                              children: [
-                                TextSpan(text: 'Depth '),
-                                TextSpan(
-                                  text: '[$fieldSizeUnit]:',
-                                  style: TextStyle(
-                                      fontSize: textStyle.fontSize,
-                                      fontWeight: FontWeight.bold,
-                                      color: _isPhoton
-                                          ? PddApp.colorPhoton
-                                          : PddApp.colorElectron),
-                                ),
-                              ],
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          Text(
-                            _strDepth,
-                            style: textStyle,
-                          ),
-                        ],
-                      ),
-                    ],
+                            DropdownButton(
+                              value: _iParticle,
+                              dropdownColor: Colors.blueGrey,
+                              items: particles.listStrParticle
+                                  .map((e) => DropdownMenuItem(
+                                        value: particles.listStrParticle
+                                            .indexOf(e),
+                                        child: Text(
+                                          e,
+                                          style: textStyle,
+                                        ),
+                                      ))
+                                  .toList(),
+                              onChanged: (int? val) {
+                                setState(() {
+                                  _iParticle = val!;
+                                  _iFieldSize = 0;
+                                  _isPhoton = particles.listStrParticle[val]
+                                      .endsWith('X');
+                                  resetGraphDefaults();
+                                });
+                              },
+                            ),
+                            Text(
+                              'EqSqr:',
+                              style: textStyle,
+                              textAlign: TextAlign.center,
+                            ),
+                            DropdownButton(
+                              value: _iFieldSize,
+                              dropdownColor: Colors.blueGrey,
+                              items: listFieldsUnits
+                                  .map((e) => DropdownMenuItem(
+                                        value: listFieldsUnits.indexOf(e),
+                                        child: Text(
+                                          e,
+                                          style: textStyle,
+                                        ),
+                                      ))
+                                  .toList(),
+                              onChanged: (int? val) {
+                                setState(() {
+                                  _iFieldSize = val!;
+                                  resetGraphDefaults();
+                                });
+                              },
+                            ),
+                            LayoutBuilder(builder: (context, constraints) {
+                              return (Container(
+                                width: constraints.maxWidth *
+                                    PddApp.fractionWidthCheckbox,
+                                color: _isFixedAxis
+                                    ? Theme.of(context).scaffoldBackgroundColor
+                                    : Theme.of(context).primaryColor,
+                                child: CheckboxListTile(
+                                  dense: true,
+                                  contentPadding: EdgeInsets.all(0),
+                                  value: _isFixedAxis,
+                                  title: Text(
+                                    'Fix axis',
+                                    style:
+                                        Theme.of(context).textTheme.headline1,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  onChanged: (checked) {
+                                    setState(() {
+                                      _isFixedAxis = !_isFixedAxis;
+                                      resetGraphDefaults();
+                                    });
+                                  },
+                                ),
+                              ));
+                            }),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              'Dose [%]:',
+                              style: textStyle,
+                            ),
+                            Text(
+                              _strDose,
+                              style: textStyle,
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                style: textStyle,
+                                children: [
+                                  TextSpan(text: 'Depth '),
+                                  TextSpan(
+                                    text: '[$depthUnit]:',
+                                    style: TextStyle(
+                                        fontSize: textStyle.fontSize,
+                                        fontWeight: FontWeight.bold,
+                                        color: _isPhoton
+                                            ? PddApp.colorPhoton
+                                            : PddApp.colorElectron),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              _strDepth,
+                              style: textStyle,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        return Container();
+      }
     } else {
-      return Scaffold();
+      return Container();
     }
   }
 }

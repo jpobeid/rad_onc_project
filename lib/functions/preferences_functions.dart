@@ -65,10 +65,13 @@ String makePreferenceKey(
   //Example format: pdd6X_10 or pdd6X_10_cm
   //Therefore listDepthMaterials accepts [bool isDepth, String unitsDepth]
   String prefixKey = 'pdd' + particle + '_' + fieldSize;
-  return listDepthMaterials[0] ? prefixKey + '_' + listDepthMaterials[1] : prefixKey;
+  return listDepthMaterials[0]
+      ? prefixKey + '_' + listDepthMaterials[1]
+      : prefixKey;
 }
 
-Future<List> readPreferences(BuildContext context) async {
+Future<Map<String, Map<String, List<double>>>> readPreferences(
+    BuildContext context) async {
   bool isAlreadyStored = false;
   late Map<String, Map<String, List<double?>>> mapPddDefault;
   mapPddDefault = await loadDefaults(context);
@@ -94,7 +97,8 @@ Future<List> readPreferences(BuildContext context) async {
         //Shared preferences does NOT yet exist, so need to make it as well as assign filtered default values
         listDepths = mapPddDefault[particle]![keyDepth]!;
         listValues = mapPddDefault[particle]![strSize]!;
-        filteredLists = filterLists(List<double?>.from(listDepths), List<double?>.from(listValues));
+        filteredLists = filterLists(
+            List<double?>.from(listDepths), List<double?>.from(listValues));
         prefs.setStringList(preferenceKeyDepths,
             filteredLists[0].map((e) => e.toString()).toList());
         prefs.setStringList(preferenceKeyValues,
@@ -124,5 +128,29 @@ Future<List> readPreferences(BuildContext context) async {
       }
     }
   }
-  return [isAlreadyStored, mapPdd];
+  return mapPdd;
+}
+
+//Not really a preference function, more general PDD but not a bad location for it since it is common
+List<List<dynamic>> getPddParameters(
+    Map<String, Map<String, List<double>>> mapPdd,
+    String particle,
+    int iField) {
+  //Note that per Prefs convention above, the "Units" referenced are those of DEPTH. Field sizes are always cm by assumption
+  List<String> listFieldsUnits =
+      mapPdd[particle]!.keys.where((element) => element.contains('-')).toList();
+
+  String fieldUnitFull = listFieldsUnits[iField];
+  String fieldSizeN = fieldUnitFull.split('-')[0];
+  String depthUnit = fieldUnitFull.split('-')[1];
+
+  List<double> activeDepths = mapPdd[particle]![fieldUnitFull]!;
+  List<double> activeValues = mapPdd[particle]![fieldSizeN]!;
+
+  return [
+    listFieldsUnits,
+    [fieldUnitFull, fieldSizeN, depthUnit],
+    activeDepths,
+    activeValues
+  ];
 }

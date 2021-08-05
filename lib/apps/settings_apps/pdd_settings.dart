@@ -39,20 +39,19 @@ class _PddSettingsState extends State<PddSettings> {
   bool _toRebuildTable = true;
 
   Future<void> readPreferences() async {
-    List<dynamic> results = await funcPrefs.readPreferences(context);
-    _mapPdd = results[1];
+    _mapPdd = await funcPrefs.readPreferences(context);
     setState(() {});
   }
 
-  Future<void> writePreferences(String strParticle, String fieldSizeFull,
+  Future<void> writePreferences(String strParticle, String fieldUnitFull,
       List<String> listDepths, List<String> listValues) async {
-    String strSize = fieldSizeFull.split('-')[0];
-    String units = fieldSizeFull.split('-')[1];
+    String fieldSizeN = fieldUnitFull.split('-')[0];
+    String depthUnits = fieldUnitFull.split('-')[1];
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String preferenceKeyDepths =
-        funcPrefs.makePreferenceKey(strParticle, strSize, [true, units]);
+        funcPrefs.makePreferenceKey(strParticle, fieldSizeN, [true, depthUnits]);
     String preferenceKeyValues =
-        funcPrefs.makePreferenceKey(strParticle, strSize, [false, units]);
+        funcPrefs.makePreferenceKey(strParticle, fieldSizeN, [false, depthUnits]);
     prefs.setStringList(preferenceKeyDepths, listDepths);
     prefs.setStringList(preferenceKeyValues, listValues);
   }
@@ -98,15 +97,15 @@ class _PddSettingsState extends State<PddSettings> {
     );
   }
 
-  void buildTable(String strParticle, String fieldSize) {
-    Map<double, double> mapParticle = Map.fromIterables(
-        _mapPdd[strParticle]![fieldSize]!,
-        _mapPdd[strParticle]![fieldSize.split('-')[0]]!);
+  void buildTable(String strParticle, String depthUnit,
+      List<double> activeDepths, List<double> activeValues) {
+    Map<double, double> mapParticle =
+        Map.fromIterables(activeDepths, activeValues);
     _listTableRows = [
       TableRow(
         children: [
           Text(
-            'Depth' + ' [${fieldSize.split('-')[1]}]',
+            'Depth' + ' [$depthUnit]',
             style: Theme.of(context).textTheme.headline1,
             textAlign: TextAlign.center,
           ),
@@ -163,14 +162,16 @@ class _PddSettingsState extends State<PddSettings> {
     bool canBuild = _mapPdd.isNotEmpty;
     if (canBuild) {
       String strParticle = particles.listStrParticle[_iParticle];
-      List<String> listFieldSizes = _mapPdd[strParticle]!
-          .keys
-          .where((element) => element.contains('-'))
-          .toList();
-      String fieldSizeFull = listFieldSizes[_iFieldSize];
-      String fieldSizeN = fieldSizeFull.split('-')[0];
+      List<dynamic> pddParameters =
+          funcPrefs.getPddParameters(_mapPdd, strParticle, _iFieldSize);
+      List<String> listFieldsUnits = pddParameters[0];
+      String fieldUnitFull = pddParameters[1][0];
+      String fieldSizeN = pddParameters[1][1];
+      String depthUnit = pddParameters[1][2];
+      List<double> activeDepths = pddParameters[2];
+      List<double> activeValues = pddParameters[3];
       if (_toRebuildTable) {
-        buildTable(strParticle, fieldSizeFull);
+        buildTable(strParticle, depthUnit, activeDepths, activeValues);
       } else {
         _toRebuildTable = true;
       }
@@ -219,10 +220,10 @@ class _PddSettingsState extends State<PddSettings> {
                         child: DropdownButton(
                           value: _iFieldSize,
                           dropdownColor: Colors.blueGrey,
-                          items: listFieldSizes
+                          items: listFieldsUnits
                               .map(
                                 (e) => DropdownMenuItem(
-                                  value: listFieldSizes.indexOf(e),
+                                  value: listFieldsUnits.indexOf(e),
                                   child: Text(
                                     e.split('-')[0] + ' cm',
                                     style:
@@ -275,7 +276,7 @@ class _PddSettingsState extends State<PddSettings> {
                             if (canSubmit) {
                               writePreferences(
                                   strParticle,
-                                  fieldSizeFull,
+                                  fieldUnitFull,
                                   _listControllerDepth
                                       .map((e) => e.text)
                                       .toList(),
@@ -382,7 +383,7 @@ class _PddSettingsState extends State<PddSettings> {
                                           List<double?>.from(listValues));
                                   writePreferences(
                                       strParticle,
-                                      fieldSizeFull,
+                                      fieldUnitFull,
                                       filteredLists[0]
                                           .map((e) => e.toString())
                                           .toList(),

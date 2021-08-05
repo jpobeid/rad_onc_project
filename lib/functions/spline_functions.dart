@@ -21,6 +21,32 @@ Vector4 getConstants(List<double> listX, List<double> listY) {
   return vecY;
 }
 
-double getInterpolatedY(Vector4 vecConstants, double x){
-  return vecConstants[0] + vecConstants[1] * x + vecConstants[2] * maths.pow(x, 2) + vecConstants[3] * maths.pow(x, 3);
+double getInterpolatedY(Vector4 vecConstants, double x) {
+  return vecConstants[0] +
+      vecConstants[1] * x +
+      vecConstants[2] * maths.pow(x, 2) +
+      vecConstants[3] * maths.pow(x, 3);
+}
+
+double? getInterpolatedNFromLists(
+    List<double> listX, List<double> listY, double x) {
+  int i = listX.indexWhere((element) => element > x);
+  if (i >= 2 && i <= listX.length - 2) {
+    Vector4 vecConstants = getConstants(
+        [listX[i - 2], listX[i - 1], listX[i], listX[i + 1]],
+        [listY[i - 2], listY[i - 1], listY[i], listY[i + 1]]);
+    return getInterpolatedY(vecConstants, x);
+  } else if (i == 1) {
+    Vector4 vecConstants = getConstants(
+        [listX[i - 1], listX[i], listX[i + 1], listX[i + 2]],
+        [listY[i - 1], listY[i], listY[i + 1], listY[i + 2]]);
+    return getInterpolatedY(vecConstants, x);
+  } else if (i == listX.length - 1) {
+    Vector4 vecConstants = getConstants(
+        [listX[i - 3], listX[i - 2], listX[i - 1], listX[i]],
+        [listY[i - 3], listY[i - 2], listY[i - 1], listY[i]]);
+    return getInterpolatedY(vecConstants, x);
+  } else {
+    return null;
+  }
 }
