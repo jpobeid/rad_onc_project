@@ -48,10 +48,10 @@ class _PddSettingsState extends State<PddSettings> {
     String fieldSizeN = fieldUnitFull.split('-')[0];
     String depthUnits = fieldUnitFull.split('-')[1];
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String preferenceKeyDepths =
-        funcPrefs.makePreferenceKey(strParticle, fieldSizeN, [true, depthUnits]);
-    String preferenceKeyValues =
-        funcPrefs.makePreferenceKey(strParticle, fieldSizeN, [false, depthUnits]);
+    String preferenceKeyDepths = funcPrefs
+        .makePreferenceKey(strParticle, fieldSizeN, [true, depthUnits]);
+    String preferenceKeyValues = funcPrefs
+        .makePreferenceKey(strParticle, fieldSizeN, [false, depthUnits]);
     prefs.setStringList(preferenceKeyDepths, listDepths);
     prefs.setStringList(preferenceKeyValues, listValues);
   }
@@ -79,8 +79,10 @@ class _PddSettingsState extends State<PddSettings> {
             _listTableRows.remove(_listTableRows.last);
             _listTableRows.last = TableRow(
               children: [
-                fields.textFieldSetting(context, _listControllerDepth.last),
-                fields.textFieldSetting(context, _listControllerPdd.last),
+                fields.textFieldStandard(
+                    context, _listControllerDepth.last, false),
+                fields.textFieldStandard(
+                    context, _listControllerPdd.last, false),
                 deleteButton(),
               ],
             );
@@ -142,8 +144,8 @@ class _PddSettingsState extends State<PddSettings> {
         _listControllerPdd.add(TextEditingController(text: value.toString()));
         _listTableRows.add(TableRow(
           children: [
-            fields.textFieldSetting(context, _listControllerDepth.last),
-            fields.textFieldSetting(context, _listControllerPdd.last),
+            fields.textFieldStandard(context, _listControllerDepth.last, false),
+            fields.textFieldStandard(context, _listControllerPdd.last, false),
             key == mapParticle.keys.last ? deleteButton() : Container(),
           ],
         ));
@@ -418,10 +420,10 @@ class _PddSettingsState extends State<PddSettings> {
                         _toRebuildTable = false;
                         _listTableRows.last = TableRow(
                           children: [
-                            fields.textFieldSetting(
-                                context, _listControllerDepth.last),
-                            fields.textFieldSetting(
-                                context, _listControllerPdd.last),
+                            fields.textFieldStandard(
+                                context, _listControllerDepth.last, false),
+                            fields.textFieldStandard(
+                                context, _listControllerPdd.last, false),
                             Container(),
                           ],
                         );
@@ -431,10 +433,10 @@ class _PddSettingsState extends State<PddSettings> {
                             .add(TextEditingController(text: '0'));
                         _listTableRows.add(TableRow(
                           children: [
-                            fields.textFieldSetting(
-                                context, _listControllerDepth.last),
-                            fields.textFieldSetting(
-                                context, _listControllerPdd.last),
+                            fields.textFieldStandard(
+                                context, _listControllerDepth.last, false),
+                            fields.textFieldStandard(
+                                context, _listControllerPdd.last, false),
                             deleteButton(),
                           ],
                         ));

@@ -1,21 +1,37 @@
-bool textFieldDoubleValidation(String str, bool canBlank, bool canNegative, bool canZero, bool canDecimal, int maxValue, int minValue, int maxNPreDec, int maxNPostDec){
+bool textFieldDoubleValidation(
+    {required String strN,
+    required bool allowBlank,
+    required bool allowNegative,
+    required bool allowZero,
+    required bool allowDecimal,
+    required double maxValue,
+    required double minValue,
+    required int maxDigitsPreDecimal,
+    required int maxDigitsPostDecimal}) {
   bool isValid = true;
   double n;
-  try{
-    n = double.parse(str);
-  }catch (e){
+  try {
+    n = double.parse(strN);
+  } catch (e) {
     return false;
   }
-  isValid = (str==null||str.contains(',')||str.contains(' '))?(false):(isValid&&true);
-  isValid = (!canBlank&&str=='')?(false):(isValid&&true);
-  isValid = (!canNegative&&str.contains('-'))?(false):(isValid&&true);
-  isValid = (!canDecimal&&str.contains('.'))?(false):(isValid&&true);
-  isValid = (!canZero&&n==0)?(false):(isValid&&true);
-  isValid = (n>maxValue||n<minValue)?(false):(isValid&&true);
-  isValid = (str[0]=='0'&&str.length>1&&!str.contains('.'))?(false):(isValid&&true);
-  if(str.contains('.')){
-    isValid = (str.split('.').length>2)?(false):(isValid&&true);
-    isValid = (str.split('.')[0].length>maxNPreDec||str.split('.')[1].length>maxNPostDec)?(false):(isValid&&true);
+  isValid =
+      (strN.contains(',') || strN.contains(' ')) ? (false) : (isValid && true);
+  isValid = (!allowBlank && strN == '') ? (false) : (isValid && true);
+  isValid =
+      (!allowNegative && strN.contains('-')) ? (false) : (isValid && true);
+  isValid = (!allowZero && n == 0) ? (false) : (isValid && true);
+  isValid = (!allowDecimal && strN.contains('.')) ? (false) : (isValid && true);
+  isValid = (n > maxValue || n < minValue) ? (false) : (isValid && true);
+  isValid = (strN[0] == '0' && strN.length > 1 && !strN.contains('.'))
+      ? (false)
+      : (isValid && true);
+  if (strN.contains('.')) {
+    isValid = (strN.split('.').length > 2) ? (false) : (isValid && true);
+    isValid = (strN.split('.')[0].length > maxDigitsPreDecimal ||
+            strN.split('.')[1].length > maxDigitsPostDecimal)
+        ? (false)
+        : (isValid && true);
   }
   return isValid;
 }

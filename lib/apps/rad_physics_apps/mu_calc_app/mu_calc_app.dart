@@ -68,6 +68,12 @@ class _MUCalcAppState extends State<MUCalcApp> {
   Widget build(BuildContext context) {
     bool canBuild = _mapPdd.isNotEmpty;
     if (canBuild) {
+      String particle = particles.listStrParticle[_iParticle];
+      String depthUnits = _mapPdd[particle]!
+          .keys
+          .where((element) => element.contains('-'))
+          .first
+          .split('-')[1];
       return SafeArea(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
@@ -191,8 +197,7 @@ class _MUCalcAppState extends State<MUCalcApp> {
                       children: [
                         Expanded(
                             child: Text(
-                          //HARD code###
-                          'Depth [cm]:',
+                          'Depth [$depthUnits]:',
                           style: Theme.of(context).textTheme.headline2,
                         )),
                         Expanded(
@@ -296,6 +301,10 @@ double? getFieldSizeInterpolatedPddN(
   }
 }
 
+double getBaseMU(double dose, double sC, double sP, double nPdd) {
+  return dose / (sC * sP * (nPdd / 100));
+}
+
 bool areInputsValid(List<TextEditingController> controllers) {
   try {
     controllers.forEach((element) {
@@ -397,6 +406,8 @@ Future<void> computeOutputs(
           mapPdd, particle, effEqSqr, double.parse(controllerDepth.text));
 
       if (nPdd != null) {
+        double baseMU = getBaseMU(double.parse(controllerDose.text),
+            scatterCollimator, scatterPatient, nPdd);
         await showDialog(
           context: context,
           builder: (context) {
@@ -442,6 +453,11 @@ Future<void> computeOutputs(
                     Divider(
                       color: Colors.green,
                       thickness: 2,
+                    ),
+                    Text(
+                      'Base MU: ${baseMU.toStringAsFixed(0)}',
+                      style: Theme.of(context).textTheme.headline2,
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),

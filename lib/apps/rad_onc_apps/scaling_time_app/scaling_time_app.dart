@@ -7,16 +7,13 @@ import 'package:rad_onc_project/functions/text_field_validation.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rad_onc_project/data/global_data.dart' as datas;
+import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
 
 class ScalingTime extends StatefulWidget {
   static const routeName = '/scaling-time-app';
 
-  @override
-  _ScalingTimeState createState() => _ScalingTimeState();
-}
-
-class _ScalingTimeState extends State<ScalingTime> {
   static const year0 = 1990;
+  static const double maxValue = 10000;
   static const List<int> listVerticalFlex = [1, 2, 2, 15, 2];
   static const List<int> listHorizontalFlex = [3, 2, 1];
   static const double fractionHeightRow = 0.08;
@@ -28,6 +25,11 @@ class _ScalingTimeState extends State<ScalingTime> {
   static const double radiusBorderAlert = 10;
   static const double widthBorderAlert = 2;
 
+  @override
+  _ScalingTimeState createState() => _ScalingTimeState();
+}
+
+class _ScalingTimeState extends State<ScalingTime> {
   int _indexMain = 0;
   List<DateTime> listDateTime = [];
   List<TextEditingController> listCtrl = [];
@@ -40,11 +42,11 @@ class _ScalingTimeState extends State<ScalingTime> {
       listDateTime.add(DateTime(now.year, now.month, now.day));
     }
     return Container(
-      height: MediaQuery.of(context).size.height * fractionHeightRow,
+      height: MediaQuery.of(context).size.height * ScalingTime.fractionHeightRow,
       child: Row(
         children: [
           Expanded(
-            flex: listHorizontalFlex[0],
+            flex: ScalingTime.listHorizontalFlex[0],
             child: TextButton(
               child: Align(
                 alignment: Alignment.topCenter,
@@ -58,7 +60,7 @@ class _ScalingTimeState extends State<ScalingTime> {
                 DateTime? value = await showDatePicker(
                     context: context,
                     initialDate: listDateTime[index],
-                    firstDate: DateTime(year0),
+                    firstDate: DateTime(ScalingTime.year0),
                     lastDate: DateTime.now());
                 setState(() {
                   if (value != null) {
@@ -69,21 +71,8 @@ class _ScalingTimeState extends State<ScalingTime> {
             ),
           ),
           Expanded(
-            flex: listHorizontalFlex[1],
-            child: TextField(
-              keyboardType: TextInputType.number,
-              maxLength: 5,
-              controller: listCtrl[index],
-              style: TextStyle(
-                  fontSize: (Theme.of(context).textTheme.headline2!.fontSize! +
-                          Theme.of(context).textTheme.headline1!.fontSize!) /
-                      2,
-                  color: Theme.of(context).textTheme.headline1!.color,
-                  fontWeight: Theme.of(context).textTheme.headline1!.fontWeight),
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(0), isDense: true),
-            ),
+            flex: ScalingTime.listHorizontalFlex[1],
+            child: fields.textFieldStandard(context, listCtrl[index], true),
           ),
           Expanded(
             child: TextButton(
@@ -121,10 +110,10 @@ class _ScalingTimeState extends State<ScalingTime> {
 
   @override
   Widget build(BuildContext context) {
-    if(MediaQuery.of(context).orientation == Orientation.portrait){
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
       return SafeArea(
         child: Scaffold(
-          resizeToAvoidBottomInset: true,
+          resizeToAvoidBottomInset: false,
           appBar: RadAppBar(
             strAppTitle: datas.mapAppNames[0]![1],
           ),
@@ -132,27 +121,29 @@ class _ScalingTimeState extends State<ScalingTime> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                flex: listVerticalFlex[1],
+                flex: ScalingTime.listVerticalFlex[1],
                 child: Center(
                     child: Text(
-                      'Biomarker Data',
-                      style: Theme.of(context).textTheme.headline2,
-                    )),
+                  'Biomarker Data',
+                  style: Theme.of(context).textTheme.headline2,
+                )),
               ),
               Expanded(
-                flex: listVerticalFlex[2],
+                flex: ScalingTime.listVerticalFlex[2],
                 child: Container(
                   color: Theme.of(context).primaryColor,
                   child: Row(
                     children: [
                       Expanded(
-                        flex: listHorizontalFlex[0],
+                        flex: ScalingTime.listHorizontalFlex[0],
                         child: Text(
                           'Date',
                           style: TextStyle(
                               color: Theme.of(context).scaffoldBackgroundColor,
-                              fontSize:
-                              Theme.of(context).textTheme.headline2!.fontSize,
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .headline2!
+                                  .fontSize,
                               fontWeight: Theme.of(context)
                                   .textTheme
                                   .headline2!
@@ -161,13 +152,15 @@ class _ScalingTimeState extends State<ScalingTime> {
                         ),
                       ),
                       Expanded(
-                        flex: listHorizontalFlex[1],
+                        flex: ScalingTime.listHorizontalFlex[1],
                         child: Text(
                           'Level',
                           style: TextStyle(
                               color: Theme.of(context).scaffoldBackgroundColor,
-                              fontSize:
-                              Theme.of(context).textTheme.headline2!.fontSize,
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .headline2!
+                                  .fontSize,
                               fontWeight: Theme.of(context)
                                   .textTheme
                                   .headline2!
@@ -181,8 +174,10 @@ class _ScalingTimeState extends State<ScalingTime> {
                             child: Icon(
                               FontAwesomeIcons.timesCircle,
                               color: Theme.of(context).scaffoldBackgroundColor,
-                              size:
-                              Theme.of(context).textTheme.headline2!.fontSize,
+                              size: Theme.of(context)
+                                  .textTheme
+                                  .headline2!
+                                  .fontSize,
                             )),
                       ),
                     ],
@@ -190,10 +185,10 @@ class _ScalingTimeState extends State<ScalingTime> {
                 ),
               ),
               Spacer(
-                flex: listVerticalFlex[0],
+                flex: ScalingTime.listVerticalFlex[0],
               ),
               Expanded(
-                flex: listVerticalFlex[3],
+                flex: ScalingTime.listVerticalFlex[3],
                 child: ListView.builder(
                     itemCount: _indexMain + 1,
                     itemBuilder: (context, index) {
@@ -206,48 +201,70 @@ class _ScalingTimeState extends State<ScalingTime> {
                 color: Theme.of(context).primaryColor,
               ),
               Spacer(
-                flex: listVerticalFlex[0],
+                flex: ScalingTime.listVerticalFlex[0],
               ),
               Expanded(
-                flex: listVerticalFlex[4],
+                flex: ScalingTime.listVerticalFlex[4],
                 child: Container(
-                  width: MediaQuery.of(context).size.width * fractionWidthCompute,
+                  width:
+                      MediaQuery.of(context).size.width * ScalingTime.fractionWidthCompute,
                   decoration: BoxDecoration(
                     color: Theme.of(context).textTheme.headline2!.color,
-                    borderRadius: BorderRadius.circular(radiusBorderAlert),
+                    borderRadius: BorderRadius.circular(ScalingTime.radiusBorderAlert),
                   ),
                   child: TextButton(
                     child: Text(
                       'Compute',
                       style: TextStyle(
                           fontSize:
-                          Theme.of(context).textTheme.headline2!.fontSize,
+                              Theme.of(context).textTheme.headline2!.fontSize,
                           fontWeight:
-                          Theme.of(context).textTheme.headline2!.fontWeight,
+                              Theme.of(context).textTheme.headline2!.fontWeight,
                           color: Theme.of(context).scaffoldBackgroundColor),
                     ),
                     onPressed: () {
-                      bool isTwoPlus = listCtrl.length>1;
-                      if(isValidEntries(listCtrl)&&isTwoPlus&&checkNoDuplicateDates(listDateTime)){
-                        Map<DateTime, String> mapSortedData = sortByDateTime(listDateTime, listCtrl);
+                      bool isTwoPlus = listCtrl.length > 1;
+                      if (isValidEntries(listCtrl) &&
+                          isTwoPlus &&
+                          checkNoDuplicateDates(listDateTime)) {
+                        Map<DateTime, String> mapSortedData =
+                            sortByDateTime(listDateTime, listCtrl);
                         Navigator.pushNamed(context, '/scaling-time-plot-app',
                             arguments: [
                               mapSortedData.keys.toList(),
                               mapSortedData.values.toList(),
                             ]);
                       } else if (!isTwoPlus) {
-                        showDialogMessage(context, fractionWidthAlert, fractionHeightAlert, widthBorderAlert, radiusBorderAlert, 'Error: Two or more entries are required');
+                        showDialogMessage(
+                            context,
+                            ScalingTime.fractionWidthAlert,
+                            ScalingTime.fractionHeightAlert,
+                            ScalingTime.widthBorderAlert,
+                            ScalingTime.radiusBorderAlert,
+                            'Error: Two or more entries are required');
                       } else if (!checkNoDuplicateDates(listDateTime)) {
-                        showDialogMessage(context, fractionWidthAlert, fractionHeightAlert, widthBorderAlert, radiusBorderAlert, 'Error: Duplicated dates present');
+                        showDialogMessage(
+                            context,
+                            ScalingTime.fractionWidthAlert,
+                            ScalingTime.fractionHeightAlert,
+                            ScalingTime.widthBorderAlert,
+                            ScalingTime.radiusBorderAlert,
+                            'Error: Duplicated dates present');
                       } else {
-                        showDialogMessage(context, fractionWidthAlert, fractionHeightAlert, widthBorderAlert, radiusBorderAlert, 'Error: Invalid value field');
+                        showDialogMessage(
+                            context,
+                            ScalingTime.fractionWidthAlert,
+                            ScalingTime.fractionHeightAlert,
+                            ScalingTime.widthBorderAlert,
+                            ScalingTime.radiusBorderAlert,
+                            'Error: Invalid value field');
                       }
                     },
                   ),
                 ),
               ),
               Spacer(
-                flex: listVerticalFlex[0],
+                flex: ScalingTime.listVerticalFlex[0],
               ),
             ],
           ),
@@ -259,19 +276,32 @@ class _ScalingTimeState extends State<ScalingTime> {
             ),
             onPressed: () {
               setState(() {
-                if (isValidEntries(listCtrl)&&checkNoDuplicateDates(listDateTime)) {
-                  _indexMain < (maxMainIndex - 1)
+                if (isValidEntries(listCtrl) &&
+                    checkNoDuplicateDates(listDateTime)) {
+                  _indexMain < (ScalingTime.maxMainIndex - 1)
                       ? _indexMain += 1
                       : _indexMain += 0;
                 } else if (!checkNoDuplicateDates(listDateTime)) {
-                  showDialogMessage(context, fractionWidthAlert, fractionHeightAlert, widthBorderAlert, radiusBorderAlert, 'Error: Duplicated dates present');
+                  showDialogMessage(
+                      context,
+                      ScalingTime.fractionWidthAlert,
+                      ScalingTime.fractionHeightAlert,
+                      ScalingTime.widthBorderAlert,
+                      ScalingTime.radiusBorderAlert,
+                      'Error: Duplicated dates present');
                 } else {
-                  showDialogMessage(context, fractionWidthAlert, fractionHeightAlert, widthBorderAlert, radiusBorderAlert, 'Error: Invalid value field');
+                  showDialogMessage(
+                      context,
+                      ScalingTime.fractionWidthAlert,
+                      ScalingTime.fractionHeightAlert,
+                      ScalingTime.widthBorderAlert,
+                      ScalingTime.radiusBorderAlert,
+                      'Error: Invalid value field');
                 }
               });
             },
           ),
-          floatingActionButtonLocation: _indexMain < (indexMainThreshold - 1)
+          floatingActionButtonLocation: _indexMain < (ScalingTime.indexMainThreshold - 1)
               ? FloatingActionButtonLocation.endFloat
               : FloatingActionButtonLocation.endTop,
         ),
@@ -282,23 +312,35 @@ class _ScalingTimeState extends State<ScalingTime> {
   }
 }
 
-bool isValidEntries(List<TextEditingController> listCtrl){
-  return (!listCtrl.any((element) => !textFieldDoubleValidation(element.text, false, false, true, true, 99999, 0, 4, 4)));
+bool isValidEntries(List<TextEditingController> listCtrl) {
+  return (!listCtrl.any((element) => !textFieldDoubleValidation(
+      strN: element.text,
+      allowBlank: false,
+      allowNegative: false,
+      allowZero: true,
+      allowDecimal: true,
+      maxValue: ScalingTime.maxValue,
+      minValue: 0,
+      maxDigitsPreDecimal: 4,
+      maxDigitsPostDecimal: 4)));
 }
 
-bool checkNoDuplicateDates(List<DateTime> listDatetime){
+bool checkNoDuplicateDates(List<DateTime> listDatetime) {
   bool isValid = true;
-  for(int i = 0; i < listDatetime.length; i++){
-    isValid = listDatetime.lastIndexOf(listDatetime[i])==i?(isValid&&true):false;
+  for (int i = 0; i < listDatetime.length; i++) {
+    isValid = listDatetime.lastIndexOf(listDatetime[i]) == i
+        ? (isValid && true)
+        : false;
   }
   return isValid;
 }
 
-Map<DateTime, String> sortByDateTime(List<DateTime> listDatetime, List<TextEditingController> listController){
+Map<DateTime, String> sortByDateTime(
+    List<DateTime> listDatetime, List<TextEditingController> listController) {
   Map<DateTime, String> mapInput = {};
   int i = 0;
   listDatetime.forEach((element) {
-    mapInput.addAll({element:listController[i].text});
+    mapInput.addAll({element: listController[i].text});
     i++;
   });
   SplayTreeMap mapSplay = SplayTreeMap();
@@ -308,29 +350,32 @@ Map<DateTime, String> sortByDateTime(List<DateTime> listDatetime, List<TextEditi
   Map<DateTime, String> mapOut = {};
   i = 0;
   listDateTimeOut.forEach((element) {
-    mapOut.addAll({element:listStrOut[i]});
+    mapOut.addAll({element: listStrOut[i]});
     i++;
   });
   return mapOut;
 }
 
-void showDialogMessage(BuildContext context, double fractionWidthAlert, double fractionHeightAlert, double widthBorderAlert, double radiusBorderAlert, String message){
+void showDialogMessage(
+    BuildContext context,
+    double fractionWidthAlert,
+    double fractionHeightAlert,
+    double widthBorderAlert,
+    double radiusBorderAlert,
+    String message) {
   showDialog(
       builder: (context) {
         return Center(
           child: Container(
-            width: MediaQuery.of(context).size.width *
-                fractionWidthAlert,
-            height: MediaQuery.of(context).size.height *
-                fractionHeightAlert,
+            width: MediaQuery.of(context).size.width * fractionWidthAlert,
+            height: MediaQuery.of(context).size.height * fractionHeightAlert,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
               border: Border.all(
                   color: Theme.of(context).primaryColor,
                   width: widthBorderAlert),
-              borderRadius:
-              BorderRadius.circular(radiusBorderAlert),
+              borderRadius: BorderRadius.circular(radiusBorderAlert),
             ),
             child: Text(
               message,

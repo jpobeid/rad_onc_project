@@ -4,21 +4,30 @@ import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'dart:math' as math;
 import 'package:rad_onc_project/widgets/rad_toggle_button.dart';
 import 'package:rad_onc_project/data/global_data.dart' as datas;
+import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
 
 class TumorVolume extends StatefulWidget {
   static const String routeName = '/tumor-volume-app';
+
+  static const double fractionToggleWidth = 0.8;
+  static const double sizeBorderRadius = 10;
+  static const double sizeBorderWidth = 2;
+  static const List<double> listHeightFractions = [0.03, 0.07, 0.3, 0.07, 0.15];
+  static const List<double> listHorizontalFlex = [3, 2];
+  static const bool allowBlank = false;
+  static const bool allowNegative = false;
+  static const bool allowZero = true;
+  static const bool allowDecimal = true;
+  static const double maxInputN = 100;
+  static const double minInputN = 0;
+  static const int maxDigitsPreDecimal = 3;
+  static const int maxDigitsPostDecimal = 3;
 
   @override
   _TumorVolumeState createState() => _TumorVolumeState();
 }
 
 class _TumorVolumeState extends State<TumorVolume> {
-  static const double fractionToggleWidth = 0.8;
-  static const double sizeBorderRadius = 10;
-  static const double sizeBorderWidth = 2;
-  static const List<double> listHeightFractions = [0.03, 0.07, 0.3, 0.07, 0.15];
-  static const List<double> listHorizontalFlex = [3, 2];
-
   List<bool> _isSelected = [true, false];
   String _strVolAns = '';
   String _strSAAns = '';
@@ -27,25 +36,6 @@ class _TumorVolumeState extends State<TumorVolume> {
   TextEditingController ctrlEllipsoidal1 = TextEditingController(text: '');
   TextEditingController ctrlEllipsoidal2 = TextEditingController(text: '');
   TextEditingController ctrlEllipsoidal3 = TextEditingController(text: '');
-
-  TextField makeTextField(int maxLength, TextEditingController ctrl) {
-    return TextField(
-      keyboardType: TextInputType.number,
-      maxLength: maxLength,
-      controller: ctrl,
-      textAlign: TextAlign.center,
-      style: Theme.of(context).textTheme.headline2,
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.all(0),
-        isDense: true,
-      ),
-      onChanged: (text) {
-        setState(() {
-          resetAns();
-        });
-      },
-    );
-  }
 
   void resetAns() {
     _strVolAns = '';
@@ -88,50 +78,48 @@ class _TumorVolumeState extends State<TumorVolume> {
         body: Column(
           children: [
             SizedBox(
-              height: heightApp * listHeightFractions[0],
+              height: heightApp * TumorVolume.listHeightFractions[0],
             ),
             Container(
-              height: MediaQuery.of(context).size.height * listHeightFractions[1],
+              height: MediaQuery.of(context).size.height *
+                  TumorVolume.listHeightFractions[1],
               child: RadToggleButton(
                 strOption1: 'Spherical',
                 strOption2: 'Ellipsoidal',
-                fractionToggleWidth: fractionToggleWidth,
-                sizeBorderRadius: sizeBorderRadius,
+                fractionToggleWidth: TumorVolume.fractionToggleWidth,
+                sizeBorderRadius: TumorVolume.sizeBorderRadius,
                 listIsSelected: _isSelected,
                 functionOnPressed: functionTogglePressed,
               ),
             ),
             SizedBox(
-              height: heightApp * listHeightFractions[0],
+              height: heightApp * TumorVolume.listHeightFractions[0],
             ),
             Container(
-              height: MediaQuery.of(context).size.height * listHeightFractions[2],
+              height: MediaQuery.of(context).size.height *
+                  TumorVolume.listHeightFractions[2],
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   if (_isSelected[0]) {
                     return Table(
                       columnWidths: {
-                        0: FlexColumnWidth(listHorizontalFlex[0]),
-                        1: FlexColumnWidth(listHorizontalFlex[1])
+                        0: FlexColumnWidth(TumorVolume.listHorizontalFlex[0]),
+                        1: FlexColumnWidth(TumorVolume.listHorizontalFlex[1])
                       },
                       children: [
-                        makeTableRow(
-                            context, 'Diameter:', makeTextField, ctrlSpherical),
+                        makeTableRow(context, 'Diameter:', ctrlSpherical),
                       ],
                     );
                   } else {
                     return Table(
                       columnWidths: {
-                        0: FlexColumnWidth(listHorizontalFlex[0]),
-                        1: FlexColumnWidth(listHorizontalFlex[1])
+                        0: FlexColumnWidth(TumorVolume.listHorizontalFlex[0]),
+                        1: FlexColumnWidth(TumorVolume.listHorizontalFlex[1])
                       },
                       children: [
-                        makeTableRow(context, 'Diameter 1:', makeTextField,
-                            ctrlEllipsoidal1),
-                        makeTableRow(context, 'Diameter 2:', makeTextField,
-                            ctrlEllipsoidal2),
-                        makeTableRow(context, 'Diameter 3:', makeTextField,
-                            ctrlEllipsoidal3),
+                        makeTableRow(context, 'Diameter 1:', ctrlEllipsoidal1),
+                        makeTableRow(context, 'Diameter 2:', ctrlEllipsoidal2),
+                        makeTableRow(context, 'Diameter 3:', ctrlEllipsoidal3),
                       ],
                     );
                   }
@@ -139,16 +127,18 @@ class _TumorVolumeState extends State<TumorVolume> {
               ),
             ),
             SizedBox(
-              height: heightApp * listHeightFractions[0],
+              height: heightApp * TumorVolume.listHeightFractions[0],
             ),
             TextButton(
               child: Container(
-                height:
-                    MediaQuery.of(context).size.height * listHeightFractions[3],
-                width: MediaQuery.of(context).size.width * fractionToggleWidth,
+                height: MediaQuery.of(context).size.height *
+                    TumorVolume.listHeightFractions[3],
+                width: MediaQuery.of(context).size.width *
+                    TumorVolume.fractionToggleWidth,
                 decoration: BoxDecoration(
                   color: Theme.of(context).textTheme.headline1!.color,
-                  borderRadius: BorderRadius.circular(sizeBorderRadius),
+                  borderRadius:
+                      BorderRadius.circular(TumorVolume.sizeBorderRadius),
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -156,7 +146,8 @@ class _TumorVolumeState extends State<TumorVolume> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: Theme.of(context).textTheme.headline2!.fontSize,
-                    fontWeight: Theme.of(context).textTheme.headline2!.fontWeight,
+                    fontWeight:
+                        Theme.of(context).textTheme.headline2!.fontWeight,
                     color: Theme.of(context).scaffoldBackgroundColor,
                   ),
                 ),
@@ -164,16 +155,7 @@ class _TumorVolumeState extends State<TumorVolume> {
               onPressed: () {
                 setState(() {
                   if (_isSelected[0]) {
-                    bool isStrDValid = textFieldDoubleValidation(
-                        ctrlSpherical.text,
-                        false,
-                        false,
-                        true,
-                        true,
-                        1000,
-                        0,
-                        3,
-                        3);
+                    bool isStrDValid = validateField(ctrlSpherical);
                     _strVolAns = isStrDValid
                         ? getVolumeSpherical(ctrlSpherical.text)
                             .toStringAsFixed(2)
@@ -182,36 +164,9 @@ class _TumorVolumeState extends State<TumorVolume> {
                         ? getSASpherical(ctrlSpherical.text).toStringAsFixed(2)
                         : 'N/A';
                   } else {
-                    bool isStrD1Valid = textFieldDoubleValidation(
-                        ctrlEllipsoidal1.text,
-                        false,
-                        false,
-                        true,
-                        true,
-                        1000,
-                        0,
-                        3,
-                        3);
-                    bool isStrD2Valid = textFieldDoubleValidation(
-                        ctrlEllipsoidal2.text,
-                        false,
-                        false,
-                        true,
-                        true,
-                        1000,
-                        0,
-                        3,
-                        3);
-                    bool isStrD3Valid = textFieldDoubleValidation(
-                        ctrlEllipsoidal3.text,
-                        false,
-                        false,
-                        true,
-                        true,
-                        1000,
-                        0,
-                        3,
-                        3);
+                    bool isStrD1Valid = validateField(ctrlEllipsoidal1);
+                    bool isStrD2Valid = validateField(ctrlEllipsoidal2);
+                    bool isStrD3Valid = validateField(ctrlEllipsoidal3);
                     _strVolAns = (isStrD1Valid && isStrD2Valid && isStrD3Valid)
                         ? getVolumeEllipsoidal(ctrlEllipsoidal1.text,
                                 ctrlEllipsoidal2.text, ctrlEllipsoidal3.text)
@@ -227,20 +182,20 @@ class _TumorVolumeState extends State<TumorVolume> {
               },
             ),
             SizedBox(
-              height: heightApp * listHeightFractions[0],
+              height: heightApp * TumorVolume.listHeightFractions[0],
             ),
             Container(
-              height: listHeightFractions[4],
+              height: TumorVolume.listHeightFractions[4],
               child: Table(
                 border: TableBorder.all(
                     color: Theme.of(context).primaryColor,
-                    width: sizeBorderWidth),
+                    width: TumorVolume.sizeBorderWidth),
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: [
                   TableRow(
                     children: [
                       Text(
-                        'Volume:',
+                        'Volume\n',
                         style: Theme.of(context).textTheme.headline2,
                         textAlign: TextAlign.center,
                       ),
@@ -254,7 +209,7 @@ class _TumorVolumeState extends State<TumorVolume> {
                   TableRow(
                     children: [
                       Text(
-                        'Surface Area:',
+                        'Surface\nArea',
                         style: Theme.of(context).textTheme.headline2,
                         textAlign: TextAlign.center,
                       ),
@@ -275,8 +230,21 @@ class _TumorVolumeState extends State<TumorVolume> {
   }
 }
 
-TableRow makeTableRow(BuildContext context, String strText,
-    Function makeTextField, TextEditingController ctrl) {
+bool validateField(TextEditingController controller) {
+  return textFieldDoubleValidation(
+      strN: controller.text,
+      allowBlank: TumorVolume.allowBlank,
+      allowNegative: TumorVolume.allowNegative,
+      allowZero: TumorVolume.allowZero,
+      allowDecimal: TumorVolume.allowDecimal,
+      maxValue: TumorVolume.maxInputN,
+      minValue: TumorVolume.minInputN,
+      maxDigitsPreDecimal: TumorVolume.maxDigitsPreDecimal,
+      maxDigitsPostDecimal: TumorVolume.maxDigitsPostDecimal);
+}
+
+TableRow makeTableRow(
+    BuildContext context, String strText, TextEditingController ctrl) {
   return TableRow(
     children: [
       Text(
@@ -284,7 +252,7 @@ TableRow makeTableRow(BuildContext context, String strText,
         style: Theme.of(context).textTheme.headline2,
         textAlign: TextAlign.center,
       ),
-      makeTextField(5, ctrl),
+      fields.textFieldStandard(context, ctrl, true),
     ],
   );
 }

@@ -336,15 +336,47 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
 bool checkStrings(
     bool? isBio, String strA0, String strPHL, String strBHL, String strDT) {
   int maxDigits = 5;
-  bool validStrA0 = textFieldDoubleValidation(strA0, false, false, true, true,
-      math.pow(10, maxDigits) as int, 0, maxDigits, maxDigits);
-  bool validStrPHL = textFieldDoubleValidation(strPHL, false, false, false,
-      true, math.pow(10, maxDigits) as int, 0, maxDigits, maxDigits);
-  bool validStrBHL = textFieldDoubleValidation(strBHL, false, false, false,
-          true, math.pow(10, maxDigits) as int, 0, maxDigits, maxDigits) ||
+  bool validStrA0 = textFieldDoubleValidation(
+      strN: strA0,
+      allowBlank: false,
+      allowNegative: false,
+      allowZero: true,
+      allowDecimal: true,
+      maxValue: math.pow(10, maxDigits) as double,
+      minValue: 0,
+      maxDigitsPreDecimal: maxDigits,
+      maxDigitsPostDecimal: maxDigits);
+  bool validStrPHL = textFieldDoubleValidation(
+      strN: strPHL,
+      allowBlank: false,
+      allowNegative: false,
+      allowZero: false,
+      allowDecimal: true,
+      maxValue: math.pow(10, maxDigits) as double,
+      minValue: 0,
+      maxDigitsPreDecimal: maxDigits,
+      maxDigitsPostDecimal: maxDigits);
+  bool validStrBHL = textFieldDoubleValidation(
+          strN: strBHL,
+          allowBlank: false,
+          allowNegative: false,
+          allowZero: false,
+          allowDecimal: true,
+          maxValue: math.pow(10, maxDigits) as double,
+          minValue: 0,
+          maxDigitsPreDecimal: maxDigits,
+          maxDigitsPostDecimal: maxDigits) ||
       strBHL == '\u221e';
-  bool validStrDT = textFieldDoubleValidation(strDT, false, false, true, true,
-      math.pow(10, maxDigits) as int, 0, maxDigits, maxDigits);
+  bool validStrDT = textFieldDoubleValidation(
+      strN: strDT,
+      allowBlank: false,
+      allowNegative: false,
+      allowZero: true,
+      allowDecimal: true,
+      maxValue: math.pow(10, maxDigits) as double,
+      minValue: 0,
+      maxDigitsPreDecimal: maxDigits,
+      maxDigitsPostDecimal: maxDigits);
   return (validStrA0 && validStrPHL && (!isBio! || validStrBHL) && validStrDT);
 }
 

@@ -108,8 +108,8 @@ class _BedQedCalcState extends State<BedQedCalc> {
                 ]),
                 TableRow(children: [
                   Text(
-                    checkStrings(_controllerDose.text, _controllerFractions.text,
-                            _controllerRate.text)[1]
+                    checkStrings(_controllerDose.text,
+                            _controllerFractions.text, _controllerRate.text)[1]
                         ? 'EQD-${_controllerRate.text} (Gy):'
                         : 'EQD-X (Gy):',
                     style: Theme.of(context).textTheme.headline2,
@@ -131,12 +131,36 @@ class _BedQedCalcState extends State<BedQedCalc> {
 }
 
 List<bool> checkStrings(String strD, String strN, String strX) {
-  bool validDose =
-      textFieldDoubleValidation(strD, false, false, true, true, 100, 0, 2, 2);
-  bool validFractions =
-      textFieldDoubleValidation(strN, false, false, false, false, 99, 0, 2, 0);
-  bool validX =
-      textFieldDoubleValidation(strX, false, false, true, true, 100, 0, 2, 3);
+  bool validDose = textFieldDoubleValidation(
+      strN: strD,
+      allowBlank: false,
+      allowNegative: false,
+      allowZero: true,
+      allowDecimal: true,
+      maxValue: 100,
+      minValue: 0,
+      maxDigitsPreDecimal: 2,
+      maxDigitsPostDecimal: 2);
+  bool validFractions = textFieldDoubleValidation(
+      strN: strN,
+      allowBlank: false,
+      allowNegative: false,
+      allowZero: false,
+      allowDecimal: false,
+      maxValue: 99,
+      minValue: 0,
+      maxDigitsPreDecimal: 2,
+      maxDigitsPostDecimal: 0);
+  bool validX = textFieldDoubleValidation(
+      strN: strX,
+      allowBlank: false,
+      allowNegative: false,
+      allowZero: true,
+      allowDecimal: true,
+      maxValue: 100,
+      minValue: 0,
+      maxDigitsPreDecimal: 2,
+      maxDigitsPostDecimal: 3);
   return [validDose && validFractions, validDose && validFractions && validX];
 }
 

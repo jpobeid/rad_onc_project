@@ -10,6 +10,20 @@ import 'dart:math' as math;
 class ScalingTimePlot extends StatefulWidget {
   static const routeName = '/scaling-time-plot-app';
 
+  static const Map<int, String> mapSuperscript = {
+    0: '\u2070',
+    1: '\u00B9',
+    2: '\u00B2',
+    3: '\u00B3',
+    4: '\u2074',
+    5: '\u2075',
+    6: '\u2076',
+    7: '\u2077',
+    8: '\u2078',
+    9: '\u2079',
+  };
+  static const double fontSizeScale = 20;
+
   final List<DateTime>? listDateTime;
   final List<String>? listStrValues;
 
@@ -228,7 +242,8 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                                 (1 - _normListY![indexX]) * maxAbsY;
                             _listCrosshairsData[2] = 1;
                             //Set the string data for the crosshairs
-                            DateTime selectedDate = widget.listDateTime![indexX];
+                            DateTime selectedDate =
+                                widget.listDateTime![indexX];
                             _listCrosshairsString[0] =
                                 '${selectedDate.month}/${selectedDate.day}/${selectedDate.year}';
                             _listCrosshairsString[1] =
@@ -484,8 +499,8 @@ class PlotPaint extends CustomPainter {
         strokeWidthAxis);
     TextPainter paintText = TextPainter(
         text: TextSpan(
-            text: nOrderY > 0 ? 'x10^${nOrderY.round()}' : '',
-            style: Theme.of(context!).textTheme.subtitle2),
+            text: nOrderY > 0 ? 'x10${ScalingTimePlot.mapSuperscript[nOrderY.round()]}' : '',
+            style: TextStyle(color: Colors.black, fontSize: ScalingTimePlot.fontSizeScale)),
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr);
     paintText.layout();

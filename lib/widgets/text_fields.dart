@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
 
-TextField textFieldSetting(
-    BuildContext context, TextEditingController controller) {
+InputDecoration standardDecoration() {
+  return InputDecoration(
+    enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Colors.blue, width: 2)),
+    contentPadding: EdgeInsets.all(4),
+    isCollapsed: true,
+    isDense: true,
+  );
+}
+
+TextField textFieldStandard(
+    BuildContext context, TextEditingController controller, bool isLarge) {
   return TextField(
     controller: controller,
     maxLength: 5,
     keyboardType: TextInputType.number,
-    style: Theme.of(context).textTheme.headline1,
+    style: isLarge
+        ? Theme.of(context).textTheme.headline2
+        : Theme.of(context).textTheme.headline1,
     textAlign: TextAlign.center,
-    decoration: InputDecoration(
-      contentPadding: EdgeInsets.all(0),
-      isCollapsed: true,
-      isDense: true,
-    ),
+    decoration: standardDecoration(),
   );
 }
 
@@ -24,11 +33,7 @@ TextField textFieldDose(BuildContext context, TextEditingController controller,
     keyboardType: TextInputType.number,
     style: Theme.of(context).textTheme.headline2,
     textAlign: TextAlign.center,
-    decoration: InputDecoration(
-      contentPadding: EdgeInsets.all(0),
-      isCollapsed: true,
-      isDense: true,
-    ),
+    decoration: standardDecoration(),
     onChanged: funcOnChanged as void Function(String)?,
   );
 }
@@ -42,11 +47,7 @@ TextField textFieldFraction(
     keyboardType: TextInputType.number,
     style: Theme.of(context).textTheme.headline2,
     textAlign: TextAlign.center,
-    decoration: InputDecoration(
-      contentPadding: EdgeInsets.all(0),
-      isCollapsed: true,
-      isDense: true,
-    ),
+    decoration: standardDecoration(),
     onChanged: funcOnChanged as void Function(String)?,
   );
 }

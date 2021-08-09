@@ -524,10 +524,26 @@ class _ComputeDialogState extends State<ComputeDialog> {
               return makeDropdownRow();
             } else if (isReserve && _valueDropdown! > 0) {
               bool isValid = _valueDropdown == 1
-                  ? check.textFieldDoubleValidation(_controllerQuantity.text,
-                      false, false, false, true, 100, 0, 2, 3)
-                  : check.textFieldDoubleValidation(_controllerQuantity.text,
-                      false, false, false, false, 100, 0, 0, 0);
+                  ? check.textFieldDoubleValidation(
+                      strN: _controllerQuantity.text,
+                      allowBlank: false,
+                      allowNegative: false,
+                      allowZero: false,
+                      allowDecimal: true,
+                      maxValue: 100,
+                      minValue: 0,
+                      maxDigitsPreDecimal: 2,
+                      maxDigitsPostDecimal: 3)
+                  : check.textFieldDoubleValidation(
+                      strN: _controllerQuantity.text,
+                      allowBlank: false,
+                      allowNegative: false,
+                      allowZero: false,
+                      allowDecimal: false,
+                      maxValue: 100,
+                      minValue: 0,
+                      maxDigitsPreDecimal: 0,
+                      maxDigitsPostDecimal: 0);
               String strAns;
               if (isValid) {
                 double R = (widget.maxDose! - widget.netDose!);
@@ -771,16 +787,40 @@ bool checkIsValid(String strMaxDose, List<String> listStrDose,
   bool isValid = true;
   isValid = isValid &&
       check.textFieldDoubleValidation(
-          strMaxDose, false, false, true, true, 1000, 0, 3, 3);
+          strN: strMaxDose,
+          allowBlank: false,
+          allowNegative: false,
+          allowZero: true,
+          allowDecimal: true,
+          maxValue: 1000,
+          minValue: 0,
+          maxDigitsPreDecimal: 3,
+          maxDigitsPostDecimal: 3);
   listStrDose.forEach((element) {
     isValid = isValid &&
         check.textFieldDoubleValidation(
-            element, false, false, true, true, 100, 0, 2, 3);
+            strN: element,
+            allowBlank: false,
+            allowNegative: false,
+            allowZero: true,
+            allowDecimal: true,
+            maxValue: 100,
+            minValue: 0,
+            maxDigitsPreDecimal: 2,
+            maxDigitsPostDecimal: 3);
   });
   listStrFractions.forEach((element) {
     isValid = isValid &&
         check.textFieldDoubleValidation(
-            element, false, false, false, false, 100, 0, 0, 0);
+            strN: element,
+            allowBlank: false,
+            allowNegative: false,
+            allowZero: false,
+            allowDecimal: false,
+            maxValue: 100,
+            minValue: 0,
+            maxDigitsPreDecimal: 0,
+            maxDigitsPostDecimal: 0);
   });
   return isValid;
 }
