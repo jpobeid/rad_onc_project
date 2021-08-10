@@ -57,7 +57,7 @@ class RouteGenerator {
         }
         break;
       case (ProbabilitiesApp.routeName):
-        MaterialPageRoute(builder: (context) => ProbabilitiesApp());
+        return MaterialPageRoute(builder: (context) => ProbabilitiesApp());
         break;
       //endregion RadOnc
 

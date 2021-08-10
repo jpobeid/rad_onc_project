@@ -54,7 +54,7 @@ class _RadOncPageState extends State<RadOncPage> {
             strRouteName: '/scaling-time-app',
           ),
           ListCard(
-            pathImage: 'assets/scaling.jpg',
+            pathImage: 'assets/dice.jpg',
             strTitle: datas.mapAppNames[0]![2],
             strSubtitle: 'Compute probabilities',
             trailingIcon: FontAwesomeIcons.calculator,
