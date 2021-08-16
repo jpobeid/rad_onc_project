@@ -1,3 +1,4 @@
+const String appName = 'Rad-Onc Tools';
 const String appAuthor = 'Jean-Pierre Obeid';
 const String appInstitution = 'Stanford University';
 const String appYear = '2021';

@@ -26,7 +26,7 @@ class _RadBioPageState extends State<RadBioPage> {
     return SafeArea(
       child: Scaffold(
         appBar: RadAppBar(
-          strAppTitle: 'Radiation Oncology App',
+          strAppTitle: datas.appName,
           isActionable: true,
         ),
         body: Column(children: [
