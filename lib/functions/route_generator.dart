@@ -8,7 +8,6 @@ import 'package:rad_onc_project/pages/settings_page.dart';
 import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 
 import '../apps/settings_apps/pdd_settings.dart';
-import '../apps/settings_apps/about_app.dart';
 import '../apps/rad_bio_apps/bed_qed_app/bed_qed_app.dart';
 import '../apps/rad_bio_apps/effective_dose_app/effective_dose.dart';
 import '../apps/rad_onc_apps/scaling_time_app/scaling_time_app.dart';
@@ -29,9 +28,6 @@ class RouteGenerator {
         break;
       case (PddSettings.routeName):
         return MaterialPageRoute(builder: (context) => PddSettings());
-        break;
-      case (AboutApp.routeName):
-        return MaterialPageRoute(builder: (context) => AboutApp());
         break;
       //endregion Settings
 

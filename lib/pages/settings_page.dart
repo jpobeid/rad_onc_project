@@ -29,7 +29,7 @@ class SettingsPage extends StatelessWidget {
               strTitle: 'About',
               strSubtitle: 'App info',
               trailingIcon: Icons.settings,
-              strRouteName: '/settings-about-app',
+              iActionType: 1,
             ),
           ],
         ),
@@ -37,3 +37,4 @@ class SettingsPage extends StatelessWidget {
     );
   }
 }
+
