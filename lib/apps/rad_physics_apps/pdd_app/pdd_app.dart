@@ -477,46 +477,46 @@ double f(double a, double b, double c, double d, double x) {
 
 vec.Matrix4 getMx0(double x0, double x1, double x2, double x3) {
   vec.Vector4 col0 = vec.Vector4(
-      maths.pow(x0, 0) as double,
-      maths.pow(x0, 1) as double,
-      maths.pow(x0, 2) as double,
-      maths.pow(x0, 3) as double);
+      maths.pow(x0, 0).toDouble(),
+      maths.pow(x0, 1).toDouble(),
+      maths.pow(x0, 2).toDouble(),
+      maths.pow(x0, 3).toDouble());
   vec.Vector4 col1 = vec.Vector4(
-      maths.pow(x1, 0) as double,
-      maths.pow(x1, 1) as double,
-      maths.pow(x1, 2) as double,
-      maths.pow(x1, 3) as double);
+      maths.pow(x1, 0).toDouble(),
+      maths.pow(x1, 1).toDouble(),
+      maths.pow(x1, 2).toDouble(),
+      maths.pow(x1, 3).toDouble());
   vec.Vector4 col2 = vec.Vector4(
-      maths.pow(x2, 0) as double,
-      maths.pow(x2, 1) as double,
-      maths.pow(x2, 2) as double,
-      maths.pow(x2, 3) as double);
+      maths.pow(x2, 0).toDouble(),
+      maths.pow(x2, 1).toDouble(),
+      maths.pow(x2, 2).toDouble(),
+      maths.pow(x2, 3).toDouble());
   vec.Vector4 col3 = vec.Vector4(
-      maths.pow(x3, 0) as double,
-      maths.pow(x3, 1) as double,
-      maths.pow(x3, 2) as double,
-      maths.pow(x3, 3) as double);
+      maths.pow(x3, 0).toDouble(),
+      maths.pow(x3, 1).toDouble(),
+      maths.pow(x3, 2).toDouble(),
+      maths.pow(x3, 3).toDouble());
   return vec.Matrix4.columns(col0, col1, col2, col3);
 }
 
 vec.Matrix4 getMx(double x0, double x1, double x2) {
   vec.Vector4 col0 =
-      vec.Vector4(0, 1, 2 * x0, 3 * (maths.pow(x0, 2) as double));
+      vec.Vector4(0, 1, 2 * x0, 3 * (maths.pow(x0, 2).toDouble()));
   vec.Vector4 col1 = vec.Vector4(
-      maths.pow(x0, 0) as double,
-      maths.pow(x0, 1) as double,
-      maths.pow(x0, 2) as double,
-      maths.pow(x0, 3) as double);
+      maths.pow(x0, 0).toDouble(),
+      maths.pow(x0, 1).toDouble(),
+      maths.pow(x0, 2).toDouble(),
+      maths.pow(x0, 3).toDouble());
   vec.Vector4 col2 = vec.Vector4(
-      maths.pow(x1, 0) as double,
-      maths.pow(x1, 1) as double,
-      maths.pow(x1, 2) as double,
-      maths.pow(x1, 3) as double);
+      maths.pow(x1, 0).toDouble(),
+      maths.pow(x1, 1).toDouble(),
+      maths.pow(x1, 2).toDouble(),
+      maths.pow(x1, 3).toDouble());
   vec.Vector4 col3 = vec.Vector4(
-      maths.pow(x2, 0) as double,
-      maths.pow(x2, 1) as double,
-      maths.pow(x2, 2) as double,
-      maths.pow(x2, 3) as double);
+      maths.pow(x2, 0).toDouble(),
+      maths.pow(x2, 1).toDouble(),
+      maths.pow(x2, 2).toDouble(),
+      maths.pow(x2, 3).toDouble());
   return vec.Matrix4.columns(col0, col1, col2, col3);
 }
 

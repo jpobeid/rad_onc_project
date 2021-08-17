@@ -249,7 +249,7 @@ class _ProbabilitiesAppState extends State<ProbabilitiesApp> {
 
 double getProbabilityFromRate(double rate, double time) {
   double complementaryProb = (1 - rate / 100);
-  return (1 - maths.pow(complementaryProb, time)) * 100 as double;
+  return (1 - maths.pow(complementaryProb, time).toDouble()) * 100;
 }
 
 double getExpProb(double yPlateau, double T, double yT, double time) {

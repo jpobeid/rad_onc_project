@@ -37,6 +37,8 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
   static const Color colorUnits = Colors.greenAccent;
   static const Color colorRate = Colors.pink;
   static const Color colorTotal = Colors.indigoAccent;
+  static const List<int> checkRowFlex = [1, 3];
+  static const double checkboxPadding = 10;
 
   List<bool> _isSelected = [true, false];
   bool? _isBioHalfLife;
@@ -48,10 +50,10 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
     _isCompute = false;
   }
 
-  TextEditingController ctrlA0 = TextEditingController(text: '');
-  TextEditingController ctrlPHL = TextEditingController(text: '');
-  TextEditingController ctrlBHL = TextEditingController(text: '');
-  TextEditingController ctrlDT = TextEditingController(text: '');
+  TextEditingController _ctrlA0 = TextEditingController(text: '');
+  TextEditingController _ctrlPHL = TextEditingController(text: '');
+  TextEditingController _ctrlBHL = TextEditingController(text: '');
+  TextEditingController _ctrlDT = TextEditingController(text: '');
 
   TextField makeTextField(BuildContext context, int maxLength,
       TextEditingController ctrl, bool isEnabled) {
@@ -85,18 +87,18 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
   void initState() {
     _isBioHalfLife = widget.isBioPresent;
     _strUnits = widget.strUnits;
-    ctrlPHL.text = widget.strImportedPHL;
-    ctrlBHL.text = widget.strImportedBHL;
+    _ctrlPHL.text = widget.strImportedPHL;
+    _ctrlBHL.text = widget.strImportedBHL;
     _strSymbol = widget.strSymbol;
     super.initState();
   }
 
   @override
   void dispose() {
-    ctrlA0.dispose();
-    ctrlPHL.dispose();
-    ctrlBHL.dispose();
-    ctrlDT.dispose();
+    _ctrlA0.dispose();
+    _ctrlPHL.dispose();
+    _ctrlBHL.dispose();
+    _ctrlDT.dispose();
     super.dispose();
   }
 
@@ -104,15 +106,15 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
   Widget build(BuildContext context) {
     String strAns = '';
     if (_isCompute) {
-      strAns = checkStrings(_isBioHalfLife, ctrlA0.text, ctrlPHL.text,
-              ctrlBHL.text, ctrlDT.text)
+      strAns = checkStrings(_isBioHalfLife, _ctrlA0.text, _ctrlPHL.text,
+              _ctrlBHL.text, _ctrlDT.text)
           ? computeAns(
                   _isSelected[0],
                   _isBioHalfLife!,
-                  ctrlA0.text,
-                  ctrlPHL.text,
-                  _isBioHalfLife! ? ctrlBHL.text : '',
-                  ctrlDT.text)
+                  _ctrlA0.text,
+                  _ctrlPHL.text,
+                  _isBioHalfLife! ? _ctrlBHL.text : '',
+                  _ctrlDT.text)
               .toStringAsFixed(2)
           : 'N/A';
     }
@@ -159,7 +161,7 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
                       style: Theme.of(context).textTheme.headline1,
                       textAlign: TextAlign.center,
                     ),
-                    makeTextField(context, 5, ctrlA0, true),
+                    makeTextField(context, 5, _ctrlA0, true),
                   ]),
                   TableRow(children: [
                     Text(
@@ -167,36 +169,44 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
                       style: Theme.of(context).textTheme.headline1,
                       textAlign: TextAlign.center,
                     ),
-                    makeTextField(context, 5, ctrlPHL, !widget.fromIsotopes),
+                    makeTextField(context, 5, _ctrlPHL, !widget.fromIsotopes),
                   ]),
                   TableRow(children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: _isBioHalfLife!
-                            ? Theme.of(context).scaffoldBackgroundColor
-                            : Theme.of(context).primaryColor,
-                      ),
-                      child: IgnorePointer(
-                        ignoring: widget.fromIsotopes,
-                        child: CheckboxListTile(
-                          title: Text(
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: checkRowFlex[0],
+                          child: IgnorePointer(
+                            ignoring: widget.fromIsotopes,
+                            child: CheckboxListTile(
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: checkboxPadding),
+                              tileColor: Colors.grey[400],
+                              value: _isBioHalfLife,
+                              onChanged: (value) {
+                                setState(() {
+                                  _ctrlBHL.clear();
+                                  _isBioHalfLife = value;
+                                  resetIsCompute();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: checkRowFlex[1],
+                          child: Text(
                             'Bio. Half-life: ',
                             style: Theme.of(context).textTheme.headline1,
                             textAlign: TextAlign.center,
                           ),
-                          value: _isBioHalfLife,
-                          onChanged: (value) {
-                            setState(() {
-                              _isBioHalfLife = value;
-                              resetIsCompute();
-                            });
-                          },
                         ),
-                      ),
+                      ],
                     ),
                     _isBioHalfLife!
                         ? makeTextField(
-                            context, 5, ctrlBHL, !widget.fromIsotopes)
+                            context, 5, _ctrlBHL, !widget.fromIsotopes)
                         : Container(),
                   ]),
                   TableRow(children: [
@@ -205,7 +215,7 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
                       style: Theme.of(context).textTheme.headline1,
                       textAlign: TextAlign.center,
                     ),
-                    makeTextField(context, 5, ctrlDT, true),
+                    makeTextField(context, 5, _ctrlDT, true),
                   ]),
                   TableRow(children: [
                     Text(
@@ -342,7 +352,7 @@ bool checkStrings(
       allowNegative: false,
       allowZero: true,
       allowDecimal: true,
-      maxValue: math.pow(10, maxDigits) as double,
+      maxValue: math.pow(10, maxDigits).toDouble(),
       minValue: 0,
       maxDigitsPreDecimal: maxDigits,
       maxDigitsPostDecimal: maxDigits);
@@ -352,7 +362,7 @@ bool checkStrings(
       allowNegative: false,
       allowZero: false,
       allowDecimal: true,
-      maxValue: math.pow(10, maxDigits) as double,
+      maxValue: math.pow(10, maxDigits).toDouble(),
       minValue: 0,
       maxDigitsPreDecimal: maxDigits,
       maxDigitsPostDecimal: maxDigits);
@@ -362,7 +372,7 @@ bool checkStrings(
           allowNegative: false,
           allowZero: false,
           allowDecimal: true,
-          maxValue: math.pow(10, maxDigits) as double,
+          maxValue: math.pow(10, maxDigits).toDouble(),
           minValue: 0,
           maxDigitsPreDecimal: maxDigits,
           maxDigitsPostDecimal: maxDigits) ||
@@ -373,7 +383,7 @@ bool checkStrings(
       allowNegative: false,
       allowZero: true,
       allowDecimal: true,
-      maxValue: math.pow(10, maxDigits) as double,
+      maxValue: math.pow(10, maxDigits).toDouble(),
       minValue: 0,
       maxDigitsPreDecimal: maxDigits,
       maxDigitsPostDecimal: maxDigits);
