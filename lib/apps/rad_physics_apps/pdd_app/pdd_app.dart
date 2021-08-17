@@ -240,32 +240,29 @@ class _PddAppState extends State<PddApp> {
                                 });
                               },
                             ),
-                            LayoutBuilder(builder: (context, constraints) {
-                              return (Container(
-                                width: constraints.maxWidth *
-                                    PddApp.fractionWidthCheckbox,
-                                color: _isFixedAxis
-                                    ? Theme.of(context).scaffoldBackgroundColor
-                                    : Theme.of(context).primaryColor,
-                                child: CheckboxListTile(
-                                  dense: true,
-                                  contentPadding: EdgeInsets.all(0),
-                                  value: _isFixedAxis,
-                                  title: Text(
-                                    'Fix axis',
-                                    style:
-                                        Theme.of(context).textTheme.headline1,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  onChanged: (checked) {
-                                    setState(() {
-                                      _isFixedAxis = !_isFixedAxis;
-                                      resetGraphDefaults();
-                                    });
-                                  },
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  'Fix axis',
+                                  style: Theme.of(context).textTheme.headline1,
+                                  textAlign: TextAlign.center,
                                 ),
-                              ));
-                            }),
+                                Container(
+                                  color: Colors.grey[400],
+                                  child: Checkbox(
+                                    checkColor: Colors.black,
+                                    value: _isFixedAxis,
+                                    onChanged: (checked) {
+                                      setState(() {
+                                        _isFixedAxis = !_isFixedAxis;
+                                        resetGraphDefaults();
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                         Column(

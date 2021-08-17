@@ -38,7 +38,6 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
   static const Color colorRate = Colors.pink;
   static const Color colorTotal = Colors.indigoAccent;
   static const List<int> checkRowFlex = [1, 3];
-  static const double checkboxPadding = 10;
 
   List<bool> _isSelected = [true, false];
   bool? _isBioHalfLife;
@@ -179,18 +178,19 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
                           flex: checkRowFlex[0],
                           child: IgnorePointer(
                             ignoring: widget.fromIsotopes,
-                            child: CheckboxListTile(
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 0, horizontal: checkboxPadding),
-                              tileColor: Colors.grey[400],
-                              value: _isBioHalfLife,
-                              onChanged: (value) {
-                                setState(() {
-                                  _ctrlBHL.clear();
-                                  _isBioHalfLife = value;
-                                  resetIsCompute();
-                                });
-                              },
+                            child: Container(
+                              color: Colors.grey[400],
+                              child: Checkbox(
+                                checkColor: Colors.black,
+                                value: _isBioHalfLife,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _ctrlBHL.clear();
+                                    _isBioHalfLife = value;
+                                    resetIsCompute();
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -204,10 +204,8 @@ class _TimeDecayDoseAppState extends State<TimeDecayDoseApp> {
                         ),
                       ],
                     ),
-                    _isBioHalfLife!
-                        ? makeTextField(
-                            context, 5, _ctrlBHL, !widget.fromIsotopes)
-                        : Container(),
+                    _isBioHalfLife! ?
+                    makeTextField(context, 5, _ctrlBHL, !widget.fromIsotopes) : Container(),
                   ]),
                   TableRow(children: [
                     Text(
