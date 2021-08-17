@@ -2,11 +2,10 @@ import 'dart:collection';
 import 'dart:core';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:rad_onc_project/functions/text_field_validation.dart';
-import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rad_onc_project/data/global_data.dart' as datas;
+import 'package:rad_onc_project/functions/text_field_validation.dart';
+import 'package:rad_onc_project/widgets/rad_app_bar.dart';
 import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
 
 class ScalingTime extends StatefulWidget {

@@ -36,7 +36,7 @@ class ScalingTimePlot extends StatefulWidget {
 
 class _ScalingTimePlotState extends State<ScalingTimePlot> {
   static const List<int> listHorizontalFlex = [10, 4];
-  static const List<int> listVerticalFlex = [4, 1];
+  static const List<int> listVerticalFlex = [5, 1, 1, 1];
   static const double fractionCanvasHeight = 0.95;
   static const double fractionCanvasWidth = 0.95;
   static const double sizeRadius = 10;
@@ -326,10 +326,11 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                       Expanded(
                         flex: listVerticalFlex[0],
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
                               'Interpol.:',
-                              style: Theme.of(context).textTheme.headline2,
+                              style: Theme.of(context).textTheme.headline1,
                             ),
                             DropdownButton(
                               value: _valueInterpol,
@@ -340,7 +341,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                                   child: Text(
                                     'Exp.',
                                     style:
-                                        Theme.of(context).textTheme.headline2,
+                                        Theme.of(context).textTheme.headline1,
                                   ),
                                 ),
                                 DropdownMenuItem(
@@ -348,7 +349,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                                   child: Text(
                                     'Linear',
                                     style:
-                                        Theme.of(context).textTheme.headline2,
+                                        Theme.of(context).textTheme.headline1,
                                   ),
                                 ),
                               ],
@@ -362,7 +363,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                             ),
                             Text(
                               'Scale:',
-                              style: Theme.of(context).textTheme.headline2,
+                              style: Theme.of(context).textTheme.headline1,
                             ),
                             DropdownButton(
                               value: _valueScale,
@@ -378,7 +379,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                             ),
                             Text(
                               'Units:',
-                              style: Theme.of(context).textTheme.headline2,
+                              style: Theme.of(context).textTheme.headline1,
                             ),
                             DropdownButton(
                               value: _valueUnits,
@@ -394,39 +395,46 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                           ],
                         ),
                       ),
+                      Spacer(
+                        flex: listVerticalFlex[1],
+                      ),
                       Expanded(
-                          flex: listVerticalFlex[1],
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(sizeRadius),
+                        flex: listVerticalFlex[2],
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(sizeRadius),
+                          ),
+                          child: TextButton(
+                            child: Text(
+                              'Metrics',
+                              style: Theme.of(context).textTheme.headline1,
                             ),
-                            child: TextButton(
-                              child: Text(
-                                'Get metrics',
-                                style: Theme.of(context).textTheme.headline2,
-                              ),
-                              onPressed: () {
-                                updateMainVars();
-                                showDialogMessage(
-                                  context,
-                                  fractionWidthDialog,
-                                  fractionHeightDialog,
-                                  widthBorderDialog,
-                                  radiusBorderDialog,
-                                  listStrScale,
-                                  listNScale,
-                                  _valueScale,
-                                  _listRelDays,
-                                  _listValues,
-                                  _valueInterpol,
-                                  _listFunctionArgs,
-                                  _elapsedDays,
-                                  _strTimeUnit,
-                                );
-                              },
-                            ),
-                          )),
+                            onPressed: () {
+                              updateMainVars();
+                              showDialogMessage(
+                                context,
+                                fractionWidthDialog,
+                                fractionHeightDialog,
+                                widthBorderDialog,
+                                radiusBorderDialog,
+                                listStrScale,
+                                listNScale,
+                                _valueScale,
+                                _listRelDays,
+                                _listValues,
+                                _valueInterpol,
+                                _listFunctionArgs,
+                                _elapsedDays,
+                                _strTimeUnit,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      Spacer(
+                        flex: listVerticalFlex[3],
+                      ),
                     ],
                   ),
                 ),
@@ -499,8 +507,11 @@ class PlotPaint extends CustomPainter {
         strokeWidthAxis);
     TextPainter paintText = TextPainter(
         text: TextSpan(
-            text: nOrderY > 0 ? 'x10${ScalingTimePlot.mapSuperscript[nOrderY.round()]}' : '',
-            style: TextStyle(color: Colors.black, fontSize: ScalingTimePlot.fontSizeScale)),
+            text: nOrderY > 0
+                ? 'x10${ScalingTimePlot.mapSuperscript[nOrderY.round()]}'
+                : '',
+            style: TextStyle(
+                color: Colors.black, fontSize: ScalingTimePlot.fontSizeScale)),
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr);
     paintText.layout();
@@ -568,7 +579,7 @@ List<DropdownMenuItem> getScaleMenu(BuildContext context,
       value: i,
       child: Text(
         listStrScale[indexStart + i],
-        style: Theme.of(context).textTheme.headline2,
+        style: Theme.of(context).textTheme.headline1,
       ),
     ));
   }
@@ -584,7 +595,7 @@ List<DropdownMenuItem> getUnitsMenu(
       value: i,
       child: Text(
         e,
-        style: Theme.of(context).textTheme.headline2,
+        style: Theme.of(context).textTheme.headline1,
       ),
     ));
     i++;
