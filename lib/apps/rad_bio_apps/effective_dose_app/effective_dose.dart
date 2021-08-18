@@ -13,7 +13,8 @@ class EffectiveDose extends StatefulWidget {
 
 class _EffectiveDoseState extends State<EffectiveDose> {
   static const double fractionHeightRow = 0.08;
-  static const double fractionHeightRowFirst = 0.1;
+  static const double fractionHeightRowFirst = 0.08;
+  static const double fractionHeightRowLabel = 0.05;
   static const double widthBorder = 1;
   static const List<int> listHorizontalFlex = [3, 2];
 
@@ -38,7 +39,7 @@ class _EffectiveDoseState extends State<EffectiveDose> {
           body: ListView.builder(
               itemCount: dataDose!.length,
               itemBuilder: (context, index) {
-                return makeRow(context, fractionHeightRow, fractionHeightRowFirst,
+                return makeRow(context, fractionHeightRow, fractionHeightRowFirst, fractionHeightRowLabel,
                     widthBorder, listHorizontalFlex, dataDose!, index);
               }),
         ),
@@ -53,13 +54,14 @@ Container makeRow(
     BuildContext context,
     double fractionHeightRow,
     double fractionHeightRowFirst,
+    double fractionHeightRowLabel,
     double widthBorder,
     List<int> listHorizontalFlex,
     List<List<dynamic>> dataDose,
     int index) {
   if (dataDose[index][1].toString() == '') {
     return Container(
-      height: MediaQuery.of(context).size.height * fractionHeightRow,
+      height: MediaQuery.of(context).size.height * fractionHeightRowLabel,
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         border: Border.all(
@@ -69,8 +71,8 @@ Container makeRow(
       child: Text(
         dataDose[index][0].toString(),
         style: TextStyle(
-            fontSize: Theme.of(context).textTheme.headline2!.fontSize,
-            fontWeight: Theme.of(context).textTheme.headline2!.fontWeight,
+            fontSize: Theme.of(context).textTheme.headline1!.fontSize,
+            fontWeight: Theme.of(context).textTheme.headline1!.fontWeight,
             color: Theme.of(context).scaffoldBackgroundColor),
       ),
     );
@@ -91,7 +93,7 @@ Container makeRow(
             child: Text(
               dataDose[index][0].toString(),
               style: index == 0
-                  ? Theme.of(context).textTheme.headline2
+                  ? Theme.of(context).textTheme.headline1
                   : Theme.of(context).textTheme.headline1,
               textAlign: TextAlign.center,
             ),
@@ -104,7 +106,7 @@ Container makeRow(
             flex: listHorizontalFlex[1],
             child: Text(
               dataDose[index][1].toString(),
-              style: Theme.of(context).textTheme.headline2,
+              style: Theme.of(context).textTheme.headline1,
               textAlign: TextAlign.center,
             ),
           ),

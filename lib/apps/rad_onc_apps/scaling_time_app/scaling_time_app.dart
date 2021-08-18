@@ -13,7 +13,7 @@ class ScalingTime extends StatefulWidget {
 
   static const year0 = 1990;
   static const double maxValue = 10000;
-  static const List<int> listVerticalFlex = [1, 2, 2, 15, 2];
+  static const List<int> listVerticalFlex = [1, 3, 3, 30, 4];
   static const List<int> listHorizontalFlex = [3, 2, 1];
   static const double fractionHeightRow = 0.08;
   static const int indexMainThreshold = 5;
@@ -141,11 +141,11 @@ class _ScalingTimeState extends State<ScalingTime> {
                               color: Theme.of(context).scaffoldBackgroundColor,
                               fontSize: Theme.of(context)
                                   .textTheme
-                                  .headline2!
+                                  .headline1!
                                   .fontSize,
                               fontWeight: Theme.of(context)
                                   .textTheme
-                                  .headline2!
+                                  .headline1!
                                   .fontWeight),
                           textAlign: TextAlign.center,
                         ),
@@ -158,11 +158,11 @@ class _ScalingTimeState extends State<ScalingTime> {
                               color: Theme.of(context).scaffoldBackgroundColor,
                               fontSize: Theme.of(context)
                                   .textTheme
-                                  .headline2!
+                                  .headline1!
                                   .fontSize,
                               fontWeight: Theme.of(context)
                                   .textTheme
-                                  .headline2!
+                                  .headline1!
                                   .fontWeight),
                           textAlign: TextAlign.center,
                         ),

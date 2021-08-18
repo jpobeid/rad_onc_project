@@ -1,11 +1,13 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rad_onc_project/functions/draw_plot.dart';
-import 'find_roots.dart' as roots;
-import 'least_squares_line.dart' as lsqr;
-import 'dart:math' as math;
+
+import './find_roots.dart' as roots;
+import './least_squares_line.dart' as lsqr;
+import './metrics.dart' as metrics;
 
 class ScalingTimePlot extends StatefulWidget {
   static const routeName = '/scaling-time-plot-app';
@@ -23,6 +25,31 @@ class ScalingTimePlot extends StatefulWidget {
     9: '\u2079',
   };
   static const double fontSizeScale = 20;
+  static const List<String> scaleLabels = [
+    '5x',
+    '3x',
+    '2x',
+    '1.5x',
+    '(2/3)x',
+    '(1/2)x',
+    '(1/3)x',
+    '(1/5)x'
+  ];
+  static const List<double> scaleValues = [
+    5.0,
+    3.0,
+    2.0,
+    1.5,
+    (2 / 3),
+    (1 / 2),
+    (1 / 3),
+    (1 / 5),
+  ];
+  static const List<String> timeUnits = [
+    'Days',
+    'Months',
+    'Years',
+  ];
 
   final List<DateTime>? listDateTime;
   final List<String>? listStrValues;
@@ -45,31 +72,6 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
   static const double fractionHeightDialog = 0.6;
   static const double widthBorderDialog = 5;
   static const double radiusBorderDialog = 20;
-  static const List<String> listStrScale = [
-    '5x',
-    '3x',
-    '2x',
-    '1.5x',
-    '(2/3)x',
-    '(1/2)x',
-    '(1/3)x',
-    '(1/5)x'
-  ];
-  static const List<double> listNScale = [
-    5.0,
-    3.0,
-    2.0,
-    1.5,
-    (2 / 3),
-    (1 / 2),
-    (1 / 3),
-    (1 / 5),
-  ];
-  static const List<String> listUnits = [
-    'Days',
-    'Months',
-    'Years',
-  ];
 
   int? _valueInterpol = 0;
   Function _valueFunction = roots.fExp;
@@ -79,12 +81,12 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
   List<String> _listCrosshairsString = ['', '', 'true'];
 
   List<double>? _listAbsDays;
-  int? _elapsedDays;
+  late int _elapsedDays;
   List<double>? _listRelDays;
   late List<String> _listPossibleUnits;
   List<double>? _listValues;
   double? _maxValue;
-  String? _strTimeUnit;
+  late String _strTimeUnit;
   List<double>? _normListX;
   List<double>? _normListY;
   List<double> _listFunctionNormArgs = [];
@@ -105,15 +107,15 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
         .round();
     _listRelDays = _listAbsDays!.map((e) => (e - _listAbsDays![0])).toList();
     List<bool> listCanBeUnit = [
-      _elapsedDays! < 365,
-      _elapsedDays! > 30,
-      _elapsedDays! >= 365
+      _elapsedDays < 365,
+      _elapsedDays > 30,
+      _elapsedDays >= 365
     ];
     _listPossibleUnits = [];
     int i = 0;
     listCanBeUnit.forEach((element) {
       if (element) {
-        _listPossibleUnits.add(listUnits[i]);
+        _listPossibleUnits.add(ScalingTimePlot.timeUnits[i]);
       }
       i++;
     });
@@ -137,7 +139,9 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
         _listFunctionNormArgs.add(normBeta);
         //Get TRUE beta for use with computations, this is based on non-normalized values
         double beta = roots.getBeta(
-            normBeta, getConvertedDt(_elapsedDays!.toDouble(), _strTimeUnit));
+            normBeta,
+            metrics.Metrics.convertElapsedTime(
+                _elapsedDays.toDouble(), _strTimeUnit));
         _listFunctionArgs.add(beta);
         break;
       case 1:
@@ -160,7 +164,9 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
         _listFunctionNormArgs.add(normBeta);
         //Get TRUE beta for use with computations, this is based on non-normalized values
         double beta = roots.getBeta(
-            normBeta, getConvertedDt(_elapsedDays!.toDouble(), _strTimeUnit));
+            normBeta,
+            metrics.Metrics.convertElapsedTime(
+                _elapsedDays.toDouble(), _strTimeUnit));
         _listFunctionArgs.add(beta);
         break;
     }
@@ -287,7 +293,7 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                             //Set the double data for the crosshairs
                             _listCrosshairsData[2] = 1;
                             //Set the string data for the crosshairs
-                            double dtDays = _elapsedDays! * (absX / maxAbsX);
+                            double dtDays = _elapsedDays * (absX / maxAbsX);
                             DateTime selectedDate =
                                 DateTime.fromMillisecondsSinceEpoch(
                                     ((_listAbsDays![0] + dtDays) *
@@ -368,8 +374,11 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                             DropdownButton(
                               value: _valueScale,
                               dropdownColor: colorDropList,
-                              items: getScaleMenu(context, listStrScale,
-                                  _listFunctionArgs, _valueInterpol),
+                              items: getScaleMenu(
+                                  context,
+                                  ScalingTimePlot.scaleLabels,
+                                  _listFunctionArgs,
+                                  _valueInterpol),
                               onChanged: (dynamic index) {
                                 setState(() {
                                   _valueScale = index;
@@ -412,14 +421,14 @@ class _ScalingTimePlotState extends State<ScalingTimePlot> {
                             ),
                             onPressed: () {
                               updateMainVars();
-                              showDialogMessage(
+                              showMetrics(
                                 context,
                                 fractionWidthDialog,
                                 fractionHeightDialog,
                                 widthBorderDialog,
                                 radiusBorderDialog,
-                                listStrScale,
-                                listNScale,
+                                ScalingTimePlot.scaleLabels,
+                                ScalingTimePlot.scaleValues,
                                 _valueScale,
                                 _listRelDays,
                                 _listValues,
@@ -604,70 +613,7 @@ List<DropdownMenuItem> getUnitsMenu(
 }
 //endregion menu functions
 
-//region calc functions
-double getConvertedDt(double elapsedDays, String? strTimeUnit) {
-  double dt = elapsedDays;
-  if (strTimeUnit == 'Months') {
-    dt = dt * (12 / 365);
-  } else if (strTimeUnit == 'Years') {
-    dt = dt / (365);
-  }
-  return dt;
-}
-
-double getScalingTime(
-    Function fX,
-    List<double> listArgs,
-    List<double> listScale,
-    int indexScale,
-    int? elapsedDays,
-    String? strTimeUnit) {
-  //Must be the case that if beta/m>0:N>1 and that if beta/m<0:N<1
-  int indexStart = (fX == roots.fExp ? listArgs[1] >= 0 : listArgs[0] >= 0)
-      ? 0
-      : (listScale.length / 2).floor();
-  double N = listScale[indexStart + indexScale];
-  double tNx;
-  if (fX == roots.fExp) {
-    tNx = math.log(N) / listArgs[1];
-  } else {
-    //This is an average tNx! Also equal to mid-line tNx since this changes with X in the linear case
-    tNx = (N - 1) * (elapsedDays! / 2 + listArgs[1] / listArgs[0]);
-    tNx = getConvertedDt(tNx, strTimeUnit);
-  }
-  return tNx;
-}
-
-double getAvgVelocity(Function fX, List<double> args, int? dtDays, double dt) {
-  if (fX == roots.fExp) {
-    return (args[0] / dt) * (math.exp(args[1] * dt) - 1);
-  } else {
-    return args[0] * (dtDays! / dt);
-  }
-}
-
-double getMeanSquaredError(Function fX, List<double> functionArgs,
-    List<double> listX, List<double>? listY, int? elapsedDays, double dt) {
-  List<double> listPredictedY;
-  if (fX == lsqr.fLine) {
-    listPredictedY =
-        List<double>.from(listX.map((e) => fX(functionArgs, e)).toList());
-  } else {
-    double betaDays = functionArgs[1] * (dt / elapsedDays!);
-    listPredictedY = List<double>.from(
-        listX.map((e) => fX([functionArgs[0], betaDays], e)).toList());
-  }
-  double sumDy = 0;
-  int i = 0;
-  listPredictedY.forEach((element) {
-    sumDy += math.pow((element - listY![i]), 2);
-    i++;
-  });
-  return sumDy / listX.length;
-}
-//endregion calc functions
-
-void showDialogMessage(
+void showMetrics(
   BuildContext context,
   double fractionWidthDialog,
   double fractionHeightDialog,
@@ -680,15 +626,21 @@ void showDialogMessage(
   List<double>? listY,
   int? valueInterpol,
   List<double> listArgs,
-  int? elapsedDays,
-  String? strTimeUnit,
+  int elapsedDays,
+  String strTimeUnit,
 ) {
   showDialog(
       builder: (context) {
-        double argA = listArgs[0];
-        double argB = listArgs[1];
-        Function fX = valueInterpol == 0 ? roots.fExp : lsqr.fLine;
         const List<double> listTableHorizontalFlex = [1, 1];
+        TextStyle styleMetrics = Theme.of(context).textTheme.headline1!;
+        const Color colorBorders = Colors.green;
+
+        metrics.Metrics metric = metrics.Metrics(
+            fX: valueInterpol == 0 ? roots.fExp : lsqr.fLine,
+            args: listArgs,
+            elapsedDays: elapsedDays,
+            unitTime: strTimeUnit);
+
         return Center(
           child: Container(
             width: MediaQuery.of(context).size.width * fractionWidthDialog,
@@ -696,9 +648,7 @@ void showDialogMessage(
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
-              border: Border.all(
-                  color: Theme.of(context).primaryColor,
-                  width: widthBorderDialog),
+              border: Border.all(color: colorBorders, width: widthBorderDialog),
               borderRadius: BorderRadius.circular(radiusBorderDialog),
             ),
             child: Table(
@@ -708,19 +658,18 @@ void showDialogMessage(
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               border: TableBorder.symmetric(
-                  inside: BorderSide(
-                      color: Theme.of(context).primaryColor, width: 2)),
+                  inside: BorderSide(color: colorBorders, width: 2)),
               children: [
                 TableRow(
                   children: [
                     Text(
                       valueInterpol == 0 ? 'Beta (k):' : 'Slope (m):',
-                      style: Theme.of(context).textTheme.headline2,
+                      style: styleMetrics,
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      '${valueInterpol == 0 ? argB.toStringAsFixed(3) : getAvgVelocity(fX, listArgs, elapsedDays, getConvertedDt(elapsedDays!.toDouble(), strTimeUnit)).toStringAsFixed(3)} [$strTimeUnit\u207b\u00b9]',
-                      style: Theme.of(context).textTheme.headline2,
+                      '${valueInterpol == 0 ? metric.args[1].toStringAsFixed(3) : metric.averageVelocity.toStringAsFixed(3)} [$strTimeUnit\u207b\u00b9]',
+                      style: styleMetrics,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -728,13 +677,13 @@ void showDialogMessage(
                 TableRow(
                   children: [
                     Text(
-                      '${valueInterpol == 0 ? '' : 'Avg. '}${listStrScale[(valueInterpol == 0 ? argB >= 0 : argA >= 0) ? valueScale! : (listStrScale.length / 2).floor() + valueScale!]} Time:',
-                      style: Theme.of(context).textTheme.headline2,
+                      '${valueInterpol == 0 ? '' : 'Avg. '}${listStrScale[(valueInterpol == 0 ? metric.args[1] >= 0 : metric.args[0] >= 0) ? valueScale! : (listStrScale.length / 2).floor() + valueScale!]} Time:',
+                      style: styleMetrics,
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      '${getScalingTime(fX, listArgs, listNScale, valueScale, elapsedDays, strTimeUnit).toStringAsFixed(1)} [$strTimeUnit]',
-                      style: Theme.of(context).textTheme.headline2,
+                      '${metric.getScalingTime(valueScale, listNScale).toStringAsFixed(1)} [$strTimeUnit]',
+                      style: styleMetrics,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -743,12 +692,12 @@ void showDialogMessage(
                   children: [
                     Text(
                       'Avg. Velocity:',
-                      style: Theme.of(context).textTheme.headline2,
+                      style: styleMetrics,
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      '${getAvgVelocity(fX, listArgs, elapsedDays, getConvertedDt(elapsedDays!.toDouble(), strTimeUnit)).toStringAsFixed(3)} [$strTimeUnit\u207b\u00b9]',
-                      style: Theme.of(context).textTheme.headline2,
+                      '${metric.averageVelocity.toStringAsFixed(3)} [$strTimeUnit\u207b\u00b9]',
+                      style: styleMetrics,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -757,12 +706,12 @@ void showDialogMessage(
                   children: [
                     Text(
                       'Mean Sq. Err.:',
-                      style: Theme.of(context).textTheme.headline2,
+                      style: styleMetrics,
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      '${getMeanSquaredError(fX, listArgs, listRelX!, listY, elapsedDays, getConvertedDt(elapsedDays.toDouble(), strTimeUnit)).toStringAsFixed(3)}',
-                      style: Theme.of(context).textTheme.headline2,
+                      '${metric.getMeanSquaredError(listRelX!, listY).toStringAsFixed(3)}',
+                      style: styleMetrics,
                       textAlign: TextAlign.center,
                     ),
                   ],

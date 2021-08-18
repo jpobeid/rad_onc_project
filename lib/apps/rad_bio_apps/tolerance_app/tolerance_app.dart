@@ -103,7 +103,7 @@ class _ToleranceAppState extends State<ToleranceApp> {
                 Expanded(
                   flex: 3,
                   child: Text(
-                    'Max ${listStrDoseType[_listToggle.indexOf(true)]} (Gy):',
+                    'Max ${listStrDoseType[_listToggle.indexOf(true)]} [Gy]:',
                     style: Theme.of(context).textTheme.headline2,
                     textAlign: TextAlign.start,
                   ),
@@ -323,7 +323,7 @@ class _CourseInfoState extends State<CourseInfo> {
           children: [
             Expanded(
               child: Text(
-                'Dose (Gy):',
+                'Dose [Gy]:',
                 style: Theme.of(context).textTheme.headline2,
                 textAlign: TextAlign.center,
               ),
@@ -567,7 +567,7 @@ class _ComputeDialogState extends State<ComputeDialog> {
                       Expanded(
                         flex: listHorizontalFlex[0],
                         child: Text(
-                          _valueDropdown == 1 ? 'Dose (Gy):' : '# Fx:',
+                          _valueDropdown == 1 ? 'Dose [Gy]:' : '# Fx:',
                           style: Theme.of(context).textTheme.headline2,
                           textAlign: TextAlign.center,
                         ),
@@ -620,7 +620,7 @@ class _ComputeDialogState extends State<ComputeDialog> {
                                 TextSpan(
                                   text: _valueDropdown == 1
                                       ? ' # Fx:'
-                                      : ' Dose (Gy):',
+                                      : ' Dose [Gy]:',
                                   style: Theme.of(context).textTheme.headline2,
                                 ),
                               ],
