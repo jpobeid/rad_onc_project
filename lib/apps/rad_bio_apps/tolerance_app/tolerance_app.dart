@@ -236,7 +236,8 @@ class _ToleranceAppState extends State<ToleranceApp> {
                                             );
                                           });
                                     } else {
-                                      Scaffold.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         SnackBar(
                                           backgroundColor:
                                               Theme.of(context).primaryColor,

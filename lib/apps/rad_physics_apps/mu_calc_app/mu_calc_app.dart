@@ -74,6 +74,8 @@ class _MUCalcAppState extends State<MUCalcApp> {
           .where((element) => element.contains('-'))
           .first
           .split('-')[1];
+      TextStyle styleLabel = Theme.of(context).textTheme.headline1!;
+
       return SafeArea(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
@@ -93,7 +95,7 @@ class _MUCalcAppState extends State<MUCalcApp> {
                             flex: 2,
                             child: Text(
                               'Particle:',
-                              style: Theme.of(context).textTheme.headline2,
+                              style: styleLabel,
                             )),
                         Expanded(
                           flex: 1,
@@ -126,7 +128,7 @@ class _MUCalcAppState extends State<MUCalcApp> {
                         Expanded(
                             child: Text(
                           'Dose [cGy]:',
-                          style: Theme.of(context).textTheme.headline2,
+                          style: styleLabel,
                         )),
                         Expanded(
                             child:
@@ -139,8 +141,8 @@ class _MUCalcAppState extends State<MUCalcApp> {
                         Expanded(
                             flex: 2,
                             child: Text(
-                              'FS [cm]:',
-                              style: Theme.of(context).textTheme.headline2,
+                              'Fields [cm]:',
+                              style: styleLabel,
                             )),
                         Expanded(
                             flex: 1,
@@ -177,8 +179,8 @@ class _MUCalcAppState extends State<MUCalcApp> {
                         Expanded(
                           flex: 4,
                           child: Text(
-                            'Block [%]',
-                            style: Theme.of(context).textTheme.headline2,
+                            'Block [%]:',
+                            style: styleLabel,
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -198,7 +200,7 @@ class _MUCalcAppState extends State<MUCalcApp> {
                         Expanded(
                             child: Text(
                           'Depth [$depthUnits]:',
-                          style: Theme.of(context).textTheme.headline2,
+                          style: styleLabel,
                         )),
                         Expanded(
                             child: fields.textFieldDose(
@@ -420,6 +422,7 @@ Future<void> computeOutputs(
                 width: MediaQuery.of(context).size.width * 0.8,
                 height: MediaQuery.of(context).size.height * 0.6,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
                       'Eq-Sqr [cm]\n${eqSqr.toStringAsFixed(2)}',

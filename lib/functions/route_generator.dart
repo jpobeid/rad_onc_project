@@ -25,22 +25,17 @@ class RouteGenerator {
       //region Settings
       case (SettingsPage.routeName):
         return MaterialPageRoute(builder: (context) => SettingsPage());
-        break;
       case (PddSettings.routeName):
         return MaterialPageRoute(builder: (context) => PddSettings());
-        break;
       //endregion Settings
 
       //region RadOnc
       case (RadOncPage.routeName):
         return MaterialPageRoute(builder: (context) => RadOncPage());
-        break;
       case (TumorVolume.routeName):
         return MaterialPageRoute(builder: (context) => TumorVolume());
-        break;
       case (ScalingTime.routeName):
         return MaterialPageRoute(builder: (context) => ScalingTime());
-        break;
       case (ScalingTimePlot.routeName):
         if (args == null) {
           return MaterialPageRoute(builder: (context) => ScalingTimePlot());
@@ -51,37 +46,28 @@ class RouteGenerator {
                     listStrValues: args[1],
                   ));
         }
-        break;
       case (ProbabilitiesApp.routeName):
         return MaterialPageRoute(builder: (context) => ProbabilitiesApp());
-        break;
       //endregion RadOnc
 
       //region RadBio
       case (RadBioPage.routeName):
         return MaterialPageRoute(builder: (context) => RadBioPage());
-        break;
       case (BedQedCalc.routeName):
         return MaterialPageRoute(builder: (context) => BedQedCalc());
-        break;
       case (EffectiveDose.routeName):
         return MaterialPageRoute(builder: (context) => EffectiveDose());
-        break;
       case (ToleranceApp.routeName):
         return MaterialPageRoute(builder: (context) => ToleranceApp());
-        break;
       //endregion RadBio
 
       //region RadPhys
       case (RadPhysicsPage.routeName):
         return MaterialPageRoute(builder: (context) => RadPhysicsPage());
-        break;
       case (PddApp.routeName):
         return MaterialPageRoute(builder: (context) => PddApp());
-        break;
       case (IsotopesApp.routeName):
         return MaterialPageRoute(builder: (context) => IsotopesApp());
-        break;
       case (TimeDecayDoseApp.routeName):
         if (args == null) {
           return MaterialPageRoute(builder: (context) => TimeDecayDoseApp());
@@ -96,10 +82,8 @@ class RouteGenerator {
                     strSymbol: args[5],
                   ));
         }
-        break;
       case (MUCalcApp.routeName):
         return MaterialPageRoute(builder: (context) => MUCalcApp());
-        break;
       //endregion RadPhys
       default:
         return MaterialPageRoute(builder: (context) => ErrorApp());

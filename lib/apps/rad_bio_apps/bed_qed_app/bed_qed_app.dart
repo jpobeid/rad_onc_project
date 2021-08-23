@@ -8,7 +8,7 @@ import 'package:rad_onc_project/widgets/text_fields.dart' as fields;
 
 class BedQedCalc extends StatefulWidget {
   static const routeName = '/bed-qed-app';
-  static const List<int> flexVertical = [1, 8, 1, 1, 4, 3];
+  static const List<int> flexVertical = [1, 9, 1, 1, 5, 2, 2];
   static const double fractionWidth = 0.4;
   static const double sizeRadius = 10;
 
@@ -159,25 +159,28 @@ class _BedQedCalcState extends State<BedQedCalc> {
             ),
             Expanded(
               flex: BedQedCalc.flexVertical[5],
-              child: TextButton(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * BedQedCalc.fractionWidth,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(BedQedCalc.sizeRadius),
-                  ),
+              child: Container(
+                width: MediaQuery.of(context).size.width * BedQedCalc.fractionWidth,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(BedQedCalc.sizeRadius),
+                ),
+                child: TextButton(
                   child: Text(
                     'Reset',
                     style: Theme.of(context).textTheme.headline2,
                     textAlign: TextAlign.center,
                   ),
+                  onPressed: () {
+                    setState(() {
+                      resetDefaults();
+                    });
+                  },
                 ),
-                onPressed: () {
-                  setState(() {
-                    resetDefaults();
-                  });
-                },
               ),
+            ),
+            Spacer(
+              flex: BedQedCalc.flexVertical[6],
             ),
           ],
         ),

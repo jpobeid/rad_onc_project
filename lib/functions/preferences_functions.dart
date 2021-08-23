@@ -72,7 +72,6 @@ String makePreferenceKey(
 
 Future<Map<String, Map<String, List<double>>>> readPreferences(
     BuildContext context) async {
-  bool isAlreadyStored = false;
   late Map<String, Map<String, List<double?>>> mapPddDefault;
   mapPddDefault = await loadDefaults(context);
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -105,7 +104,6 @@ Future<Map<String, Map<String, List<double>>>> readPreferences(
             filteredLists[1].map((e) => e.toString()).toList());
       } else {
         //Shared preferences exist, so need to load the depths/values - Already stored post-null filter
-        isAlreadyStored = true;
         filteredLists.add(prefs
             .getStringList(preferenceKeyDepths)!
             .map((e) => double.parse(e))

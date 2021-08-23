@@ -239,7 +239,7 @@ List<TableRow> makeRows(BuildContext context, int index, int intRowKeys,
       key = key.split('(')[0] + '\n(' + key.split('(')[1];
     }
     String value = data[index][j].toString();
-    if ((key != null && key != '') && (value != null && value != '')) {
+    if (key != '' && value != '') {
       listTableRows.add(TableRow(
         children: [
           Text(
@@ -263,16 +263,12 @@ String getTimeUnit(String? char) {
   switch (char) {
     case ('m'):
       return '[Mins]';
-      break;
     case ('h'):
       return '[Hours]';
-      break;
     case ('d'):
       return '[Days]';
-      break;
     case ('y'):
       return '[Years]';
-      break;
     default:
       return '[User defined]';
   }
